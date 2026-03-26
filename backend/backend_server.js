@@ -13,14 +13,14 @@ const PORT = 3000;
 const pool = new Pool({ 
   user: "postgres",
   host: "localhost",
-  database: "study_tracker",
-  password: "mypassword123",
+  database: "studyhacker",
+  password: "SQLpassword",
   port: 5432,
 });
 
 app.get("/tasks", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM tasks ORDER BY id");
+    const result = await pool.query("SELECT * FROM tasks ORDER BY task_id");
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -37,7 +37,7 @@ app.post("/add_task", async (req, res) => {
     console.log('New message:', name);
 
     const result = await pool.query(
-      "INSERT INTO tasks (title) VALUES ($1) RETURNING *",
+      "INSERT INTO tasks (task_name) VALUES ($1) RETURNING *",
       [name]
     );
 
