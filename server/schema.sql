@@ -7,7 +7,7 @@
 -- Dumped from database version 18.3 (Homebrew)
 -- Dumped by pg_dump version 18.3 (Homebrew)
 
-SET statement_timeout = 0;
+-- SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET transaction_timeout = 0;
@@ -34,8 +34,9 @@ CREATE TABLE public.users (
     board_id integer[]
 );
 
-
-ALTER TABLE public.users OWNER TO josefinfundberg;
+--
+-- ALTER TABLE public.users OWNER TO josefinfundberg;
+--
 
 --
 -- Name: User_user_id_seq; Type: SEQUENCE; Schema: public; Owner: josefinfundberg
@@ -50,7 +51,7 @@ CREATE SEQUENCE public."User_user_id_seq"
     CACHE 1;
 
 
-ALTER SEQUENCE public."User_user_id_seq" OWNER TO josefinfundberg;
+-- ALTER SEQUENCE public."User_user_id_seq" OWNER TO josefinfundberg;
 
 --
 -- Name: User_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: josefinfundberg
@@ -69,7 +70,7 @@ CREATE TABLE public.board (
 );
 
 
-ALTER TABLE public.board OWNER TO josefinfundberg;
+-- ALTER TABLE public.board OWNER TO josefinfundberg;
 
 --
 -- Name: board_board_id_seq; Type: SEQUENCE; Schema: public; Owner: josefinfundberg
@@ -84,7 +85,7 @@ CREATE SEQUENCE public.board_board_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.board_board_id_seq OWNER TO josefinfundberg;
+-- ALTER SEQUENCE public.board_board_id_seq OWNER TO josefinfundberg;
 
 --
 -- Name: board_board_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: josefinfundberg
@@ -103,7 +104,7 @@ CREATE TABLE public.board_task (
 );
 
 
-ALTER TABLE public.board_task OWNER TO josefinfundberg;
+-- LTER TABLE public.board_task OWNER TO josefinfundberg;
 
 --
 -- Name: tasks; Type: TABLE; Schema: public; Owner: josefinfundberg
@@ -115,7 +116,7 @@ CREATE TABLE public.tasks (
 );
 
 
-ALTER TABLE public.tasks OWNER TO josefinfundberg;
+-- ALTER TABLE public.tasks OWNER TO josefinfundberg;
 
 --
 -- Name: tasks_task_id_seq; Type: SEQUENCE; Schema: public; Owner: josefinfundberg
@@ -130,7 +131,7 @@ CREATE SEQUENCE public.tasks_task_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.tasks_task_id_seq OWNER TO josefinfundberg;
+-- ALTER SEQUENCE public.tasks_task_id_seq OWNER TO josefinfundberg;
 
 --
 -- Name: tasks_task_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: josefinfundberg
@@ -149,7 +150,7 @@ CREATE TABLE public.user_board (
 );
 
 
-ALTER TABLE public.user_board OWNER TO josefinfundberg;
+-- ALTER TABLE public.user_board OWNER TO josefinfundberg;
 
 --
 -- Name: board board_id; Type: DEFAULT; Schema: public; Owner: josefinfundberg
