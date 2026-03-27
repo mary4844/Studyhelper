@@ -11,10 +11,10 @@ app.use(express.static("."));
 const PORT = 3000;
 
 const pool = new Pool({ 
-  user: "postgres",
+  user: "olof",
   host: "localhost",
   database: "studyhacker",
-  password: "SQLpassword",
+  password: "password123",
   port: 5432,
 });
 
