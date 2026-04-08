@@ -2,6 +2,7 @@ body {
     margin: 0px;
     width: 300px;
     margin: 0 auto;
+    background: lightskyblue;
 }
 
 .all-groups {
@@ -13,7 +14,7 @@ body {
     display: inline-block;
     width: 50px;
     height: 300 px;
-    border: ;
+    
     margin: 0 auto;
 }
 
