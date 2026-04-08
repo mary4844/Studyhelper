@@ -1,14 +1,29 @@
 body {
     margin: 0px;
+    width: 300px;
+    margin: 0 auto;
 }
 
 .all-groups {
     width: 300px;
+    margin: 0 auto;
 }
 
 .group {
     display: inline-block;
     width: 50px;
+    height: 300 px;
+    border: ;
     margin: 0 auto;
-    
+}
+
+.bottom {
+    display: inline-block;
+    width: 100px;
+    margin: 0 auto;
+    float: right;
+}
+
+.button {
+    float: right;
 }
