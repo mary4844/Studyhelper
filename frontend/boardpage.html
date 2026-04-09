@@ -58,7 +58,7 @@
         const nameInput = document.getElementById('name'); // fetching entered task name
 
         function addTask() {
-            const name = nameInput.value
+            const name = nameInput.value;
 
             fetch("/add_task", { // calls backend server, writing task name to the server
                 method: "POST",
@@ -70,7 +70,7 @@
             
             .then(res => res.json()) // turning the response from the backend to JSON style
             .then(() => {
-                name.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
+                nameInput.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
                 loadTasks(); // meant to update the page to show the newly added task in the list
             });
         }
