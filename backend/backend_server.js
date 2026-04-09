@@ -1,21 +1,26 @@
-const express = require("express");
+const express = require("express"); // framework used to simplify crating the server
 const cors = require("cors");
 const { Pool } = require("pg");
+const path = require("path"); // tool for handling file paths safely
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("."));
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 const PORT = 3000;
 
 const pool = new Pool({ 
-  user: "olof",
+  user: "mattiasrylander",
   host: "localhost",
   database: "studyhacker",
-  password: "password123",
+  password: "mattiasrylander",
   port: 5432,
+});
+
+app.get("/", (req, res) => {
+  res.redirect("boardpage.html");
 });
 
 app.get("/tasks", async (req, res) => {
@@ -29,7 +34,7 @@ app.get("/tasks", async (req, res) => {
 });
 
 app.post("/add_task", async (req, res) => {
-    console.log("entered add task");
+  console.log("entered add task");
 
   try {
     const { name } = req.body
@@ -63,6 +68,15 @@ app.post("/create_board", async (req, res) => {
   } catch (error) {
     console.error("Error creating board:", error);
     res.status(500).json({ error: "Failed to create board" });
+  }
+});
+
+app.post("/clearList", async (req, res) => { // clears items in table tasks
+  try {
+    const result = await pool.query("delete from tasks");
+    res.json(result.rows);
+  } catch (error){
+    console.error("Error Failed to clear list:", error);
   }
 });
 
