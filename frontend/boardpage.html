@@ -26,14 +26,15 @@
     <!-- skelett för hur en lista med tasks kan se ut -->
     <div style="border: 1px solid black;">
         <h2>Name of Task List</h2>
-        <ul id="TaskList">
-            <li>task 1</li>
-            <li> task 2</li> 
-        </ul>
+        <ul id="TaskList"></ul>
+
         <form id="Add task">
             <input id ="name" placeholder="Task name">
-            <button type="button" onclick="add_task()"> ✚ Add task</button>
+            <button type="button" onclick="addTask()"> ✚ Add task</button>
         </form>
+
+        <button type="button" onclick="clearList()">Clear List</button>
+
     </div> 
 
     <script>
@@ -53,29 +54,36 @@
             });
         }
 
-        const nameInput = document.getElementById('name');
+        const nameInput = document.getElementById('name'); // fetching entered task name
 
         function addTask() {
-            const input = document.getElementById("name"); // fetching entered task name
+            const name = nameInput.value
 
-            fetch("/tasks", { // calls backend server, writing task name to the server
+            fetch("/add_task", { // calls backend server, writing task name to the server
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                title: input.value
-                })
+                body: JSON.stringify({ name })
             })
             
             .then(res => res.json()) // turning the response from the backend to JSON style
             .then(() => {
-                input.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
+                name.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
                 loadTasks(); // meant to update the page to show the newly added task in the list
             });
         }
 
-        
+        function clearList() { // calls backend to empty the list
+            console.log("entered clear list");
+            fetch("/clearList", {
+                method: "POST"
+            })
+            .then(res => res.json())
+            .then(() => { 
+                loadTasks(); 
+            }) // updates the list to show nothing
+        }
     </script>
 
 </body>
