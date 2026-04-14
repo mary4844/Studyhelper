@@ -12,15 +12,15 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 const PORT = 3000;
 
 const pool = new Pool({ 
-  user: "mattiasrylander",
+  user: "postgres",
   host: "localhost",
-  database: "studyhacker",
-  password: "mattiasrylander",
+  database: "study_tracker",
+  password: "1337",
   port: 5432,
 });
 
 app.get("/", (req, res) => {
-  res.redirect("boardpage.html");
+  res.redirect("startpage.html");
 });
 
 app.get("/tasks", async (req, res) => {
