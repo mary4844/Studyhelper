@@ -59,7 +59,7 @@
             console.log("entered add task")
             const name = nameInput.value
 
-            fetch("/add_task", {
+            fetch("/tasks/add", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
