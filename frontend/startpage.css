@@ -1,30 +1,70 @@
-body {
-    margin: 0px;
-    width: 300px;
-    margin: 0 auto;
-    background: lightskyblue;
+.body {
+    background-color: white;
 }
 
-.all-groups {
-    width: 300px;
-    margin: 0 auto;
+/* .top {
+    background-image: url(images/natur.webp);
+} */
+
+#title {
+    font-size: 75px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    text-align: center;
 }
 
-.group {
-    display: inline-block;
-    width: 50px;
-    height: 300 px;
-    
-    margin: 0 auto;
+.create_board {
+    border: none;
+    background-color: #94C8F3;
+    color: white;
+    border-radius: 5px;
+    position: absolute;
+    top: 35px;
+    left: 20px; 
 }
 
-.bottom {
-    display: inline-block;
-    width: 100px;
-    margin: 0 auto;
-    float: right;
+.create_board:hover {
+    opacity: 0.85;
 }
 
-.button {
-    float: right;
+.create_board:active {
+    opacity: 0.5;
+}
+
+#boards_head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#all_boards {
+    background-color: white;
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: black;
+    position: relative;
+}
+
+#boards-container {
+    display: flex;
+}
+
+.board {
+    text-align: center;
+    width: 75px;
+    height: 300px;
+    background-color: #96CFA1;
+    border-radius: 10px;
+    text-align: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    padding-top: 5px;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.board:hover {
+    opacity: 0.8;
 }

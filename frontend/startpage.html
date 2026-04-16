@@ -4,31 +4,45 @@
     <title>StudyHacker</title>
     <link rel="stylesheet" href="startpage.css">
 </head>
-<body>
-    <div class="all-groups">
-        <a href="boardpage.html">
-            <div class="group">
-                <h3>My first board</h3>        <!-- Byt namn -->    
-            </div>
-        </a>
-        <a href="boardpage.html">
-            <div class="group">
-                <h3>Title</h3>            
-            </div>
-        </a>
-        <a href="boardpage.html">
-            <div class="group">
-                <h3>Title</h3>            
-            </div>
-        </a>
-    </div>
 
-    <div class="bottom">
-        <h3>hej</h3>
-        <a class="button" href="">
-            <button>Create board</button>
-        </a>
-    </div>
+<body class="body">
+    <!-- <div id="top">
+        
+    </div> -->
+    <p id="title">StudyHelper</p>
 
+    <!-- <div class="startpicture">
+        <img src="images/natur.webp" alt="naturbild">
+    </div> -->
+
+    <div id="all_boards">
+
+        <div id="boards_head">
+            <button class="create_board" type="button" onclick="new_board()">
+                Create board
+            </button>
+            
+            <h1>
+                Dina boards
+            </h1>
+        </div>
+        
+        
+        <div id="boards-container">
+        </div>
+        
+    </div>
+    
+    <script>
+        function new_board() {
+            const new_board = document.createElement("a");
+            new_board.textContent = "New board";
+            new_board.href = "boardpage.html";
+            new_board.classList.add("board");
+            const boards_container = document.getElementById("boards-container");
+            boards_container.appendChild(new_board);
+            console.log("Works");
+        }
+    </script>
 </body>
 </html>
