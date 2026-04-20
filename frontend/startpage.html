@@ -3,24 +3,41 @@
 <head>
     <title>StudyHacker</title>
     <link rel="stylesheet" href="startpage.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div>
-        <!-- <p id="title">StudyHelper</p> -->
-        <img class="startimage" src="images/natur-startsida.png" alt="Naturbild">
-    </div>
+    <!-- <div class="startpage-top">
+        <p id="title">StudyHelper</p>
+        <img class="startimage" src="images/naturbild.png" alt="Naturbild">
+    </div> -->
+    <img class="startimage" src="images/naturbild.png" alt="Naturbild">
 
-    <div id="all_boards">
+    <div class="all_boards">
 
-        <div id="boards_head">
-            <button class="create_board" type="button" onclick="new_board()">
-                Create board
+        <div class="boards_head">
+            
+            <div class="btns">
+
+                <button class="buttons" type="button" onclick="new_board()">
+                    <b>+</b> Add board
+                </button>
+
+                <button class="buttons" type="button">
+                    ▼ Your boards
+                </button>
+
+            </div>
+
+            <h1 class="text">Your boards</h1>
+
+            <button class="sound">
+                &#X1F50A;
             </button>
             
-            <h1>
-                Dina boards
-            </h1>
         </div>
         
         
@@ -32,11 +49,15 @@
     <script>
         function new_board() {
             const new_board = document.createElement("a");
-            new_board.textContent = "New board";
+
+            new_board.textContent = "Board name";
             new_board.href = "boardpage.html";
+            
             new_board.classList.add("board");
             const boards_container = document.getElementById("boards-container");
+            
             boards_container.appendChild(new_board);
+            
             console.log("Works");
         }
     </script>
