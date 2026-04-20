@@ -1,10 +1,12 @@
-.body {
+body {
     background-color: white;
 }
 
-/* .top {
-    background-image: url(images/natur.webp);
-} */
+.startimage {
+    display: block;
+
+    transform: rotate(-90deg);
+}
 
 #title {
     font-size: 75px;
