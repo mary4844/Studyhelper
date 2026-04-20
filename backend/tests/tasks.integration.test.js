@@ -1,42 +1,35 @@
-// Import Supertest so we can send real requests through the Express app.
-const request = require("supertest");
-// Import the real Express app.
-const { app } = require("../app");
-// Import the real PostgreSQL pool so these tests use the actual database.
-const { pool } = require("../db");
+//Integrationstest filen; testar backendkoden mot vår db, för just tasks routes.
+//Jest-funktioner som describe, test, expect, afterEach, afterAll osv.
+//supertest avänds för att skicka HTTP-requests mot vår ecpress app under testet ex request(app).get(...).
 
-// Keep track of task names that the tests create in the real database.
+const request = require("supertest"); // Supertest är verktyget för att skicka requests till vår Express app.
+const { app } = require("../app"); //importera appen
+const { pool } = require("../pool");
+
+// sprar namn på tasks som läggs til i db under testkörningen
 const createdTaskNames = new Set();
 
-// After each test, delete any rows that this file created.
+// efter varje test ta bort skapade tasks från db (testerna ska ej påverka varandra)
 afterEach(async () => {
-  // Loop through all task names created during the previous test.
   for (const taskName of createdTaskNames) {
-    // Remove the matching row from the real database.
-    await pool.query("DELETE FROM tasks WHERE task_name = $1", [taskName]);
+    await pool.query("DELETE FROM tasks WHERE task_name = $1", [taskName]); // ta bort matcher i db
   }
-
-  // Clear the set so the next test starts fresh.
   createdTaskNames.clear();
 });
 
-// After all integration tests finish, close the real database pool.
+// Efter alla tester stäng av db anslutningen (pga jest)
 afterAll(async () => {
   await pool.end();
 });
 
-// Group the real database tests under one readable label in Jest output.
 describe("Tasks integration tests with real database", () => {
-  // Test that GET /tasks talks to the real database and returns an array.
-  test("GET /tasks returns an array from PostgreSQL", async () => {
-    // Send a real GET request through the route.
-    const response = await request(app).get("/tasks");
+  test("GET /tasks returns an array from PostgreSQL, atm empty", async () => {
+    const response = await request(app).get("/tasks"); //skicka en GET request till /tasks route i vår app,
+    // obs! vi anger endpoint som annars redan står i URL:en i frontend
 
-    // Check that the route responded with HTTP 200.
+    // kolla repsons statuset, och att det är av typ json samt en array.
     expect(response.status).toBe(200);
-    // Check that the route responded with JSON.
     expect(response.headers["content-type"]).toMatch(/json/);
-    // Check that the body is an array, even if it is empty.
     expect(Array.isArray(response.body)).toBe(true);
   });
 
@@ -51,23 +44,19 @@ describe("Tasks integration tests with real database", () => {
       .send({ name: testTaskName })
       .set("Content-Type", "application/json");
 
-    // Save the task name so cleanup can delete the inserted row afterwards.
+    // spara i setet för att ta bort det i aftereach
     createdTaskNames.add(testTaskName);
 
-    // Check that the route responded with HTTP 200.
     expect(response.status).toBe(200);
-    // Check that the route returned the same task name we inserted.
     expect(response.body.task_name).toBe(testTaskName);
 
-    // Query the real database directly to verify that the row really exists.
+    // Verifiera att datan finns i db
     const dbResult = await pool.query(
       "SELECT * FROM tasks WHERE task_name = $1",
       [testTaskName],
     );
 
-    // Check that exactly one matching row was found.
-    expect(dbResult.rows.length).toBe(1);
-    // Check that the row in the database has the expected task name.
+    expect(dbResult.rows.length).toBe(1); // kanske inte behövs?
     expect(dbResult.rows[0].task_name).toBe(testTaskName);
   });
 });

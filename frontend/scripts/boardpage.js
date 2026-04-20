@@ -1,4 +1,6 @@
 
+//alla js funktioner som används i boardpage.html 
+
 document.addEventListener("DOMContentLoaded", loadTasks);
         
         const list = document.getElementById("TaskList");

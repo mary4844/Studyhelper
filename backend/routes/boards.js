@@ -1,7 +1,7 @@
 // Import express so we can create a router just for board-related routes.
 const express = require("express");
 // Import the shared database pool from db.js.
-const { pool } = require("../db");
+const { pool } = require("../pool");
 
 // Create a router that will hold routes related to boards.
 const router = express.Router();
