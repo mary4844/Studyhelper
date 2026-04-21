@@ -32,7 +32,7 @@ describe("Tasks routes with mocked database", () => {
     ]);
   });
 
-  test("POST /tasks/add returns the created task", async () => {
+  test("POST /tasks returns the created task", async () => {
     const mockTaskName = "Mock created task";
 
     pool.query = async (sql, values) => {
@@ -43,7 +43,7 @@ describe("Tasks routes with mocked database", () => {
     };
 
     const response = await request(app)
-      .post("/tasks/add")
+      .post("/tasks")
       .send({ name: mockTaskName })
       .set("Content-Type", "application/json");
 
@@ -53,4 +53,28 @@ describe("Tasks routes with mocked database", () => {
       task_name: mockTaskName,
     });
   });
+
+  test("DELETE /tasks/:id deletes a task by its id", async () => {
+    const taskId = 3;
+
+    pool.query = async (sql, values) => {
+      expect(sql).toBe("DELETE FROM tasks WHERE task_id = $1 RETURNING *");
+      expect(values).toEqual([taskId]);
+      return { rows: [{ task_id: taskId, task_name: "Mock created task" }] };
+    };
+
+    const response = await request(app).delete(`/tasks/${taskId}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      task_id: taskId,
+      task_name: "Mock created task",
+    });
+  });
+
+
+
+
+
+  
 });

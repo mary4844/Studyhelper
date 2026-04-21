@@ -34,19 +34,20 @@ describe("Tasks integration tests with real database", () => {
   });
 
   // Test that POST /tasks/add writes a real row to the real database.
-  test("POST /tasks/add inserts a real task into PostgreSQL", async () => {
+  test("POST /tasks inserts a real task into PostgreSQL", async () => {
     // Build a unique task name so this test does not clash with existing rows.
     const testTaskName = `integration-task-${Date.now()}`;
 
     // Send a real POST request that should insert a row into PostgreSQL.
     const response = await request(app)
-      .post("/tasks/add")
+      .post("/tasks")
       .send({ name: testTaskName })
       .set("Content-Type", "application/json");
 
     // spara i setet för att ta bort det i aftereach
     createdTaskNames.add(testTaskName);
 
+    //kontroller
     expect(response.status).toBe(200);
     expect(response.body.task_name).toBe(testTaskName);
 
@@ -58,5 +59,86 @@ describe("Tasks integration tests with real database", () => {
 
     expect(dbResult.rows.length).toBe(1); // kanske inte behövs?
     expect(dbResult.rows[0].task_name).toBe(testTaskName);
+  });
+
+  test("PATCH /tasks/:id edits a task name in table", async () => {
+    const testTaskName = `integration-task-${Date.now()}`;
+    const updatedTaskName = `${testTaskName}-updated`; //adds extra text to the string
+
+    // Create task first.
+    const createResponse = await request(app)
+      .post("/tasks")
+      .send({ name: testTaskName })
+      .set("Content-Type", "application/json");
+
+    createdTaskNames.add(testTaskName);
+
+    expect(createResponse.status).toBe(200);
+    expect(createResponse.body.task_name).toBe(testTaskName);
+
+    const taskId = createResponse.body.task_id;
+
+    // Update created task name by id.
+    const patchResponse = await request(app)
+      .patch(`/tasks/${taskId}`)
+      .send({ name: updatedTaskName })
+      .set("Content-Type", "application/json");
+
+    // Cleanup set should track the updated name.
+    createdTaskNames.delete(testTaskName);
+    createdTaskNames.add(updatedTaskName);
+
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.body.task_id).toBe(taskId);
+    expect(patchResponse.body.task_name).toBe(updatedTaskName);
+
+    const dbResult = await pool.query(
+      "SELECT * FROM tasks WHERE task_id = $1",
+      [taskId],
+    );
+
+    expect(dbResult.rows.length).toBe(1);
+    expect(dbResult.rows[0].task_name).toBe(updatedTaskName);
+  });
+
+  test("DELETE /tasks/:id delete a task by id from table", async () => {
+    //create a task and verify it
+    const testTaskName = `integration-task-${Date.now()}`;
+    const createResponse = await request(app)
+      .post("/tasks")
+      .send({ name: testTaskName })
+      .set("Content-Type", "application/json");
+
+    createdTaskNames.add(testTaskName);
+
+    expect(createResponse.status).toBe(200);
+    expect(createResponse.body.task_name).toBe(testTaskName);
+
+    const taskId = createResponse.body.task_id;
+    const response = await request(app) //respons ifrån backend efter att ha kallat clear tasks
+      .delete(`/tasks/${taskId}`)
+      .set("Content-Type", "application/json");
+
+    expect(response.status).toBe(200);
+
+    const dbResult = await pool.query(
+      "SELECT * FROM tasks WHERE task_id = $1",
+      [taskId],
+    );
+
+    expect(dbResult.rows.length).toBe(0);
+  });
+
+  test("POST /tasks clear delete all tasks from table", async () => {
+    const response = await request(app) //respons ifrån backend efter att ha kallat clear tasks
+      .delete("/tasks")
+      .set("Content-Type", "application/json");
+
+    expect(response.status).toBe(200);
+
+    const dbResult = await pool.query(
+      "SELECT COUNT(*)::int AS count FROM tasks",
+    );
+    expect(dbResult.rows[0].count).toBe(0);
   });
 });

@@ -1,4 +1,4 @@
-const express = require("express"); //
+const express = require("express"); 
 const { pool } = require("../pool"); //importera db
 
 const router = express.Router(); // create a smal route container just for tasks
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 // Create one new task.
-router.post("/add", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     // Read the task name sent from the frontend body.
     const { name } = req.body;
@@ -36,7 +36,7 @@ router.post("/add", async (req, res) => {
 });
 
 // Delete all tasks from the table.
-router.post("/clear", async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     const result = await pool.query("DELETE FROM tasks"); // ta bort alla rader ifrån tabellen.
 
@@ -44,6 +44,37 @@ router.post("/clear", async (req, res) => {
   } catch (error) {
     console.error("Error failed to clear list:", error);
     res.status(500).json({ error: "Failed to clear list" });
+  }
+});
+
+//Ta bort en task med ett id
+router.delete("/:id", async (req, res) => {
+  try {
+    const taskId = Number(req.params.id);
+    const result = await pool.query(
+      "DELETE FROM tasks WHERE task_id = $1 RETURNING *",
+      [taskId],
+    );
+    res.json(result.rows[0]); //skicka db restultatet som JSON så slipper frontend göra en GET för att uppdatera
+  } catch (error) {
+    console.error("Error failed to clear list:", error);
+    res.status(500).json({ error: "Failed to clear list" });
+  }
+});
+
+//redigera namnet på en task med ett id
+router.patch("/:id", async (req, res) => {
+  try {
+    const taskId = Number(req.params.id); //params värden ifrån URL path, body är data i request payload ex namn
+    const name = req.body.name; // body är data i request payload ex namn
+    const result = await pool.query(
+      "UPDATE tasks SET task_name = $1 WHERE task_id = $2 RETURNING *",
+      [name, taskId],
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error updating task:", error);
+    res.status(500).json({ error: "Failed to update task" });
   }
 });
 

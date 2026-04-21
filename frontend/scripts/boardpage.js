@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", loadTasks);
         function addTask() {
             const name = nameInput.value;
 
-            fetch("/tasks/add", { // calls backend server, writing task name to the server
+            fetch("/tasks", { // calls backend server, writing task name to the server
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -40,8 +40,8 @@ document.addEventListener("DOMContentLoaded", loadTasks);
 
         function clearList() { // calls backend to empty the list
             console.log("entered clear list");
-            fetch("/tasks/clear", {
-                method: "POST"
+            fetch("/tasks", {
+                method: "DELETE",
             })
             .then(res => res.json())
             .then(() => { 
