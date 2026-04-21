@@ -4,18 +4,16 @@ const express = require("express");
 const cors = require("cors");
 // Import path so we can point Express to the frontend folder safely.
 const path = require("path");
-// Import the task routes from the tasks route file.
+
 const tasksRouter = require("./routes/tasks");
-// Import the board routes from the boards route file.
 const boardsRouter = require("./routes/boards");
 
-// Create the main Express app object.
 const app = express();
 
 // Allow cross-origin requests during development.
 app.use(cors());
 // Let Express understand JSON bodies sent from the frontend.
-app.use(express.json());
+app.use(express.json());  
 // Serve the frontend files as static files.
 app.use(express.static(path.join(__dirname, "../frontend")));
 
@@ -27,7 +25,7 @@ app.get("/", (req, res) => {
 // Mount all task-related routes onto the app.
 app.use('/tasks', tasksRouter);
 // Mount all board-related routes onto the app.
-app.use('/board', boardsRouter);
+app.use('/boards', boardsRouter);
 
 // Export the app so route tests can import it later.
 module.exports = { app };

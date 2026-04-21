@@ -6,20 +6,56 @@ const { pool } = require("../db");
 // Create a router that will hold routes related to boards.
 const router = express.Router();
 
+//get all boards
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM board");
+    return res.status(200).json(result.rows);
+
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+    res.status(500).json({ error: "Failed to fetch boards" });
+  }
+})
+
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query("SELECT * FROM board WHERE id = $1", [id]);
+    
+    if(result.rows.length === 0) {
+      return res.status(404).json(result.rows[0])
+    }
+
+    return res.status(200).json(result.rows[0]);
+
+  } catch (error) {
+    console.error("error fetching board:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+})
+
+
 // Create one new board.
-router.post("/create", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     // Read the board name sent from the frontend body.
     const { name } = req.body;
+
+    if(!name) {
+      return res.status(400).json({ error: 'Name is required'});
+    }
 
     // Insert the new board and ask PostgreSQL to return the inserted row.
     const result = await pool.query(
       "INSERT INTO board (board_name) VALUES ($1) RETURNING *",
       [name],
     );
+    //return the status code that the creation worked.
+    return res.status(201).json(result.rows[0]);
 
     // Send the created board back to the frontend.
-    res.json(result.rows[0]);
   } catch (error) {
     // Log the real error in the terminal for debugging.
     console.error("Error creating board:", error);
@@ -28,5 +64,36 @@ router.post("/create", async (req, res) => {
   }
 });
 
+//delete all boards
+router.delete('/', async (req, res) => {
+  try {
+    await pool.query("DELETE FROM board");
+    return res.status(204).send();
+
+  } catch (error) {
+    console.log("Error failed to delete boards ");
+    res.status(500).json({error: "Failed to delete boards"});
+  }
+})
+
+
+//delete board by id
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query("DELETE FROM board WHERE id = $1", [id]);
+
+    if(result.rowCount === 0) {
+      return res.status(404).json({ error: "result not found"});
+    }
+
+    res.status(204).send();
+
+  } catch (error) {
+    console.error("error deleting board:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+})
 // Export the router so app.js can mount it.
 module.exports = router;
