@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --runInBand --verbose",
+    "test:routes": "jest --runInBand --verbose tests/tasks.routes.test.js",
+    "test:integration": "jest --runInBand --verbose tests/tasks.integration.test.js"
   },
   "keywords": [],
   "author": "",

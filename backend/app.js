@@ -1,31 +1,37 @@
-// Import express so we can create the main backend application.
-const express = require("express");
-// Import cors so the frontend can talk to the backend from the browser.
-const cors = require("cors");
-// Import path so we can point Express to the frontend folder safely.
-const path = require("path");
+//app.js är en samling av olika routes som deligerar olika request i frontend 
+// till olika route filer i backend/routes där funktionerna körs.
 
+
+
+const express = require("express");   //ramverket vi använder för att skapa vår backend server.
+const cors = require("cors");         //middelware som möjligör kommunikation mellan frontend och backend 
+const path = require("path");       // modul för att hantera filvägar på datorns filsysten oavsett OS
+
+// exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
 const tasksRouter = require("./routes/tasks");
 const boardsRouter = require("./routes/boards");
 
 const app = express();
 
-// Allow cross-origin requests during development.
+// Möjligör kommunikationen mellan back och frontend
 app.use(cors());
-// Let Express understand JSON bodies sent from the frontend.
-app.use(express.json());  
-// Serve the frontend files as static files.
+// JSON bodies kommande från frontend körs om till JS-objekt så express kan läsa dem
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Redirect the root URL to the start page in the frontend.
+// omderigiera root url till startpage.html
 app.get("/", (req, res) => {
   res.redirect("startpage.html");
 });
 
-// Mount all task-related routes onto the app.
+// Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 app.use('/tasks', tasksRouter);
-// Mount all board-related routes onto the app.
-app.use('/boards', boardsRouter);
+app.use('/board', boardsRouter);
+//TODO: fortsätt skriva routs för resterande funkinoaliteter?
+
+
+
+
 
 // Export the app so route tests can import it later.
 module.exports = { app };
