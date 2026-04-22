@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 app.use('/tasks', tasksRouter);
-app.use('/board', boardsRouter);
+app.use('/boards', boardsRouter);
 //TODO: fortsätt skriva routs för resterande funkinoaliteter?
 
 
