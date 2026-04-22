@@ -1,14 +1,33 @@
 
+// HTTP status codes
+
+// 200 OK → Request succeeded (most common)
+// 201 Created → Something was created (e.g. POST request)
+// 204 No Content → Success, but nothing to return
+
+// 301 Moved Permanently → URL changed forever
+// 302 Found → Temporary redirect
+
+// 400 Bad Request → Invalid request (bad syntax/data)
+// 401 Unauthorized → Not logged in
+// 403 Forbidden → Not allowed
+// 404 Not Found → Resource doesn’t exist
+
+// 500 Internal Server Error → Generic crash
+// 502 Bad Gateway → Bad response from another server
+// 503 Service Unavailable → Server is down or overloaded
+// const request = require('supertest');
+
 const request = require('supertest');
 const { app } = require("../app");
 
-jest.mock('../db', () => ({
+jest.mock('../pool', () => ({
     pool: {
         query: jest.fn()
     }
 }));
 
-const { pool } = require('../db');
+const { pool } = require('../pool');
 
 const originalQuery = pool.query;
 
