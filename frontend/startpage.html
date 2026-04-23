@@ -10,52 +10,45 @@
 </head>
 
 <body>
-    <!-- <div class="startpage-top">
-        <p id="title">StudyHelper</p>
-        <img class="startimage" src="images/naturbild.png" alt="Naturbild">
-    </div> -->
-    <img class="startimage" src="images/naturbild.png" alt="Naturbild">
+    <img class="nature-image" src="images/naturbild.png" alt="Naturbild">
 
-    <div class="all_boards">
-
-        <div class="boards_head">
-            
-            <div class="btns">
-
-                <button class="buttons" type="button" onclick="new_board()">
+    <div class="main">
+        <div class="menu">
+            <div class="buttons">
+                <button class="button" type="button" onclick="new_board()">
                     <b>+</b> Add board
                 </button>
-
-                <button class="buttons" type="button">
+                <button class="button" type="button">
                     ▼ Your boards
                 </button>
-
             </div>
 
-            <h1 class="text">Your boards</h1>
+            <p class="page-name">Your boards</p>
 
-            <button class="sound">
-                &#X1F50A;
-            </button>
-            
+            <div class="sound">
+                <button class="sound-button">
+                    &#X1F50A;
+                </button>
+            </div>
         </div>
         
         
-        <div id="boards-container">
+        <div class="boards-container">
         </div>
         
     </div>
     
     <script>
         function new_board() {
-            const new_board = document.createElement("a");
+            const new_board = document.createElement("a"); // skapar en a-tag, klickbar
 
-            new_board.textContent = "Board name";
-            new_board.href = "boardpage.html";
+            new_board.textContent = "Board name";// Rubrik på boarden
+            new_board.href = "boardpage.html"; // Vart vi ska när vi klickar på boarden
             
-            new_board.classList.add("board");
-            const boards_container = document.getElementById("boards-container");
-            
+            new_board.classList.add("board"); // Ger klassen board till elementet
+            // const boards_container = document.getElementById("boards-container"); // Lägg till vårt nya element på en id
+            const boards_container = document.querySelector(".boards-container"); // Lägg till vårt nya element på en class
+
             boards_container.appendChild(new_board);
             
             console.log("Works");
