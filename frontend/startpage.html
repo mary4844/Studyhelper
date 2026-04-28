@@ -10,17 +10,36 @@
 </head>
 
 <body>
-    <img class="nature-image" src="images/naturbild.png" alt="Naturbild">
+    <div class="page-top">
+        <img class="nature-image" src="images/naturbild.png" alt="Naturbild">
+        <div class="logo">
+            StudyHelper
+        </div>
+    </div>
+
 
     <div class="main">
         <div class="menu">
             <div class="buttons">
-                <button class="button" type="button" onclick="new_board()">
-                    <b>+</b> Add board
-                </button>
-                <button class="button" type="button">
-                    ▼ Your boards
-                </button>
+                <div class="input-dropdown">
+                    <button class="button" type="button">
+                        ▼ Add Board
+                    </button>
+                    <div class="input">
+                        <input class="enter-name" type="text" placeholder="Enter Board Name">
+                        <button class="add-button" type="button" onclick="new_board()">Add</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="button" type="button">
+                        ▼ Your boards
+                    </button>
+                    <div class="alternatives">
+                        <a href="">Personal Boards</a>
+                        <a href="">Group Boards</a>
+                        <a href="">All Boards</a>
+                    </div>
+                </div>
             </div>
 
             <p class="page-name">Your boards</p>

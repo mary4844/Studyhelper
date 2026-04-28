@@ -1,23 +1,36 @@
 body {
     margin: 0;
     background-color: white;
+    margin-bottom: 2000px;
 }
 
 .nature-image {
     width: 100%;
     height: 200px;
-    object-fit: cover;
+    position: relative;
+    object-fit: cover; /* gör att en bild fyller ut hela sin yta, men kan då beskäras */
+}
+
+.logo {
+    position: absolute; /* Fixerer ett element på sidan, svävar ovanpå vanliga element */
+    top: 5px;
+    right: 10px;
+
+    font-size: 40px;
+    font-family: Inter, Arial;
+    color: white;
+    font-weight: bold;
 }
 
 .main {
     background-color: white;
-    text-align: center;
     font-family: Inter;
 }
 
 .menu {
-    display: grid;
-    grid-template-columns: 300px 1fr 300px;
+    display: grid; /* skapar en grid, som ett rutnät*/
+    grid-template-columns: 300px 1fr 300px; /* varje kolumns storlek. 1fr = 1 free space(?) felxibel storlek, anpassar sig efter sidan*/
+    margin: 20px;
 }
 
 .buttons {
@@ -26,24 +39,110 @@ body {
 
 .button {
     display: block;
-    border: none;
     background-color: #94C8F3;
     color: white;
+    margin-top: 20px;
+    
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: bold;
+    
+    border: none;
     border-radius: 10px;
+
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 20px;
     padding-left: 20px;
-    font-size: 20px;
-    font-family: Inter;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 20px;
+}
+
+.button:hover {
+    background-color: #53aaf1;
+    cursor: pointer;
+}
+
+.input-dropdown {
+    width: fit-content;
+    position: relative;
+    margin: 0;
+}
+
+.input-dropdown .input{
+    position: absolute;
+    
+    display: none;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+
+}
+
+.input-dropdown:hover .input {
+    display: block;
+}
+
+.enter-name {
+    display: inline-block;
+}
+
+.add-button {
+    display: inline-block;
+
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+}
+
+.add-button:hover{
+    background-color: #53aaf1;
+    cursor: pointer;
+}
+
+.dropdown {
+    width: fit-content;
+    position: relative;
+    margin: 0;
+}
+
+.dropdown button:hover {
+    background-color: #53aaf1;
+    cursor: pointer;
+}
+
+.dropdown .alternatives {
+    position: absolute;
+    display: none;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    width: 90%;
+}
+
+.dropdown:hover .alternatives {
+    display: block;
+}
+.dropdown a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    padding: 5px;
+}
+
+.dropdown a:hover {
+    background-color: hsl(0, 0%, 90%);
 }
 
 .page-name {
     font-weight: bold;
     font-size: 200%;
+    text-align: center;
 }
 
 .sound{
@@ -88,10 +187,13 @@ body {
     height: 300px;
     background-color: #96CFA1;
     border-radius: 10px;
+
     text-align: left;
+    
     margin-left: 30px;
     margin-right: 30px;
     margin-bottom: 20px;
+    
     padding-top: 5px;
     padding-right: 20px;
     padding-left: 20px;

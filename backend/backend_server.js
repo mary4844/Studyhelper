@@ -12,15 +12,15 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 const PORT = 3000;
 
 const pool = new Pool({ 
-  user: "postgres",
+  user: "mattiasrylander",
   host: "localhost",
-  database: "study_tracker",
-  password: "1337",
+  database: "studyhacker",
+  password: "mattiasrylander",
   port: 5432,
 });
 
 app.get("/", (req, res) => {
-  res.redirect("startpage.html");
+  res.redirect("boardpage.html");
 });
 
 app.get("/tasks", async (req, res) => {
@@ -79,6 +79,7 @@ app.post("/clearList", async (req, res) => { // clears items in table tasks
     console.error("Error Failed to clear list:", error);
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
