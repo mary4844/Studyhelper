@@ -46,13 +46,15 @@ body {
     font-size: 200%;
 }
 
-.sound{
+.sound {
     margin-right: 10%;
-    display: flex;
+    display: block;
     justify-content: end;
+    position: relative;
+    /* width: fit-content; */
 }
 
-.sound-button {
+.sound button {
     background-color: #94C8F3;
     border-radius: 10px;
     border: none;
@@ -61,7 +63,37 @@ body {
     height: 50%;
     margin-top: 20px;
     margin-bottom: 20px;
+    cursor: pointer;
     /* flex: 1; */
+}
+
+.sound:hover .sound-options {
+    display: block;
+}
+
+.sound:hover button {
+    background-color: #94c8f39a;
+}
+
+.sound .audio:hover {
+    background-color: hsl(0, 0%, 90%);
+}
+
+.sound .sound-options {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: 100%;
+    right: 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.sound .audio {
+    display: block;
+    color: black;
+    padding: 15px;
 }
 
 .sort_boards {
