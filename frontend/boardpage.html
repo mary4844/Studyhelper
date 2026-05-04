@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boardpage</title>
+    
+</head>
+<body style="background-color:LightBlue;">   
+    <h1 style="background-color:LightSeaGreen">My first Board</h1>
+    <picture>
+        <source
+            srcset="images/natur.jpg"
+            media="(orientation: portrait) " />
+        <img src = "images/natur.jpg" alt = ""/>
+        
+    </picture>
+        
+  
+    
+
+    <a href="startpage.html">  
+        <button type="button">Home</button>
+    </a>
+
+    <!-- skelett för hur en lista med tasks kan se ut -->
+    <div style="border: 1px solid black;">
+        <h2>My first Task List</h2>  <!-- Byt namn -->    
+        <ul id="TaskList"></ul>
+
+        <form id="Add task">
+            <input id ="name" placeholder="Task name">
+            <button type="submit" onclick="addTask()"> ✚ Add task</button>
+        </form>
+
+        <button type="button" onclick="clearList()">Clear List</button>
+
+    </div> 
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadTasks);
+        
+        const list = document.getElementById("TaskList");
+
+        function loadTasks() {
+            fetch("/tasks")
+            .then(res => res.json())
+            .then(tasks => {
+                list.innerHTML = ""; // clear list
+            tasks.forEach(task => {
+                const li = document.createElement("li");
+                li.textContent = task.task_name;
+                list.appendChild(li);
+                });
+            });
+        }
+
+        const nameInput = document.getElementById('name'); // fetching entered task name
+
+        function addTask() {
+            const name = nameInput.value;
+
+            fetch("/add_task", { // calls backend server, writing task name to the server
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name })
+            })
+            
+            .then(res => res.json()) // turning the response from the backend to JSON style
+            .then(() => {
+                nameInput.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
+                loadTasks(); // meant to update the page to show the newly added task in the list
+            });
+        }
+
+        function clearList() { // calls backend to empty the list
+            console.log("entered clear list");
+            fetch("/clearList", {
+                method: "POST"
+            })
+            .then(res => res.json())
+            .then(() => { 
+                loadTasks(); 
+            }) // updates the list to show nothing
+        }
+    </script>
+
+</body>
+
+</html>
