@@ -1,57 +1,161 @@
 body {
     margin: 0;
     background-color: white;
+    margin-bottom: 2000px;
 }
 
 .nature-image {
     width: 100%;
     height: 200px;
-    object-fit: cover;
+    position: relative;
+    object-fit: cover; /* gör att en bild fyller ut hela sin yta, men kan då beskäras */
+}
+
+.logo {
+    position: absolute; /* Fixerer ett element på sidan, svävar ovanpå vanliga element */
+    top: 5px;
+    right: 10px;
+
+    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
+    font-family: Inter, Arial;
+    color: white;
+    font-weight: bold;
 }
 
 .main {
     background-color: white;
-    text-align: center;
     font-family: Inter;
 }
 
 .menu {
-    display: grid;
-    grid-template-columns: 300px 1fr 300px;
-}
-
-.buttons {
-    margin-left: 10%;
-}
-
-.button {
-    display: block;
-    border: none;
-    background-color: #94C8F3;
-    color: white;
-    border-radius: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-right: 20px;
-    padding-left: 20px;
-    font-size: 20px;
-    font-family: Inter;
-    font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    display: grid; /* skapar en grid, som ett rutnät*/
+    grid-template-columns: 300px 1fr 300px; /* varje kolumns storlek. 1fr = 1 free space(?) felxibel storlek, anpassar sig efter sidan*/
+    margin: 20px;
 }
 
 .page-name {
     font-weight: bold;
-    font-size: 200%;
+    font-size: 3vw;
+    text-align: center;
+    float:left;
+}
+
+.buttons {
+    margin-left: 10%;
+    float: left;
+    width: 100%;
+}
+
+.button {
+    display: block;
+    background-color: #94C8F3;
+    color: white;
+    margin-top: 20px;
+    
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: bold;
+    
+    border: none;
+    border-radius: 10px;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.button:hover {
+    background-color: #53aaf1;
+}
+
+.input-dropdown {
+    width: fit-content;
+    position: relative;
+    margin: 0;
+}
+
+.input{
+    position: absolute;
+    
+    display: none;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+
+}
+
+.input.show-input {
+    display: block;
+}
+
+.enter-name {
+    display: inline-block;
+}
+
+.add-button {
+    display: inline-block;
+
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+}
+
+.add-button:hover{
+    background-color: #53aaf1;
+    cursor: pointer;
+}
+
+.dropdown {
+    width: fit-content;
+    position: relative;
+    margin: 0;
+}
+
+.dropdown button:hover {
+    background-color: #53aaf1;
+}
+
+.alternatives {
+    position: absolute;
+    display: none;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    width: 90%;
+    z-index: 1; 
+    cursor: pointer;
+}
+
+.alternatives.show-alternatives {
+    display: block;
+}
+
+.dropdown a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    padding: 5px;
+}
+
+.dropdown a:hover {
+    background-color: hsl(0, 0%, 90%);
 }
 
 .sound {
     margin-right: 10%;
     display: block;
     justify-content: end;
-    position: relative;
-    /* width: fit-content; */
+
+    float: left;
+    width: 100%;
 }
 
 .sound button {
@@ -110,25 +214,71 @@ body {
 
 .boards-container {
     display: flex;
-    justify-content: start;
+    justify-content: left;
     flex-wrap: wrap;
+}
+
+.single_board_conatainer {
+    display: inline-block;
+    position: relative;
+
+    margin-right: 50px;
+    margin-bottom: 50px;
+
 }
 
 .board {
     display: block;
-    width: 200px;
-    height: 300px;
-    background-color: #96CFA1;
     border-radius: 10px;
-    text-align: left;
-    margin-left: 30px;
-    margin-right: 30px;
+
+    float: left;
+
+    height: 100%;
+    width: 100%;
+
+    text-align: center;
+    text-decoration: none;
+    font-size: 2vw;
+    color: black;
+    
+    margin-left: 50px;
+    margin-right: 50px;
     margin-bottom: 20px;
-    padding-top: 5px;
-    padding-right: 20px;
-    padding-left: 20px;
+
+    padding-bottom: 10px;
+
+    position: relative;
+}
+
+.board:hover{
+    cursor:default;
+}
+
+.remove_button {
+    position: absolute;
+    bottom: -5px;
+    right: -45px;
+
+    display: inline-block;
+
+    background-color: grey;
+    
+    border-radius: 8px;
+    border: none;
+}
+
+.remove_button:hover{
+    cursor: pointer;
+}
+
+.board.personal {
+    background-color: #96CFA1;
+}
+
+.board.group {
+    background-color: rgb(121, 183, 242);
 }
 
 .board:hover {
-    opacity: 0.8;
+    opacity: 0.9;
 }

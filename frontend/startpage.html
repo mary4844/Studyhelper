@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>StudyHacker</title>
+    <title>StudyHelper</title>
     <link rel="stylesheet" href="startpage.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Meningen att den här ska göra att sidan anpassar beroende vilken enhet den används på , till exempel mobil, dator, ipad-->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,17 +12,44 @@
 </head>
 
 <body>
-    <img class="nature-image" src="images/naturbild.png" alt="Naturbild">
+    <div class="page-top">
+        <img class="nature-image" src="images/naturbild.png" alt="Naturbild">
+        <div class="logo">
+            StudyHelper
+        </div>
+    </div>
+
 
     <div class="main">
         <div class="menu">
+
             <div class="buttons">
-                <button class="button" type="button" onclick="new_board()">
-                    <b>+</b> Add board
-                </button>
-                <button class="button" type="button">
-                    ▼ Your boards
-                </button>
+                <div class="input-dropdown">
+                    <button class="button" type="button" onclick="show_adding_board()">
+                        ▼ Add Board
+                    </button>
+                    <div class="input">
+                        <input class="enter-name" type="text" placeholder="Enter Board Name" required> 
+                        <label>
+                            <input type="radio" name="board-type" value="personal"> Personal board
+                        </label>
+                        <label>
+                            <input type="radio" name="board-type" value="group"> Group board
+                        </label>
+
+                        <button class="add-button" type="button" onclick="new_board()">Add</button>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="button" type="button" onclick="show_alterntive_boards()">
+                        ▼ Your boards
+                    </button>
+                    <div class="alternatives">
+                        <a href="#" role="button" onclick="personal_boards()"> Personal Boards</a>
+                        <a href="#" role="button" onclick="group_boards()">Group Boards</a>
+                        <a href="#" role="button" onclick="group_boards()">All Boards</a>
+                    </div>
+                </div>
             </div>
 
             <p class="page-name">Your boards</p>
@@ -71,19 +100,81 @@
     </div>
     
     <script>
+        function show_adding_board() {
+            const dropdown = document.querySelector(".input");
+            dropdown.classList.toggle("show-input");
+        }
+
+        function show_alterntive_boards() {
+            const dropdown = document.querySelector(".alternatives");
+            dropdown.classList.toggle("show-alternatives");
+        }
+
         function new_board() {
+            const entered_name = document.querySelector(".enter-name") // hämtar namnet som användaren skrev in
+            const selected_type = document.querySelector('input[name="board-type"]:checked');
+            
+            if (entered_name.value.trim() === "") { // Kontrollera att man skrivit in ett namn
+                alert("Du måste skriva ett namn på boarden!");
+                return; // Avslutar funktionen här så ingen board skapas
+            }
+
+            const single_board_container = document.createElement("div");
+            single_board_container.classList.add("single_board_conatainer");
+            
             const new_board = document.createElement("a"); // skapar en a-tag, klickbar
-
-            new_board.textContent = "Board name";// Rubrik på boarden
+            new_board.textContent = entered_name.value; // + " (" + selected_type.value + ")";// Tar fram värdet på inputen, en sträng
             new_board.href = "boardpage.html"; // Vart vi ska när vi klickar på boarden
-            
             new_board.classList.add("board"); // Ger klassen board till elementet
-            // const boards_container = document.getElementById("boards-container"); // Lägg till vårt nya element på en id
-            const boards_container = document.querySelector(".boards-container"); // Lägg till vårt nya element på en class
-
-            boards_container.appendChild(new_board);
+            new_board.classList.add(selected_type.value); // Ger boarden en typ beroende på vad man valt, personal eller group
+            single_board_container.appendChild(new_board);
             
-            console.log("Works");
+            const remove_button = document.createElement("button");
+            remove_button.textContent = "Delete"
+            remove_button.class = "button"
+            remove_button.onclick = remove_board;
+            remove_button.classList.add("remove_button");
+            single_board_container.appendChild(remove_button);
+            
+            const boards_container = document.querySelector(".boards-container"); // Lägg till vårt nya element på en class
+            boards_container.appendChild(single_board_container);
+            
+            entered_name.value = ""; // tömmer inputen från innehåll så att man kan skriva in en ny
+        }
+
+        function personal_boards(event) { // att hämta specifika boards från databasen borde se ut såhär ungefär?
+            event.preventDefault();
+
+            fetch("/personal_boards")
+            .then(res => res.json())
+            .then(tasks => {
+                list.innerHTML = ""; // clear list
+                tasks.forEach(task => {
+                    const li = document.createElement("li");
+                    li.textContent = task.task_name;
+                    list.appendChild(li);
+                });
+            }); 
+        }
+
+        function group_boards(event) {
+            console.log("entered group boards")
+            event.preventDefault();
+
+        }
+
+        function all_boards(event) {
+            console.log("entered all boards")
+            event.preventDefault();
+
+        }
+
+        function clear_boards_container() {
+            console.log("entered clear boards")
+        }
+
+        function remove_board() {
+            console.log("entered remove board")
         }
     </script>
 </body>
