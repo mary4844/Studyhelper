@@ -16,7 +16,7 @@ body {
     top: 5px;
     right: 10px;
 
-    font-size: 40px;
+    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
     font-family: Inter, Arial;
     color: white;
     font-weight: bold;
@@ -33,8 +33,17 @@ body {
     margin: 20px;
 }
 
+.page-name {
+    font-weight: bold;
+    font-size: 3vw;
+    text-align: center;
+    float:left;
+}
+
 .buttons {
     margin-left: 10%;
+    float: left;
+    width: 100%;
 }
 
 .button {
@@ -58,7 +67,6 @@ body {
 
 .button:hover {
     background-color: #53aaf1;
-    cursor: pointer;
 }
 
 .input-dropdown {
@@ -67,7 +75,7 @@ body {
     margin: 0;
 }
 
-.input-dropdown .input{
+.input{
     position: absolute;
     
     display: none;
@@ -81,7 +89,7 @@ body {
 
 }
 
-.input-dropdown:hover .input {
+.input.show-input {
     display: block;
 }
 
@@ -110,10 +118,9 @@ body {
 
 .dropdown button:hover {
     background-color: #53aaf1;
-    cursor: pointer;
 }
 
-.dropdown .alternatives {
+.alternatives {
     position: absolute;
     display: none;
     border: none;
@@ -122,11 +129,14 @@ body {
     padding: 20px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     width: 90%;
+    z-index: 1; 
+    cursor: pointer;
 }
 
-.dropdown:hover .alternatives {
+.alternatives.show-alternatives {
     display: block;
 }
+
 .dropdown a {
     display: block;
     text-decoration: none;
@@ -139,16 +149,13 @@ body {
     background-color: hsl(0, 0%, 90%);
 }
 
-.page-name {
-    font-weight: bold;
-    font-size: 200%;
-    text-align: center;
-}
-
 .sound{
     margin-right: 10%;
     display: flex;
     justify-content: end;
+
+    float: left;
+    width: 100%;
 }
 
 .sound-button {
@@ -177,28 +184,71 @@ body {
 
 .boards-container {
     display: flex;
-    justify-content: start;
+    justify-content: left;
     flex-wrap: wrap;
+}
+
+.single_board_conatainer {
+    display: inline-block;
+    position: relative;
+
+    margin-right: 50px;
+    margin-bottom: 50px;
+
 }
 
 .board {
     display: block;
-    width: 200px;
-    height: 300px;
-    background-color: #96CFA1;
     border-radius: 10px;
 
-    text-align: left;
+    float: left;
+
+    height: 100%;
+    width: 100%;
+
+    text-align: center;
+    text-decoration: none;
+    font-size: 2vw;
+    color: black;
     
-    margin-left: 30px;
-    margin-right: 30px;
+    margin-left: 50px;
+    margin-right: 50px;
     margin-bottom: 20px;
+
+    padding-bottom: 10px;
+
+    position: relative;
+}
+
+.board:hover{
+    cursor:default;
+}
+
+.remove_button {
+    position: absolute;
+    bottom: -5px;
+    right: -45px;
+
+    display: inline-block;
+
+    background-color: grey;
     
-    padding-top: 5px;
-    padding-right: 20px;
-    padding-left: 20px;
+    border-radius: 8px;
+    border: none;
+}
+
+.remove_button:hover{
+    cursor: pointer;
+}
+
+.board.personal {
+    background-color: #96CFA1;
+}
+
+.board.group {
+    background-color: rgb(121, 183, 242);
 }
 
 .board:hover {
-    opacity: 0.8;
+    opacity: 0.9;
 }
