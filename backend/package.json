@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "jest --runInBand --verbose",
     "test:routes": "jest --runInBand --verbose route_tests/tasks.routes.test.js" ,
     "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js"
