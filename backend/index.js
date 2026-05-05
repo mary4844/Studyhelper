@@ -6,5 +6,5 @@ const { app } = require("./app");
 // That makes the app easier to understand and easier to test later.
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
