@@ -17,12 +17,17 @@ const app = express();
 app.use(cors());
 // JSON bodies kommande från frontend körs om till JS-objekt så express kan läsa dem
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../frontend")));
+
+// app.use(express.static(path.join(__dirname, "../frontend")));
 
 // omderigiera root url till startpage.html
 // app.get("/", (req, res) => {
 //   res.redirect("startpage.html");
 // });
+
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
 
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 app.use('/tasks', tasksRouter);
