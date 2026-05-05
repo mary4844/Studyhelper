@@ -42,13 +42,13 @@
             .then(res => res.json())
             .then(tasks => {
                 list.innerHTML = ""; // clear list
-        tasks.forEach(task => {
-            const li = document.createElement("li");
-            li.textContent = task.task_name;
-            list.appendChild(li);
-          });
-        }); 
-    }
+            tasks.forEach(task => {
+                const li = document.createElement("li");
+                li.textContent = task.task_name;
+                list.appendChild(li);
+            });
+            }); 
+        }
 
         const form = document.getElementById('Add task')
         const nameInput = document.getElementById('name');
