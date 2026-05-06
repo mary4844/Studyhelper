@@ -66,7 +66,7 @@ function group_boards(event) {
 
 }
 
-import { getBoards } from "./api";
+import { getBoards } from "./api.js";
 
 function all_boards(event) {
     console.log("entered all boards")
