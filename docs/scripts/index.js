@@ -5,13 +5,11 @@
 // import { getBoards } from "./api.js";
 
 import { testFunction } from "./api.js";
-function testFunc() {
+document.getElementById("testBtn").addEventListener("click", () => {
   testFunction().then(data => {
-    console.log("Svar från backend:", data);
+    console.log(data);
   });
-}
-// gör funktionen global så HTML hittar den
-window.testFunc = testFunc;
+});
 
 function show_adding_board() {
     const dropdown = document.querySelector(".input");
