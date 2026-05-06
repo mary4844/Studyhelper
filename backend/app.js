@@ -19,9 +19,28 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+//Auth0
+
+require('dotenv').config(); //new
+const { auth, requiresAuth } = require('express-openid-connect'); //new
+// Auth0 configuration
+const config = {
+  authRequired: false,      // Allow public routes
+  auth0Logout: true,        // Use Auth0 logout endpoint
+  secret: process.env.SECRET,
+  baseURL: process.env.BASE_URL,
+  clientID: process.env.CLIENT_ID,
+  issuerBaseURL: process.env.ISSUER_BASE_URL,
+};
+
+// Apply the auth middleware
+app.use(auth(config));
+
 // omderigiera root url till startpage.html
 app.get("/", (req, res) => {
-  res.redirect("startpage.html");
+  const isAuthenticated = req.oidc.isAuthenticated();
+  isAuthenticated ? res.redirect("startpage.html") : res.redirect("login.html");
+  // res.redirect("startpage.html");
 });
 
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
