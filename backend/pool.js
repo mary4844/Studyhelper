@@ -5,12 +5,19 @@
 const { Pool } = require("pg");
 
 // Create one shared database connection pool for the whole backend.
+// const pool = new Pool({
+//   user: "olof",
+//   host: "localhost",
+//   database: "studyhacker",
+//   password: "password123",
+//   port: 5432,
+// });
+
 const pool = new Pool({
-  user: "olof",
-  host: "localhost",
-  database: "studyhacker",
-  password: "password123",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 // exportera poolen (databasanalutningen) så att andra filer kan komma åt databasen.
