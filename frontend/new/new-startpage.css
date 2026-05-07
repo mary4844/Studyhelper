@@ -61,13 +61,17 @@ body {
     align-items: center;
 }
 
-#add-board-popup-close {
+#add-board-popup-title {
+    margin-right: auto;
+}
+
+.board-popup-close {
     background-color: #94C8F3;
     color: white;
     border: none;
     border-radius: 5px;
-    width: 50px;
-
+    margin-left: auto;
+    font-weight: bold;
 }
 
 #add-btn {
@@ -126,4 +130,27 @@ body {
     padding: 20px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#your-boards-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#your-boards-popup-title {
+    margin-right: auto;
+}
+
+#all-boards, #personal-boards, #group-boards {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
+    border: none;
+}
+
+#all-boards:hover, #personal-boards:hover, #group-boards:hover,
+#all-boards:active, #personal-boards:active, #group-boards:active {
+    background: lightgray;
 }
