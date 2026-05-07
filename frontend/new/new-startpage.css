@@ -1,0 +1,129 @@
+body {
+    margin: 0;
+    font-family: Inter, Arial;
+}
+
+#header {
+    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
+    
+    color: white;
+    font-weight: bold;
+    height: 20vh;
+    background-image: url("../images/naturbild.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    text-align: end;
+    padding: 20px;
+}
+
+#main {
+    display: flex;
+}
+
+#board-btns-div {
+    margin-left: 20px;
+}
+
+.board-btns {
+    display: block;
+    background-color: #94C8F3;
+    color: white;
+    margin-top: 20px;
+    
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: bold;
+    
+    border: none;
+    border-radius: 10px;
+
+    padding: 10px 20px;
+    
+}
+
+#add-board-alts {
+    /* position: absolute; */
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#add-board-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#add-board-popup-close {
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 50px;
+
+}
+
+#add-btn {
+    width: 50px;
+
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#boards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 150px);
+    gap: 80px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 50px;
+}
+.board {
+    border-radius: 10px;
+    height: 200px;
+    width: 150px;
+
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    border: none;
+    
+    /* margin-left: 50px;
+    margin-right: 50px; */
+    margin-bottom: 20px;
+
+    padding-bottom: 10px;
+
+    
+}
+
+.board-personal {
+    background: #96CFA1;
+}
+
+.board-group {
+    background: rgb(121, 183, 242);
+}
+
+#your-boards-alts {
+    /* position: absolute; */
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}

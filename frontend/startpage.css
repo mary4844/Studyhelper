@@ -97,6 +97,14 @@ body {
     display: inline-block;
 }
 
+#personal-opt {
+    display: block;
+}
+
+#group-opt {
+    display: block;
+}
+
 .add-button {
     display: inline-block;
 
