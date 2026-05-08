@@ -4,7 +4,7 @@
 const API_URL = "https://studyhelper-xlki.onrender.com";
 
 export function testFunction() {
-  return fetch(`${API_URL}/boards`)
+  return fetch(`/boards`)
     .then(res => res.json());
 }
 
