@@ -21,9 +21,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 //omderigiera root url till startpage.html
-app.get("/", (req, res) => {
-  res.redirect("index.html");
-});
+// app.get("/", (req, res) => {
+//   res.redirect("/index.html");
+// });
 
 // app.get("/", (req, res) => {
 //   res.send("API is running");
