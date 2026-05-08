@@ -15,6 +15,10 @@ function show_adding_board() {
     const dropdown = document.querySelector(".input");
     dropdown.classList.toggle("show-input");
 }
+document
+  .getElementById("addBoardBtn")
+  .addEventListener("click", show_adding_board);
+
 
 function show_alterntive_boards() {
     const dropdown = document.querySelector(".alternatives");
