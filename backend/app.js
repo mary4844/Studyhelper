@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 
 // omderigiera root url till startpage.html
 app.get("/", (req, res) => {
-  res.redirect("startpage.html");
+  res.redirect("calendar.html");
 });
 
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
