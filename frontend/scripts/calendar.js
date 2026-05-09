@@ -13,7 +13,7 @@ const months = [
 ];
 
 function renderCalendar(month, year) {
-    //calendarDates.innerHTML = '';
+    calendarDates.innerHTML = '';
     monthYear.textContent = `${months[month]} ${year}`;
 
     // Get first day of the month
