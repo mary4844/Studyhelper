@@ -1,0 +1,17 @@
+.nature-image {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    object-fit: cover; /* gör att en bild fyller ut hela sin yta, men kan då beskäras */
+}
+
+.logo {
+    position: absolute; /* Fixerer ett element på sidan, svävar ovanpå vanliga element */
+    top: 5px;
+    right: 10px;
+
+    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
+    font-family: Inter, Arial;
+    color: white;
+    font-weight: bold;
+}

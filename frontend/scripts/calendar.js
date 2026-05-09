@@ -1,0 +1,86 @@
+const calendarDates = document.querySelector('.calendar-dates');
+const monthYear = document.getElementById('month-year');
+const prevMonthBtn = document.getElementById('prev-month');
+const nextMonthBtn = document.getElementById('next-month');
+
+let currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+
+const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+function renderCalendar(month, year) {
+    //calendarDates.innerHTML = '';
+    monthYear.textContent = `${months[month]} ${year}`;
+
+    // Get first day of the month
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // Get the number of days in the month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Create blanks for days of the before the forst day
+    for (let i = 0; i < firstDay - 1; i++) {
+        const blank = document.createElement('div');
+        calendarDates.appendChild(blank);
+    }
+
+    // Get today's date
+    const today = new Date();
+
+    // Populate the days
+    for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+
+        const date = document.createElement('div');
+        date.textContent = i;
+        date.classList.add('date')
+
+        const dateInfo = document.createElement('div');
+        dateInfo.textContent = 'Test'
+        dateInfo.classList.add('date-info')
+
+        // Highlight today's date
+        if (
+            i === today.getDate() &&
+            year === today.getFullYear() &&
+            month === today.getMonth()
+        ) {
+            day.classList.add('current-date');
+        }
+        
+        day.appendChild(date);
+        day.appendChild(dateInfo);
+        
+        calendarDates.appendChild(day);
+    }
+}
+
+renderCalendar(currentMonth, currentYear);
+
+prevMonthBtn.addEventListener('click', () => {
+    currentMonth--;
+    if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+    }
+    renderCalendar(currentMonth, currentYear);
+});
+
+nextMonthBtn.addEventListener('click', () => {
+    currentMonth++;
+    if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+    }
+    renderCalendar(currentMonth, currentYear);
+})
+
+calenderDates.addEventListener('click', (e) => {
+    if (e.target.textContent !== '') {
+        alert(`You clicked on ${e.target.textContent} ${months[currentMonth]} ${year[currentYear]}`);
+    }
+})
