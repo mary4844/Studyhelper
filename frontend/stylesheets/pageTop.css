@@ -10,7 +10,8 @@
     top: 5px;
     right: 10px;
 
-    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
+    /* font-size: 5vw; gör att storleken på texten anpassar sig efter browser window */
+    font-size: clamp(2.5rem, 10vw, 6rem);
     font-family: Inter, Arial;
     color: white;
     font-weight: bold;
