@@ -79,8 +79,8 @@ nextMonthBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
 })
 
-calenderDates.addEventListener('click', (e) => {
+calendarDates.addEventListener('click', (e) => {
     if (e.target.textContent !== '') {
-        alert(`You clicked on ${e.target.textContent} ${months[currentMonth]} ${year[currentYear]}`);
+        alert(`${months[currentMonth]} ${currentYear} ${e.target.textContent}`);
     }
 })
