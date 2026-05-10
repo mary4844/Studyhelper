@@ -1,0 +1,247 @@
+<!-- <!DOCTYPE html>
+<html>
+  <body>
+    <h2>Socket.IO Board Test</h2>
+
+    <br /><br />
+
+    <h3>boards</h3>
+    <input id="boardName" placeholder="new board" />
+    <button onclick="createBoard()">Create board</button> 
+
+
+    <ul id = "boards"></ul>
+
+    <br /><br />
+
+    <div id="boardView" style="display:none;">
+
+      <h3 id="currentBoard"></h3>
+
+      <input id="taskName" placeholder="Task name" />
+      <button onclick="createTask()">Create Task</button>
+
+      <button onclick="deleteAll()">
+        Delete All Tasks
+      </button>
+
+      <h3>Tasks</h3>
+
+      <ul id="list"></ul>
+
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+      const socket = io("http://localhost:3000");
+
+      const list = document.getElementById("list");
+
+      const boardInput = document.getElementById("boardName");
+
+      const taskInput = document.getElementbyId("taskName")
+
+      let boardId;
+
+   
+      socket.on("connect", () => {
+        console.log("Connected:", socket.id);
+      });
+
+
+      // ---------------- CREATE ----------------
+      function createTask() {
+            const taskName = taskInput.value;
+
+            fetch("/tasks", { // calls backend server, writing task name to the server
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ taskName })
+            })
+            
+            .then(res => res.json()) // turning the response from the backend to JSON style
+            .then(() => {
+                nameInput.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
+            });
+        }
+
+      function creatBoard() {
+        const boardName = boardInput.value;
+
+        fetch("/boards", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ boardName })
+        });
+      }
+
+      // ---------------- DELETE ALL ----------------
+      function deleteAll() {
+        fetch("/tasks", {
+          method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(() => { 
+      }}
+
+      // ---------------- SOCKET EVENTS ----------------
+
+      socket.on("tasks changed", () => {
+        console.log("Tasks changed!");
+        loadTasks(boardId);
+      });
+     
+      socket.on("task deleted", (task) => {
+        const el = document.getElementById(`task-${task.task_id}`);
+        if (el) el.remove();
+        });
+
+      socket.on("tasks deleted", () => {
+        list.innerHTML = "";
+        });
+
+      // ---------------- UI ----------------
+
+      function addTask(task) {
+        const li = document.createElement("li");
+        li.id = `task-${task.task_id}`;
+
+        li.innerHTML = `
+          <span id="text-${task.task_id}">${task.task_name}</span>
+
+          <button onclick="editTask(${task.task_id})">Edit</button>
+          <button onclick="deleteTask(${task.task_id})">Delete</button>
+        `;
+
+        list.appendChild(li);
+      }
+
+      // ---------------- EDIT ONE TASK ----------------
+      function editTask(id) {
+        const newName = prompt("New task name:");
+
+        if (!newName) return;
+
+        fetch(`/tasks/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: newName })
+        });
+      }
+
+      // ---------------- DELETE ONE TASK ----------------
+      function deleteTask(id) {
+        fetch(`/tasks/${id}`, {
+          method: "DELETE"
+        });
+      }
+
+      async function createBoard() {
+
+        const name =
+          document.getElementById("newBoard").value;
+
+        const res = await fetch(
+          "http://localhost:3000/boards",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name })
+          }
+        );
+
+        const board = await res.json();
+
+        console.log("CREATED BOARD:", board);
+
+        // update board list only
+        addBoard(board);
+
+        // clear input
+        document.getElementById("newBoard").value = "";
+      }
+
+
+      async function joinBoard(id, name) {
+
+        boardId = id;
+
+        // show board UI
+        document.getElementById("boardView")
+          .style.display = "block";
+
+        // show board name
+        document.getElementById("currentBoard")
+          .innerText = `Board: ${name}`;
+
+        // join socket room
+        socket.emit("join room", boardId);
+
+        console.log("Joined board:", boardId);
+
+        // load board tasks
+        loadTasks(boardId);
+      }
+
+
+      async function loadBoards() {
+        const res = await fetch("http://localhost:3000/boards");
+
+        const boards = await res.json();
+
+        boardsList.innerHTML = "";
+
+        boards.forEach(addBoard);
+
+        console.log("LOADED BOARDS:", boards);
+      }
+
+
+
+      function addBoard(board) {
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <strong>${board.board_name}</strong>
+
+          <button onclick="
+            joinBoard(
+              ${board.board_id},
+              '${board.board_name}'
+            )
+          ">
+            Join
+          </button>
+        `;
+
+        boardsList.appendChild(li);
+      }
+
+
+
+      async function loadTasks(boardId) {
+
+        const res = await fetch(
+          `http://localhost:3000/tasks/board/${boardId}`
+        );
+
+        const tasks = await res.json();
+
+        list.innerHTML = "";
+
+        tasks.forEach(addTask);
+
+        console.log("BOARD TASKS:", tasks);
+      }
+
+      loadBoards();
+    </script>
+  </body>
+</html> -->
