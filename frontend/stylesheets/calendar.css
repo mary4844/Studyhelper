@@ -43,7 +43,7 @@ body {
 }
 .calendar-dates > div {
     position: relative;
-    height: 8vw;
+    height: 80px;
     background-color: lightgray;
     cursor: pointer;
     border: 2px solid white;
@@ -59,7 +59,7 @@ body {
 .date-info {
     display: inline-block;
     padding: 0.2vw;
-    font-size: 1.2vw;
+    font-size: 0.5em;
     color: black;
     transition: 0.2s;
 }
