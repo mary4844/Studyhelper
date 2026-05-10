@@ -2,16 +2,19 @@ body {
     font-family: Inter, Arial;
     background-color: #fff;
     margin-bottom: 70px;
+
+    /* box-sizing: border-box; */
 }
 .header {
     display: flex;
-    height: 5vw;
+    height: 1vw;
 }
 
 .calendar {
-    box-shadow: 0 rgba(0, 0, 0, 0.1);
-    margin-left: 8vw;
-    margin-right: 8vw;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 5vw;
 }
 .calendar-header {
     display: flex;
@@ -38,15 +41,20 @@ body {
 }
 .calendar-weekdays div {
     text-align: center;
-    /* padding: 10px; */
     padding-bottom: 10px;
     padding-top: 10px;
     font-weight: bold;
     border: 2px solid white;
 }
+.calendar-dates {
+    width: 100%;
+    min-width: 0;
+}
 .calendar-dates > div {
     position: relative;
     height: 80px;
+    overflow: hidden;
+
     background-color: lightgray;
     cursor: pointer;
     border: 2px solid white;
@@ -56,15 +64,20 @@ body {
 .date{
     display: block;
     padding-left: 0.2vw;
-    font-size: 1em;
     transition: 0.2s;
+
+    /* font-size: 1em; */
+    font-size: clamp(0.9rem, 1.8vw, 1.4rem);
 }
 .date-info {
     display: inline-block;
     padding: 0.2vw;
-    font-size: 0.5em;
+    font-size: clamp(0.5rem, 0.9vw, 0.8rem);
     color: black;
+
     transition: 0.2s;
+
+    overflow-wrap: break-word;
 }
 .calendar-dates div.current-date{
     background-color: #4d9df3;
@@ -77,6 +90,9 @@ body {
 @media (max-width: 400px) {
     .calendar {
         width: 100%;
-        margin: 0 10px;
+        padding: 0 10px;
+    }
+    .calendar-dates > div {
+        font-size: 15px;
     }
 }

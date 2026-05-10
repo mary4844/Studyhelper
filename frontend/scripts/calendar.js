@@ -40,7 +40,7 @@ function renderCalendar(month, year) {
         date.classList.add('date')
 
         const dateInfo = document.createElement('div');
-        dateInfo.textContent = 'Testar att skriva något som är ängre'
+        dateInfo.textContent = 'Testar att skriva något som är längre Testar att skriva något som är längre Testar att skriva något som är längre'
         dateInfo.classList.add('date-info')
 
         // Highlight today's date
