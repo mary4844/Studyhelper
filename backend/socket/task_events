@@ -1,0 +1,30 @@
+async function emitTaskCreated(io, task, boardId) {
+    io.to(boardId).emit("task created", task);
+}
+
+async function emitAllTasks(io, tasks, boardId) {
+    io.to(boardId).emit("all tasks", tasks);
+}
+
+async function emitTaskDeleted(io, tasks, boardId) {
+    io.to(boardId).emit("task deleted", tasks);
+}
+
+async function emitUpdatedTask(io, tasks, boardId) {
+    io.to(boardId).emit("task updated", tasks);
+}
+
+module.export = {
+    emitTaskCreated,
+    emitAllTasks,
+    emitTaskDeleted,
+    emitUpdatedTask
+}
+
+
+
+
+
+
+
+

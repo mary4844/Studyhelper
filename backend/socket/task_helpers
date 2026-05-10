@@ -1,0 +1,14 @@
+const { pool } = require('../pool');
+
+async function getBoardByTaskId(taskId) {
+    const result = await pool.query(
+        "SELECT board_id FROM board_task WHERE task_id = $1",
+        [taskId]
+    )
+
+    return result.rows[0]?.boardId;
+}
+
+module.exports = {
+    getBoardByTaskId
+}

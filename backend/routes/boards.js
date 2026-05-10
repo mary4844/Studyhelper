@@ -9,7 +9,7 @@ const router = express.Router();
 //get all boards
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM board");
+    const result = await pool.query("SELECT * FROM board ORDER BY board_id");
     return res.status(200).json(result.rows);
 
   } catch (error) {
@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
   }
 })
 
+//get board by id
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -95,5 +96,33 @@ router.delete('/:id', async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 })
+
+router.get("/board/:boardId", async (req, res) => {
+  try {
+
+    const boardId = Number(req.params.boardId);
+
+    const result = await pool.query(
+      `
+      SELECT tasks.*
+      FROM tasks
+      JOIN board_task
+        ON tasks.task_id = board_task.task_id
+      WHERE board_task.board_id = $1
+      ORDER BY tasks.task_id
+      `,
+      [boardId]
+    );
+
+    res.json(result.rows);
+
+  } catch (err) {
+    res.status(500).json({
+      error: "Failed to fetch board tasks"
+    });
+  }
+});
+
+
 // Export the router so app.js can mount it.
 module.exports = router;

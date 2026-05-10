@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand --verbose",
-    "test:routes": "jest --runInBand --verbose route_tests/tasks.routes.test.js" ,
-    "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js"
+    "test:routes": "jest --runInBand --verbose route_tests/tasks.routes.test.js",
+    "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,9 @@
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "pg": "^8.20.0"
+    "nodemon": "^3.1.14",
+    "pg": "^8.20.0",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "jest": "^30.3.0",
