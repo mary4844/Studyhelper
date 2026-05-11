@@ -57,7 +57,35 @@ button, a {
     
 }
 
-#add-task-alts {
+.subtask-controls {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#sub-title {
+    font-size: large;
+}
+
+.sub-add-task-alts {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+
+    z-index: 20;
+}
+
+.add-task-alts {
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -70,13 +98,13 @@ button, a {
     z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
 }
 
-#add-task-popup-div {
+.add-task-popup-div {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#add-task-popup-title {
+.add-task-popup-title {
     margin-right: auto;
 }
 
@@ -85,11 +113,11 @@ button, a {
     color: white;
     border: none;
     border-radius: 5px;
-    margin-left: auto;
     font-weight: bold;
+    margin-left: auto;
 }
 
-#add-btn {
+.add-btn {
     width: 50px;
     margin-top: 5px;
     background-color: #94C8F3;
@@ -117,10 +145,11 @@ button, a {
     color: black;
     border: none;
     position: relative;
+    border: 3px solid black;
     
     /* margin-left: 50px;
     margin-right: 50px; */
-    margin-bottom: 20px;
+    margin-top: 20px;
 
     padding-bottom: 0px;   
 }
@@ -132,16 +161,21 @@ button, a {
 }
 
 .dropdown-btn {
-    height: 50px;
+    /* height: 50px; */
     color: white;
     border: 3px solid white;
+    border-radius: 10px;
     font-size: 35px;
-    margin-top: 7px;
-    margin-right: 50px;
-
+    margin-right: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    padding-bottom: 5px;
 }
 
 .task-tail {
+    display: flex;
+}
+
+.task-tail-confirm-btns {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -168,6 +202,97 @@ button, a {
     /* position: absolute;
     bottom: 10px;
     right: 10px; */
+}
+
+.confirm-popup {
+    position: absolute;
+    top: 100%;
+    right: 0;
+
+    background: white;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+
+    z-index: 10;
+}
+
+.confirm-btns {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.yes-btn {
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.no-btn {
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.task-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.subtasks-container {
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+.subtask {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
+    padding: 0px 10px 0 10px;
+    padding-bottom: 0px;
+    border-radius: 10px;
+    border: 3px solid black;
+
+    color: white;
+}
+
+.subtask-tail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+#sub-check-task-btn {
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+/* #sub-delete-task-btn {
+    margin-right: 10px;
+    margin-top: 2px;
+} */
+
+.add-subtask-btn {
+    border: 3px solid white;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: small;
 }
 
 .task-personal {
@@ -201,7 +326,9 @@ button, a {
     margin-right: auto;
 }
 
-#all-tasks, #personal-tasks, #group-tasks {
+#all-tasks,
+#completed-tasks,
+#active-tasks {
     background: white;
     font-size: 17px;
     padding: 5px;
@@ -209,11 +336,39 @@ button, a {
     border: none;
 }
 
-#all-tasks:hover, #personal-tasks:hover, #group-tasks:hover,
-#all-tasks:active, #personal-tasks:active, #group-tasks:active {
+#all-tasks:hover,
+#completed-tasks:hover,
+#active-tasks:hover,
+#all-tasks:active,
+#completed-tasks:active,
+#active-tasks:active {
     background: lightgray;
 }
 
+.your-tasks-alts {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+
+    background: white;
+    border-radius: 20px;
+
+    padding: 20px;
+
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+
+    z-index: 20;
+}
+
+.your-tasks-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.your-tasks-popup-title {
+    margin-right: auto;
+}
 
 /* Title */
 /* .page-name {
@@ -239,90 +394,4 @@ button, a {
     margin: 5px;
     height: 50%;   
 }
-
-/* Sound */
-#sound-alts {
-    position: absolute;
-    
-    /* top: 260px;
-    right: 20px; */
-    right: 100%;
-    display: flex;
-    flex-direction: column;
-    border: none;
-    background-color: white;
-    border-radius: 20px;
-    
-    padding: 20px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
-}
-
-#sound-popup-div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#sound-popup-title {
-    margin-right: auto;
-}
-
-#white-noise, #brown-noise, #pink-noise, #mute {
-    background: white;
-    font-size: 17px;
-    padding: 5px;
-    text-align: start;
-    border: none;
-}
-
-#white-noise:hover, #brown-noise:hover, #pink-noise:hover, #mute:hover,
-#white-noise:active, #brown-noise:active, #pink-noise:active, #mute:active{
-    background: lightgray;
-}
-
-/*Timer*/
-#timer-alts {
-    position: absolute;
-    
-    /* top: 260px;
-    right: 20px; */
-    right: 100%;
-    display: flex;
-    flex-direction: column;
-    border: none;
-    background-color: white;
-    border-radius: 20px;
-    
-    padding: 20px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
-}
-
-#timer-popup-div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#timer-popup-title {
-    margin-right: auto;
-}
-
-#pomodoro, #custom {
-    background: white;
-    font-size: 17px;
-    padding: 5px;
-    text-align: start;
-    border: none;
-}
-
-#pomodoro:hover, #custom:active {
-    background: lightgray;
-}
-
-#timer-text {
-    display: none;
-}
-
 

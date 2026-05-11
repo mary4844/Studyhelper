@@ -11,23 +11,49 @@ const tasks_container = document.getElementById("tasks-container");
 let userInput = null;
 let selectedAlt = null;
 
+let selectedAltYourTasks = "all";
+
+function applyTaskFilter(filter) {
+    const allTasks = document.querySelectorAll(".task-wrapper");
+
+    allTasks.forEach(task => {
+        const mainTask = task.querySelector(".task");
+        const checkBtn = mainTask.querySelector(".check-task-btn");
+        const isCompleted = checkBtn.textContent === "✔️";
+
+        if (filter === "all") {
+            task.style.display = "flex";
+        } else if (filter === "completed") {
+            task.style.display = isCompleted ? "flex" : "none";
+        } else if (filter === "active") {
+            task.style.display = !isCompleted ? "flex" : "none";
+        }
+    });
+}
+
+const other_alts = document.querySelector(".your-tasks-alts");
 add_task_btn.addEventListener("click", () => {
     let checked = false;
+    let deleted = false;
     // Check if already displayed
-    const existing_alts = document.getElementById("add-task-alts");
+    const existing_alts = document.querySelector(".add-task-alts");
     if (existing_alts) {
         existing_alts.remove();
         return;
     }
+    const other_alts = document.querySelector(".your-tasks-alts");
+    if (other_alts) {
+        other_alts.remove();
+    }
 
     const task_type = document.createElement("div");
-    task_type.id = "add-task-alts";
+    task_type.classList.add("add-task-alts");
     
     const header = document.createElement("div");
-    header.id = "add-task-popup-div";
+    header.classList.add("add-task-popup-div");
     const title = document.createElement("h3");
     title.textContent = "Add task";
-    title.id = "add-task-popup-title";
+    title.classList.add("add-task-popup-title");
     const exit_btn = document.createElement("button");
     exit_btn.textContent = "X";
     exit_btn.classList.add("task-popup-close");
@@ -41,12 +67,12 @@ add_task_btn.addEventListener("click", () => {
     const task_name = document.createElement("input");
     task_name.type = "text";
     task_name.placeholder = "Enter task name"
-    task_name.id = "task-name-input";
+    task_name.classList.add("task-name-input");
 
     // Add knapp
     const add_btn = document.createElement("button");
     add_btn.textContent = "Add"
-    add_btn.id = "add-btn";
+    add_btn.classList.add("add-btn");
     add_btn.addEventListener("click", () => {
         // Save the input field
         userInput = task_name.value.trim();
@@ -75,36 +101,43 @@ add_task_btn.addEventListener("click", () => {
             check_btn.style.fontSize = "100%";
             check_btn.classList.add("check-task-btn");
             check_btn.addEventListener("click", () => {
+                const current = document.querySelector(".confirm-popup-check");
+                const other = document.querySelector(".confirm-popup-delete");
+                if(other || current) {
+                    return;
+                }
                 if(check_btn.textContent === "") {
-                    check_btn.textContent = "✔️";
 
                     const confirm_popup = document.createElement("div");
-                    confirm_popup.classList.add("confirm_popup");
+                    confirm_popup.classList.add("confirm-popup");
+                    confirm_popup.classList.add("confirm-popup-check");
                     
-                    const question = document.createElement("h4");
+                    const question = document.createElement("h5");
                     question.textContent = "Confirm task as done?";
                     
                     const confirm_btns = document.createElement("div");
-                    confirm_btns.id = "confirm-btns";
+                    confirm_btns.classList.add("confirm-btns");
                     
                     const yes_btn = document.createElement("button");
                     yes_btn.textContent = "Yes";
-                    yes_btn.classList.add("task-popup-close");
-                    yes_btn.id = "yes-btn";
+                    yes_btn.classList.add("yes-btn");
                     yes_btn.addEventListener("click", () => {
-                        confirm_btns.remove();
+                        confirm_popup.remove();
                         checked = true;
+                        check_btn.textContent = "✔️";
                     })
 
                     const no_btn = document.createElement("button");
                     no_btn.textContent = "No";
-                    no_btn.classList.add("task-popup-close");
-                    no_btn.id = "no-btn";
+                    no_btn.classList.add("no-btn");
                     no_btn.addEventListener("click", () => {
-                        
+                        confirm_popup.remove();
+                        check_btn.textContent = "";
                     })
 
                     confirm_btns.append(yes_btn, no_btn);
+                    confirm_popup.append(question, confirm_btns);
+                    new_task.append(confirm_popup);
                 } else {
                     check_btn.textContent = "";
                 }
@@ -114,16 +147,254 @@ add_task_btn.addEventListener("click", () => {
             const delete_btn = document.createElement("button");
             delete_btn.textContent = "Delete";
             delete_btn.classList.add("delete-task-btn");
-            
             delete_btn.addEventListener("click", () => {
-                new_task.remove();
-            });
+                const current = document.querySelector(".confirm-popup-delete");
+                const other = document.querySelector(".confirm-popup-check");
+                if(other || current) {
+                    return;
+                }
+                const confirm_popup = document.createElement("div");
+                confirm_popup.classList.add("confirm-popup");
+                confirm_popup.classList.add("confirm-popup-delete");
+                
+                const question = document.createElement("h5");
+                question.textContent = "Delete task?";
+                
+                const confirm_btns = document.createElement("div");
+                confirm_btns.classList.add("confirm-btns");
+                
+                const yes_btn = document.createElement("button");
+                yes_btn.textContent = "Yes";
+                yes_btn.classList.add("yes-btn");
+                yes_btn.addEventListener("click", () => {
+                    confirm_popup.remove();
+                    deleted = true;
+                    new_task.remove();
+                })
+
+                const no_btn = document.createElement("button");
+                no_btn.textContent = "No";
+                no_btn.classList.add("no-btn");
+                no_btn.addEventListener("click", () => {
+                    confirm_popup.remove();
+                })
+
+                confirm_btns.append(yes_btn, no_btn);
+                confirm_popup.append(question, confirm_btns);
+                new_task.append(confirm_popup);
+            })
+            
             const task_tail = document.createElement("div");
             task_tail.classList.add("task-tail");
-            task_tail.append(check_btn, delete_btn);
-            
+            const task_tail_confirm_btns = document.createElement("div");
+            task_tail_confirm_btns.classList.add("task-tail-confirm-btns");
+            task_tail_confirm_btns.append(check_btn, delete_btn);
+
+            // Subtasks container
+            const subtasks_container = document.createElement("div");
+            subtasks_container.classList.add("subtasks-container");
+
+            // Add subtask button
+            const subtask_controls = document.createElement("div");
+            subtask_controls.classList.add("subtask-controls");
+
+            const add_subtask_btn = document.createElement("button");
+            add_subtask_btn.textContent = "Add Subtask";
+            add_subtask_btn.classList.add("add-subtask-btn", "task-btns");
+
+            add_subtask_btn.addEventListener("click", () => {
+                const sub_existing_alts = document.querySelector(".sub-add-task-alts");
+                if (sub_existing_alts) {
+                    sub_existing_alts.remove();
+                    return;
+                }
+
+                const sub_task_type = document.createElement("div");
+                sub_task_type.classList.add("sub-add-task-alts");
+                
+                const sub_header = document.createElement("div");
+                sub_header.classList.add("add-task-popup-div");
+                const sub_title = document.createElement("h3");
+                sub_title.textContent = "Add subtask";
+                sub_title.classList.add("add-task-popup-title");
+                sub_title.id = "sub-title";
+                const sub_exit_btn = document.createElement("button");
+                sub_exit_btn.textContent = "X";
+                sub_exit_btn.classList.add("task-popup-close");
+                sub_exit_btn.addEventListener("click", () => {
+                    // Remove popup
+                    sub_task_type.remove();
+                });
+                sub_header.append(sub_title, sub_exit_btn);
+
+                // Input field
+                const sub_task_name = document.createElement("input");
+                sub_task_name.type = "text";
+                sub_task_name.placeholder = "Enter task name"
+                sub_task_name.classList.add("task-name-input");
+
+                // Add knapp
+                const sub_add_btn = document.createElement("button");
+                sub_add_btn.textContent = "Add";
+                sub_add_btn.classList.add("add-btn");
+                sub_add_btn.addEventListener("click", () => {
+                const subInput = sub_task_name.value.trim();
+
+                if (subInput === "") {
+                    return;
+                }
+
+                const subtask = document.createElement("div");
+                subtask.classList.add("subtask");
+                subtask.style.background = page_color;
+
+                // Left side (title)
+                const subtask_title = document.createElement("h3");
+                subtask_title.textContent = subInput;
+                subtask.id = "subtask-title";
+
+                // Right side buttons
+                const subtask_tail = document.createElement("div");
+                subtask_tail.classList.add("subtask-tail");
+
+                // Check button
+                const subtask_check_btn = document.createElement("button");
+                subtask_check_btn.classList.add("check-task-btn");
+                subtask_check_btn.id = "sub-check-task-btn";
+
+                subtask_check_btn.addEventListener("click", () => {
+                    const current = document.querySelector(".confirm-popup-check");
+                    const other = document.querySelector(".confirm-popup-delete");
+
+                    if (other || current) {
+                        return;
+                    }
+
+                    if (subtask_check_btn.textContent === "") {
+                        const confirm_popup = document.createElement("div");
+                        confirm_popup.classList.add("confirm-popup", "confirm-popup-check");
+
+                        const question = document.createElement("h5");
+                        question.textContent = "Confirm subtask as done?";
+
+                        const confirm_btns = document.createElement("div");
+                        confirm_btns.classList.add("confirm-btns");
+
+                        const yes_btn = document.createElement("button");
+                        yes_btn.textContent = "Yes";
+                        yes_btn.classList.add("yes-btn");
+
+                        yes_btn.addEventListener("click", () => {
+                            confirm_popup.remove();
+                            subtask_check_btn.textContent = "✔️";
+                        });
+
+                        const no_btn = document.createElement("button");
+                        no_btn.textContent = "No";
+                        no_btn.classList.add("no-btn");
+
+                        no_btn.addEventListener("click", () => {
+                            confirm_popup.remove();
+                            subtask_check_btn.textContent = "";
+                        });
+
+                        confirm_btns.append(yes_btn, no_btn);
+                        confirm_popup.append(question, confirm_btns);
+
+                        subtask.append(confirm_popup);
+                    } else {
+                        subtask_check_btn.textContent = "";
+                    }
+                });
+
+                // Delete button
+                const subtask_delete_btn = document.createElement("button");
+                subtask_delete_btn.id = "sub-delete-task-btn";
+                subtask_delete_btn.textContent = "Delete";
+                subtask_delete_btn.classList.add("delete-task-btn");
+
+                subtask_delete_btn.addEventListener("click", () => {
+                    const current = document.querySelector(".confirm-popup-delete");
+                    const other = document.querySelector(".confirm-popup-check");
+
+                    if (other || current) {
+                        return;
+                    }
+
+                    const confirm_popup = document.createElement("div");
+                    confirm_popup.classList.add("confirm-popup", "confirm-popup-delete");
+
+                    const question = document.createElement("h5");
+                    question.textContent = "Delete subtask?";
+
+                    const confirm_btns = document.createElement("div");
+                    confirm_btns.classList.add("confirm-btns");
+
+                    const yes_btn = document.createElement("button");
+                    yes_btn.textContent = "Yes";
+                    yes_btn.classList.add("yes-btn");
+
+                    yes_btn.addEventListener("click", () => {
+                        confirm_popup.remove();
+                        subtask.remove();
+                    });
+
+                    const no_btn = document.createElement("button");
+                    no_btn.textContent = "No";
+                    no_btn.classList.add("no-btn");
+
+                    no_btn.addEventListener("click", () => {
+                        confirm_popup.remove();
+                    });
+
+                    confirm_btns.append(yes_btn, no_btn);
+                    confirm_popup.append(question, confirm_btns);
+
+                    subtask.append(confirm_popup);
+                });
+
+                subtask_tail.append(subtask_check_btn, subtask_delete_btn);
+
+                subtask.append(subtask_title, subtask_tail);
+
+                subtasks_container.append(subtask);
+                sub_task_type.remove();
+            });
+
+            sub_task_type.append(sub_header, sub_task_name, sub_add_btn);
+            subtask_controls.append(sub_task_type);
+                
+
+            });
+
+            // Dropdown button show/hide subtasks
+            dropdown_btn.addEventListener("click", () => {
+                if (subtasks_container.style.display === "none") {
+                    subtasks_container.style.display = "flex";
+                    dropdown_btn.textContent = "▼";
+                } else {
+                    subtasks_container.style.display = "none";
+                    dropdown_btn.textContent = "▶";
+                }
+            });
+
+            // Add subtask button to task
+            subtask_controls.append(add_subtask_btn);
+            task_tail.append(subtask_controls, task_tail_confirm_btns);
+
+            // Add main task content
             new_task.append(task_header, task_tail);
-            tasks_container.append(new_task);
+
+            // Wrapper around task + subtasks
+            const task_wrapper = document.createElement("div");
+            task_wrapper.classList.add("task-wrapper");
+
+            task_wrapper.append(new_task, subtasks_container);
+
+            // Add everything to page
+            tasks_container.append(task_wrapper);
+            selectedAltYourTasks = "active";
+            applyTaskFilter("active");
         } else {
             return;
         }
@@ -135,258 +406,94 @@ add_task_btn.addEventListener("click", () => {
 
 
     task_type.append(header, task_name, add_btn);
-    document.getElementById("task-btns-div").append(task_type);
+    const other = document.getElementById("your-tasks-btn");
+    document.getElementById("task-btns-div").insertBefore(task_type, other);
 
     
 });
 
+const your_tasks_btn = document.getElementById("your-tasks-btn");
 
+your_tasks_btn.addEventListener("click", () => {
 
-// // Timer youtube
-// const timer_btn = document.getElementById("timer-btn");
-// let timeDisplayed = null;
-// let startTime = null;
-// let interval = null;
-// let remainingTime = 0;
-// let timerIsRunning = false;
-// let timerIsPaused = false;
-// let pauseBtn = null;
+    // Check if popup already exists
+    const existing_alts = document.querySelector(".your-tasks-alts");
 
-// function updateTimer(time) {
-//     let minutes = Math.floor(time/60);
-//     let seconds = time % 60;
+    if (existing_alts) {
+        existing_alts.remove();
+        return;
+    }
 
-//     return minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
-// };
+    // Remove add task popup if open
+    const other_alts = document.querySelector(".add-task-alts");
 
-// function updatePauseButton() {
-//     if (!pauseBtn) return;
+    if (other_alts) {
+        other_alts.remove();
+    }
 
-//     if (timerIsRunning) {
-//         pauseBtn.textContent = "Pause";
-//         pauseBtn.style.backgroundColor = "red";
-//     } else {
-//         pauseBtn.textContent = "Unpause";
-//         pauseBtn.style.backgroundColor = "green";
-//     }
-// }
+    // Main popup
+    const task_type = document.createElement("div");
+    task_type.classList.add("your-tasks-alts");
 
-// const startTimer = (time) => {
-//     clearInterval(interval);
+    // Header
+    const header = document.createElement("div");
+    header.classList.add("your-tasks-popup-div");
 
-//     remainingTime = time;
-//     timerIsRunning = true;
-//     timerIsPaused = false;
+    const title = document.createElement("h3");
+    title.textContent = "Your Tasks";
+    title.classList.add("your-tasks-popup-title");
 
-//     timeDisplayed.style.display = "block";
+    const exit_btn = document.createElement("button");
+    exit_btn.textContent = "X";
+    exit_btn.classList.add("task-popup-close");
 
-//     const timerText = updateTimer(remainingTime);
+    exit_btn.addEventListener("click", () => {
+        task_type.remove();
+    });
 
-//     timeDisplayed.textContent = timerText;
-//     document.title = timerText + " - StudyHelper";
+    header.append(title, exit_btn);
 
-//     updatePauseButton();
+    // ALL TASKS
+    const alt1 = document.createElement("button");
+    alt1.id = "all-tasks";
+    alt1.textContent = "All tasks";
 
-//     interval = setInterval(() => {
-//         remainingTime--;
+    alt1.addEventListener("click", () => {
 
-//         timeDisplayed.textContent = updateTimer(remainingTime);
-//         document.title = updateTimer(remainingTime) + " - StudyHelper";
+        selectedAltYourTasks = "all";
+        applyTaskFilter("all");
 
-//         if (remainingTime <= 0) {
-//             clearInterval(interval);
-//             timerIsRunning = false;
-//             timerIsPaused = false;
+        task_type.remove();
+    });
 
-//             timeDisplayed.textContent = updateTimer(0);
-//             document.title = "Time's up!";
-//             updatePauseButton();
+    // COMPLETED TASKS
+    const alt2 = document.createElement("button");
+    alt2.id = "completed-tasks";
+    alt2.textContent = "Completed tasks";
 
-//             setTimeout(() => {
-//                 alert("Time's up!");
-//                 timeDisplayed.style.display = "none";
-//                 document.title = "StudyHelper";
-//             }, 100);
-//         }
-//     }, 1000);
-// };
+    alt2.addEventListener("click", () => {
 
-// // const stopTimer = () => clearInterval(interval);
+        selectedAltYourTasks = "completed";
+        applyTaskFilter("completed");
 
-// // const resetTimer = () => {
-// //     clearInterval(interval);
-// //     timeLeft = 1500;
-// //     updateTimer();
-// // }
+        task_type.remove();
+    });
 
+    // ACTIVE TASKS
+    const alt3 = document.createElement("button");
+    alt3.id = "active-tasks";
+    alt3.textContent = "Active tasks";
 
-// timer_btn.addEventListener("click", () => {
-//     // Check if already displayed
-//     const existing_alts = document.getElementById("timer-alts");
-//     if (existing_alts) {
-//         existing_alts.remove();
-//         return;
-//     }
+    alt3.addEventListener("click", () => {
 
-//     const timer_other1 = document.getElementById("schedule-alts"); // ?
-//     const timer_other2 = document.getElementById("sound-alts");
+        selectedAltYourTasks = "active";
+        applyTaskFilter("active");
 
-//     if (timer_other1) {
-//         timer_other1.remove();
-//     }
-    
-//     if (timer_other2) {
-//         timer_other2.remove();
-//     }
-    
-//     const timer_type = document.createElement("div");
-//     timer_type.id = "timer-alts";
-    
-//     const header = document.createElement("div");
-//     header.id = "timer-popup-div";
-//     const title = document.createElement("h3");
-//     title.textContent = "Timer";
-//     title.id = "timer-popup-title";
-//     const exit_btn = document.createElement("button");
-//     exit_btn.textContent = "X";
-//     exit_btn.classList.add("task-popup-close");
-//     exit_btn.addEventListener("click", () => {
-//         // Remove popup
-//         timer_type.remove();
-//     });
-//     header.append(title, exit_btn);
-//     timeDisplayed = document.getElementById("timer-text");
-//     if(!timerIsRunning) {
-//         timeDisplayed.textContent = startTime === null ? updateTimer(0) : updateTimer(startTime);
-//     }
-//     const alt1 = document.createElement("button");
-//     alt1.id = "pomodoro";
-//     alt1.textContent = "Pomodoro";
-//     alt1.addEventListener("click", () => {
-//         startTime = 1500;
-//         startTimer(startTime);
-//         timer_type.remove();
-// });
+        task_type.remove();
+    });
 
-//     const alt2 = document.createElement("button");
-//     alt2.id = "custom";
-//     alt2.textContent = "Custom";
-//     alt2.addEventListener("click", () => {
-//         const custom_container = document.createElement("div");
-//         custom_container.id = "custom-container";
+    task_type.append(header, alt1, alt2, alt3);
 
-//         const header_custom = document.createElement("div");
-//         header_custom.id = "timer-popup-div";
-//         const title_custom = document.createElement("h3");
-//         title_custom.textContent = "Custom";
-//         title_custom.id = "custom-popup-title";
-//         const exit_btn_custom = document.createElement("button");
-//         exit_btn_custom.textContent = "X";
-//         exit_btn_custom.classList.add("task-popup-close");
-//         exit_btn_custom.addEventListener("click", () => {
-//             // Remove popup
-//             custom_container.remove();
-//         });
-//         header_custom.append(title_custom, exit_btn_custom);
+    document.getElementById("task-btns-div").append(task_type);
 
-//         // const time_text = document.createElement("p");
-//         // time_text.id = "time-text";
-//         // time_text.textContent = "Select time: ";
-
-//         // const time_input = document.createElement("input");
-//         // time_input.type = "time";
-//         // time_input.id = "time-input"
-        
-//         // Minutes input
-//         const minutes_input = document.createElement("input");
-//         minutes_input.type = "number";
-//         minutes_input.placeholder = "MM";
-
-//         // Seconds input
-//         const seconds_input = document.createElement("input");
-//         seconds_input.type = "number";
-//         seconds_input.placeholder = "SS";
-
-//         const submit_btn = document.createElement("button");
-//         submit_btn.id = "submit-btn";
-//         submit_btn.classList.add("task-popup-close");
-//         submit_btn.textContent = "Start";
-//         submit_btn.addEventListener("click", () => {
-//             // const [minutes_input, seconds_input] = time_input.value.split(":");
-//             const minutes = Number(minutes_input.value);
-//             const seconds = Number(seconds_input.value);
-            
-//             if(minutes_input.value === "" || seconds_input.value === "") {
-//                 alert("Please fill in both minutes and seconds");
-//             } else if(minutes < 0 || seconds < 0 || seconds > 59) {
-//                 alert("Please insert a valid time");
-//             } else {
-//                 startTime = minutes * 60 + seconds;
-//                 custom_container.remove();
-//                 timer_type.remove()
-//                 startTimer(startTime);
-                
-//             }
-//         });
-//         custom_container.append(header_custom, 
-//             document.createTextNode("Minutes:"), minutes_input,
-//             document.createTextNode("Seconds:"), seconds_input, 
-//             submit_btn);
-//         timer_type.append(custom_container);
-        
-//     });
-
-//     const timer_controls = document.createElement("div");
-//     timer_controls.id = "timer-controls";
-//     timer_controls.style.display = "flex";
-//     timer_controls.style.marginTop = "5px";
-
-//     const restart_btn = document.createElement("button");
-//     restart_btn.classList.add("task-popup-close");
-//     restart_btn.textContent = "Restart";
-//     restart_btn.style.marginRight = "2px";
-
-//     pauseBtn = document.createElement("button");
-//     pauseBtn.classList.add("task-popup-close")
-//     pauseBtn.textContent = "Pause";
-//     pauseBtn.style.backgroundColor = "red";
-//     pauseBtn.style.marginLeft = "2px";
-
-//     pauseBtn.addEventListener("click", () => {
-//         if (timerIsRunning) {
-//             clearInterval(interval);
-//             timerIsRunning = false;
-//             timerIsPaused = true;
-//         } else if (timerIsPaused) {
-//             startTimer(remainingTime);
-//         }
-
-//         updatePauseButton();
-//     });
-
-//     restart_btn.addEventListener("click", () => {
-//         if (startTime === null) {
-//             return;
-//         }
-
-//         clearInterval(interval);
-
-//         remainingTime = startTime;
-
-//         timerIsRunning = false;
-//         timerIsPaused = true;
-
-//         timeDisplayed.textContent = updateTimer(startTime);
-//         timeDisplayed.style.display = "block";
-
-//         updatePauseButton();
-//     });
-
-//     timer_controls.append(restart_btn, pauseBtn);
-
-     
-//     timer_type.append(header, alt1, alt2, timer_controls);
-//     document.getElementById("features-btns-div").append(timer_type);
-//     // document.body.append(sound_type);
-
-// });
+});

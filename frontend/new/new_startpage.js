@@ -4,7 +4,25 @@ const add_board_btn = document.getElementById("add-board-btn");
 const boards_container = document.getElementById("boards-container");
 let userInput = null;
 let selectedAlt = null;
+let selectedAltYourBoards = "all";
 
+function applyBoardFilter(filter) {
+    const allBoards = document.querySelectorAll(".board");
+
+    allBoards.forEach(board => {
+        if (filter === "all") {
+            board.style.display = "block";
+        } else if (filter === "personal") {
+            board.style.display = board.classList.contains("board-personal")
+                ? "block"
+                : "none";
+        } else if (filter === "group") {
+            board.style.display = board.classList.contains("board-group")
+                ? "block"
+                : "none";
+        }
+    });
+}
 add_board_btn.addEventListener("click", () => {
     // Check if already displayed
     const existing_alts = document.getElementById("add-board-alts");
@@ -136,6 +154,12 @@ add_board_btn.addEventListener("click", () => {
 
             new_board.append(board_title, delete_btn);
             boards_container.append(new_board);
+
+            if (selectedAltYourBoards !== "all" && selectedAltYourBoards !== selectedAlt) {
+                selectedAltYourBoards = selectedAlt;
+            }
+
+            applyBoardFilter(selectedAltYourBoards);
         } else {
             return;
         }
@@ -155,15 +179,16 @@ add_board_btn.addEventListener("click", () => {
 
 // Your boards knappen
 const your_boards_btn = document.getElementById("your-boards-btn");
-const other_alts = document.getElementById("add-board-alts");
-let selectedAltYourBoards = null;
+
 your_boards_btn.addEventListener("click", () => {
-    // Check if already displayed
     const existing_alts = document.getElementById("your-boards-alts");
+
     if (existing_alts) {
         existing_alts.remove();
         return;
     }
+
+    const other_alts = document.getElementById("add-board-alts");
 
     if (other_alts) {
         other_alts.remove();
@@ -174,22 +199,27 @@ your_boards_btn.addEventListener("click", () => {
     
     const header = document.createElement("div");
     header.id = "your-boards-popup-div";
+
     const title = document.createElement("h3");
     title.textContent = "Your Boards";
     title.id = "your-boards-popup-title";
+
     const exit_btn = document.createElement("button");
     exit_btn.textContent = "X";
     exit_btn.classList.add("board-popup-close");
+
     exit_btn.addEventListener("click", () => {
-        // Remove popup
         board_type.remove();
     });
+
     header.append(title, exit_btn);
+
     const alt1 = document.createElement("button");
     alt1.id = "all-boards";
     alt1.textContent = "All boards";
     alt1.addEventListener("click", () => {
         selectedAltYourBoards = "all";
+        applyBoardFilter("all");
         board_type.remove();
     });
 
@@ -198,6 +228,7 @@ your_boards_btn.addEventListener("click", () => {
     alt2.textContent = "Personal boards";
     alt2.addEventListener("click", () => {
         selectedAltYourBoards = "personal";
+        applyBoardFilter("personal");
         board_type.remove();
     });
 
@@ -206,12 +237,12 @@ your_boards_btn.addEventListener("click", () => {
     alt3.textContent = "Group boards";
     alt3.addEventListener("click", () => {
         selectedAltYourBoards = "group";
+        applyBoardFilter("group");
         board_type.remove();
     });
-    
+
     board_type.append(header, alt1, alt2, alt3);
     document.getElementById("board-btns-div").append(board_type);
-
 });
 
 // Sound knappen
