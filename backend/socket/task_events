@@ -1,24 +1,29 @@
 async function emitTaskCreated(io, task, boardId) {
-    io.to(boardId).emit("task created", task);
+    io.to(String(boardId)).emit("task created", task);
 }
 
-async function emitAllTasks(io, tasks, boardId) {
-    io.to(boardId).emit("all tasks", tasks);
+async function emitAllTasksDeleted(io) {
+    io.emit("all tasks deleted");
 }
 
-async function emitTaskDeleted(io, tasks, boardId) {
-    io.to(boardId).emit("task deleted", tasks);
+async function emitBoardTasksDeleted(io, boardId) {
+    io.to(String(boardId)).emit("boardtasks deleted");
 }
 
 async function emitUpdatedTask(io, tasks, boardId) {
-    io.to(boardId).emit("task updated", tasks);
+    io.to(String(boardId)).emit("task updated", tasks);
 }
 
-module.export = {
+async function emitTaskDeleted(io, task, boardId) {
+    io.to(String(boardId)).emit("task deleted", task);
+}
+
+module.exports = {
     emitTaskCreated,
-    emitAllTasks,
-    emitTaskDeleted,
-    emitUpdatedTask
+    emitAllTasksDeleted,
+    emitBoardTasksDeleted,
+    emitUpdatedTask,
+    emitTaskDeleted
 }
 
 

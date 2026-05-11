@@ -21,13 +21,10 @@ io.on("connection", socket => {
 
   //rooms
 
-  //temp
-  socket.user = {
-    id: socket.id
-  }
+  
+  
   //man måste ange vilka rum från frontend, dvs en GET och sedan lista på boards
   socket.on('join room', async boardId => {
-    const userId = socket.user.id;
 
     //dont need for testing sockets, restricted by db
       //const hasAccess = await canUserAccessBoard(userId, boardId);

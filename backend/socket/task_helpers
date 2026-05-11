@@ -6,7 +6,7 @@ async function getBoardByTaskId(taskId) {
         [taskId]
     )
 
-    return result.rows[0]?.boardId;
+    return result.rows[0]?.board_id;
 }
 
 module.exports = {

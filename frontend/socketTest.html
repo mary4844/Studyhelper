@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <body>
     <h2>Socket.IO Board Test</h2>
@@ -7,241 +7,248 @@
 
     <h3>boards</h3>
     <input id="boardName" placeholder="new board" />
-    <button onclick="createBoard()">Create board</button> 
+    <button id="createBoard">Create board</button> 
 
+    <button id="deleteAllBoards">Delete boards</button>
 
-    <ul id = "boards"></ul>
+    <ul id = "boardList"></ul>
 
     <br /><br />
 
-    <div id="boardView" style="display:none;">
+    <input id="boardJoin" placeholder="board to join" />
+    <button id="joinBoard">Join board</button>
 
-      <h3 id="currentBoard"></h3>
+    <br /><br />
 
-      <input id="taskName" placeholder="Task name" />
-      <button onclick="createTask()">Create Task</button>
+    <h3 id="currentBoard">No board selected</h3>
 
-      <button onclick="deleteAll()">
-        Delete All Tasks
-      </button>
+    <br /><br />
 
-      <h3>Tasks</h3>
+    <h3>tasks</h3>
+    <input id="taskName" placeholder = "new task" />
+    <button id="createTask">Create task</button>
 
-      <ul id="list"></ul>
+    <br /><br />
 
-    </div>
+    <button id = "deleteTasksInBoard">Delete tasks in board</button>
+
+    <ul id = "taskList"></ul>
+
+    <br /><br />
+
+    <!-- <button id="deleteAllTasks">Delete all tasks</button> -->
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
       const socket = io("http://localhost:3000");
 
-      const list = document.getElementById("list");
-
       const boardInput = document.getElementById("boardName");
 
-      const taskInput = document.getElementbyId("taskName")
+      const taskInput = document.getElementById("taskName");
 
-      let boardId;
+      const boardList = document.getElementById("boardList");
 
+      const taskList = document.getElementById("taskList");
+
+      const boardIdInput = document.getElementById("boardJoin");
+
+      let boardId = null;
    
       socket.on("connect", () => {
         console.log("Connected:", socket.id);
+        loadBoards();
       });
 
 
       // ---------------- CREATE ----------------
-      function createTask() {
+      document.getElementById("createTask").addEventListener("click", async () => {
+        if (!boardId) { alert("Join a board first!"); return; }
+        console.log("created new task");
+        await createTask();
+        await loadTasks(boardId);
+      })
+
+      async function createTask() {
             const taskName = taskInput.value;
 
-            fetch("/tasks", { // calls backend server, writing task name to the server
+            const res = await fetch("/tasks", { // calls backend server, writing task name to the server
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ taskName })
+                body: JSON.stringify({ name: taskName, boardId })
             })
             
-            .then(res => res.json()) // turning the response from the backend to JSON style
-            .then(() => {
-                nameInput.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
-            });
+            const task = await res.json();
+            console.log(task);
+            taskInput.value = ""; // emptying a buffer which otherwise still would hold the old name when adding a new task
         }
 
-      function creatBoard() {
+      document.getElementById("createBoard").addEventListener("click", async () => {
+        console.log("created new board");
+        await createBoard();
+        await loadBoards();
+      })
+      
+
+      async function createBoard() {
         const boardName = boardInput.value;
 
-        fetch("/boards", {
+        const res = await fetch("/boards", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({ boardName })
         });
+
+        const board = await res.json();
+        console.log(board);
+        boardInput.value = "";
       }
 
       // ---------------- DELETE ALL ----------------
-      function deleteAll() {
-        fetch("/tasks", {
+      document.getElementById("deleteAllBoards").addEventListener("click", async () => {
+        console.log("Deleted all boards");
+        await deleteAllBoards();
+        await loadBoards();
+      })
+
+      async function deleteAllBoards() {
+
+        await fetch("/boards", {
+          method: "DELETE" 
+        })
+      }
+
+
+      // document.getElementById("deleteAllTasks").addEventListener("click", async () => {
+      //   console.log("Deleted all tasks");
+      //   await deleteAllTasks();
+      //   await loadTasks(boardId);
+      // })
+
+      // async function deleteAllTasks() {
+        
+      //   await fetch("/tasks", {
+      //     method: "DELETE"
+      //   })
+      // }
+
+      document.getElementById("deleteTasksInBoard").addEventListener("click", async () => {
+        if (!boardId) { alert("Join a board first!"); return; }
+        console.log("Deleted all tasks in this board");
+        await deleteAllBoardTasks(boardId);
+        await loadTasks(boardId);
+      })
+
+      async function deleteAllBoardTasks(boardId) {
+
+        await fetch(`/tasks/board/${boardId}`, {
           method: "DELETE"
         })
-        .then(res => res.json())
-        .then(() => { 
-      }}
+      }
 
       // ---------------- SOCKET EVENTS ----------------
 
-      socket.on("tasks changed", () => {
-        console.log("Tasks changed!");
+      socket.on("task created", (newTask) => {
+        console.log("Task created", newTask);
         loadTasks(boardId);
       });
-     
-      socket.on("task deleted", (task) => {
-        const el = document.getElementById(`task-${task.task_id}`);
-        if (el) el.remove();
+          
+      socket.on("boardtasks deleted", () => {
+        console.log("boardtasks deleted!")
+        loadTasks(boardId);
         });
 
-      socket.on("tasks deleted", () => {
-        list.innerHTML = "";
+      socket.on("all tasks deleted", () => {
+        console.log("All tasks deleted!")
+        loadTasks(boardId);
         });
 
-      // ---------------- UI ----------------
+      
+      // ----------------- LOAD ALL BOARDS ------------------
 
-      function addTask(task) {
-        const li = document.createElement("li");
-        li.id = `task-${task.task_id}`;
+      async function loadBoards() {
+        fetch("/boards")
+        .then(res => res.json())
+        .then(boards => {
+          boardList.innerHTML = "";
+          
+          boards.forEach(board => {
+            const li = document.createElement("li");
+            li.textContent = board.board_name;
+            boardList.appendChild(li);
+          });
+        });   
+      }
+    
 
-        li.innerHTML = `
-          <span id="text-${task.task_id}">${task.task_name}</span>
+    //  --------------------- LOAD BOARD SPECIFIC TASKS --------------------- 
 
-          <button onclick="editTask(${task.task_id})">Edit</button>
-          <button onclick="deleteTask(${task.task_id})">Delete</button>
-        `;
+      async function loadTasks(boardId) {
 
-        list.appendChild(li);
+        const res = await fetch(`/tasks/board/${boardId}`);
+        const tasks = await res.json();
+
+        if (!Array.isArray(tasks)) {  //guard for error responses
+          console.error("Failed to load tasks:", tasks);
+          return;
+        }
+
+        taskList.innerHTML = "";
+
+        tasks.forEach(task => {
+          const li = document.createElement("li");
+          li.textContent = task.task_name;
+          taskList.appendChild(li);
+        });
       }
 
-      // ---------------- EDIT ONE TASK ----------------
-      function editTask(id) {
-        const newName = prompt("New task name:");
 
-        if (!newName) return;
+    // --------------------------- JOIN BOARD ------------------------------
+      
+      document.getElementById("joinBoard").addEventListener("click", async () => {
+        const input = document.getElementById("boardJoin").value;
 
-        fetch(`/tasks/${id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: newName })
-        });
-      }
+        await joinBoard(input);
+      });
 
-      // ---------------- DELETE ONE TASK ----------------
-      function deleteTask(id) {
-        fetch(`/tasks/${id}`, {
-          method: "DELETE"
-        });
-      }
+      async function joinBoard(boardName) {
 
-      async function createBoard() {
+        // get all boards
+        const res = await fetch("/boards");
 
-        const name =
-          document.getElementById("newBoard").value;
+        const boards = await res.json();
 
-        const res = await fetch(
-          "http://localhost:3000/boards",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ name })
-          }
+        // find board with matching NAME
+        const boardExists = boards.find(
+          board => board.board_name === boardName
         );
 
-        const board = await res.json();
+        // board not found
+        if (!boardExists) {
+          alert("Board not found");
+          return;
+        }
 
-        console.log("CREATED BOARD:", board);
-
-        // update board list only
-        addBoard(board);
-
-        // clear input
-        document.getElementById("newBoard").value = "";
-      }
-
-
-      async function joinBoard(id, name) {
-
-        boardId = id;
-
-        // show board UI
-        document.getElementById("boardView")
-          .style.display = "block";
-
-        // show board name
-        document.getElementById("currentBoard")
-          .innerText = `Board: ${name}`;
+        // save actual board id
+        boardId = boardExists.board_id;
 
         // join socket room
         socket.emit("join room", boardId);
 
         console.log("Joined board:", boardId);
 
-        // load board tasks
-        loadTasks(boardId);
+        // update UI
+        document.getElementById("currentBoard").innerText =
+          `Current board: ${boardExists.board_name}`;
+
+        // load tasks
+        await loadTasks(boardId);
       }
+          
 
-
-      async function loadBoards() {
-        const res = await fetch("http://localhost:3000/boards");
-
-        const boards = await res.json();
-
-        boardsList.innerHTML = "";
-
-        boards.forEach(addBoard);
-
-        console.log("LOADED BOARDS:", boards);
-      }
-
-
-
-      function addBoard(board) {
-
-        const li = document.createElement("li");
-
-        li.innerHTML = `
-          <strong>${board.board_name}</strong>
-
-          <button onclick="
-            joinBoard(
-              ${board.board_id},
-              '${board.board_name}'
-            )
-          ">
-            Join
-          </button>
-        `;
-
-        boardsList.appendChild(li);
-      }
-
-
-
-      async function loadTasks(boardId) {
-
-        const res = await fetch(
-          `http://localhost:3000/tasks/board/${boardId}`
-        );
-
-        const tasks = await res.json();
-
-        list.innerHTML = "";
-
-        tasks.forEach(addTask);
-
-        console.log("BOARD TASKS:", tasks);
-      }
-
-      loadBoards();
     </script>
   </body>
-</html> -->
+</html>

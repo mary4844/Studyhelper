@@ -5,8 +5,8 @@ const router = express.Router(); // create a smal route container just for tasks
 //detta är för att skapa en mini app i express, istället för att ha varje route i main app.js
 
 //hjäplfunktioner till sockets
-const { getBoardByTaskId } = require("../socket/task_helpers");
-const { emitTaskUpdated } = require("../socket/task_events");
+const { emitBoardTasksDeleted, emitAllTasksDeleted } = require("../socket/task_events");
+
 
 // Return all tasks in task_id order.
 router.get("/", async (req, res) => {
@@ -61,7 +61,7 @@ router.delete("/", async (req, res) => {
 
     await pool.query("DELETE FROM tasks");
 
-    io.emit("tasks:deleted");
+    emitAllTasksDeleted(io);
 
     res.json({ success: true });
   } catch (error) {
@@ -69,63 +69,111 @@ router.delete("/", async (req, res) => {
   }
 });
 
-//Ta bort en task med ett id
-router.delete("/:id", async (req, res) => {
-  try {
-    const io = req.app.get("io");
 
-    const taskId = Number(req.params.id);
+router.get("/board/:boardId", async (req, res) => {
+  try {
+    const boardId = Number(req.params.boardId);
+
     const result = await pool.query(
-      "DELETE FROM tasks WHERE task_id = $1 RETURNING *",
-      [taskId],
+      `
+      SELECT t.*
+      FROM tasks t
+      JOIN board_task bt ON bt.task_id = t.task_id
+      WHERE bt.board_id = $1
+      ORDER BY t.task_id
+      `,
+      [boardId]
     );
 
-    const deletedTask = result.rows[0]
-
-    const boardId = await getBoardByTaskId(taskId);
-    if(boardId) {
-      emitTaskDeleted(io, deletedTask, boardId);
-    }
-
-    res.json(deletedTask); //skicka db restultatet som JSON så slipper frontend göra en GET för att uppdatera
+    res.json(result.rows);
   } catch (error) {
-    console.error("Error failed to clear list:", error);
-    res.status(500).json({ error: "Failed to clear list" });
+    console.error("Error fetching tasks by board:", error);
+    res.status(500).json({ error: "Failed to fetch tasks" });
   }
 });
 
-
-//redigera namnet på en task med ett id
-router.patch("/:id", async (req, res) => {
+router.delete("/board/:boardId", async (req, res) => {
   try {
-    //låt den här routen använda socket.io servern
     const io = req.app.get("io");
+    const boardId = Number(req.params.boardId);
 
-    //taskens id och namn, body är data i request payload ex namn
-    const taskId = Number(req.params.id);
-    const { name } = req.body;
+    // delete from junction table first, then orphaned tasks
+    await pool.query("DELETE FROM board_task WHERE board_id = $1", [boardId]);
 
-    const result = await pool.query(
-      "UPDATE tasks SET task_name = $1 WHERE task_id = $2 RETURNING *",
-      [name, taskId]
-    );
+    // io.to(String(boardId)).emit("tasks deleted");
+    emitBoardTasksDeleted(io, boardId);
 
-    const updatedTask = result.rows[0];
-
-    //hitta rätt id och skicka till dem med sockets
-    const boardId = await getBoardByTaskId(taskId);
-    if(boardId) {
-      emitTaskUpdated(io, updatedTask, boardId);
-    }
-
-    //test om databas updateras som den ska
-    console.log(result.rows[0]); 
-    
-    res.json(updatedTask);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update task" });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete board tasks" });
   }
 });
+
+
+// //Ta bort en task med ett id
+// router.delete("/:id", async (req, res) => {
+//   try {
+//     const io = req.app.get("io");
+//     const taskId = Number(req.params.id);
+//     const boardId = await getBoardByTaskId(taskId);
+    
+//     const result = await pool.query(
+//       "DELETE FROM tasks WHERE task_id = $1 RETURNING *",
+//       [taskId],
+//     );
+
+//     const deletedTask = result.rows[0]
+
+//     //behöver fixas emitTaskDeleted funkar inte
+    
+//     console.log("getBoardByTaskId result:", result.rows[0]);
+//     if(boardId) {
+//       emitTaskDeleted(io, deletedTask, boardId);
+//     }
+
+//     res.json(deletedTask); //skicka db restultatet som JSON så slipper frontend göra en GET för att uppdatera
+//   } catch (error) {
+//     console.error("Error failed to clear list:", error);
+//     res.status(500).json({ error: "Failed to clear list" });
+//   }
+// });
+
+
+// //redigera namnet på en task med ett id
+// router.patch("/:id", async (req, res) => {
+//   try {
+//     //låt den här routen använda socket.io servern
+//     const io = req.app.get("io");
+
+//     //taskens id och namn, body är data i request payload ex namn
+//     const taskId = Number(req.params.id);
+//     const { name } = req.body;
+
+//     const result = await pool.query(
+//       "UPDATE tasks SET task_name = $1 WHERE task_id = $2 RETURNING *",
+//       [name, taskId]
+//     );
+
+//     const updatedTask = result.rows[0];
+
+//     //hitta rätt id och skicka till dem med sockets
+//     const boardId = await getBoardByTaskId(taskId);
+//     console.log("getBoardByTaskId result:", result.rows[0]);
+//     if(boardId) {
+//       emitUpdatedTask(io, taskId, boardId);
+//     }
+
+//     //test om databas updateras som den ska
+//     console.log(result.rows[0]); 
+    
+//     res.json(updatedTask);
+//   } catch (err) {
+//     res.status(500).json({ error: "Failed to update task" });
+//   }
+// });
+
+
+
 
 //Möjligör att app.js kan importera routern o dess funktioner
 module.exports = router;
