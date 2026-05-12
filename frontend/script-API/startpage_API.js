@@ -48,3 +48,5 @@ export async function patchBoardById(board_id, new_name) {
     })
     .then(res => res.json());
 }
+
+//testa merge
