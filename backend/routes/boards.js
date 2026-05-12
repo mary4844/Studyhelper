@@ -41,7 +41,10 @@ router.get('/:id', async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     // Read the board name sent from the frontend body.
-    const { name } = req.body;
+    const { name,type } = req.body;
+    console.log("req.body:",req.body);
+    const is_shared = (type === 'group');
+    console.log("is_shared:", is_shared);
 
     if(!name) {
       return res.status(400).json({ error: 'Name is required'});
@@ -49,9 +52,10 @@ router.post("/", async (req, res) => {
 
     // Insert the new board and ask PostgreSQL to return the inserted row.
     const result = await pool.query(
-      "INSERT INTO board (board_name) VALUES ($1) RETURNING *",
-      [name],
+      "INSERT INTO board (board_name, is_shared) VALUES ($1, $2) RETURNING *",
+      [name, is_shared]
     );
+
     //return the status code that the creation worked.
     return res.status(201).json(result.rows[0]);
 

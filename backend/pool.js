@@ -6,10 +6,10 @@ const { Pool } = require("pg");
 
 // Create one shared database connection pool for the whole backend.
 const pool = new Pool({
-  user: "olof",
+  user: "postgres",
   host: "localhost",
-  database: "studyhacker",
-  password: "password123",
+  database: "finaldb",
+  password: "asdf",
   port: 5432,
 });
 
