@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Favicons-->
+        <!-- Recommended to have an image of at least 96x96 in size-->
+        <!-- <link rel="icon" type="image/png" href="images/favicon.png"> -->
+        <title>My first website</title>
+    </head>
+    <body>
+        <h1>Boards</h1>
+        <hr>
+        <br>
+        <a href="https://en.wikipedia.org/wiki/Dog">
+        <img src="images/dog.jpg"
+        alt="This is a picture of a dog"
+        height="200">
+        </a>
+
+        <!-- You can also have GIFs-->
+        
+        <img src="images/dogcatchingball.webp"
+        alt="GIF of dog catching a ball"
+        height="200">
+    </body>
+    <!-- Buttons-->
+    <a href="page2.html">
+        <button style="font-size: 25px; background-color: rgb(110, 58, 58); color:rgb(208, 230, 173); border-radius: 25px;">click me</button>
+    </a>
+
+    <form id="Add task">
+        <input id ="name" placeholder="Task name">
+        <button type="button" onclick="add_task()"> ✚ Add task</button>
+    </form>
+    
+
+    <ul id="taskList"></ul>
+    
+    <script>
+        const list = document.getElementById("taskList");
+        function loadTasks() {
+            fetch("/tasks")
+            .then(res => res.json())
+            .then(tasks => {
+                list.innerHTML = ""; // clear list
+            tasks.forEach(task => {
+                const li = document.createElement("li");
+                li.textContent = task.task_name;
+                list.appendChild(li);
+            });
+            }); 
+        }
+
+        const form = document.getElementById('Add task')
+        const nameInput = document.getElementById('name');
+        
+        
+        function add_task() {
+            // event.preventDefault() // prevents the form from refreshing the page when submitted
+            console.log("entered add task")
+            const name = nameInput.value
+
+            fetch("/tasks/add", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name})
+            })
+            
+            .then(res => res.json())
+            .then(() => {
+                nameInput.value = "";
+                loadTasks(); // reload tasks
+            });
+            // .then(task =>)
+        }
+        
+        // <button onclick="add_task()">Add task + </button>
+        
+    //     function add_task() {
+    // // 1. Hämta titel från användaren
+    // const title = prompt("Enter task title:");
+
+    // // 2. Skicka POST till backend
+    // fetch("http://localhost:3000/tasks", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ title: title, board_id: 1 }) // vi använder board_id 1 som exempel
+    // })
+    // .then(response => response.json())
+    // .then(task => {
+    //     console.log("Task created:", task);
+    //     // 3. Visa tasken i frontend
+    //     const taskElement = document.createElement("div");
+    //     taskElement.innerText = task.title;
+    //     document.body.appendChild(taskElement);
+    // })
+    // .catch(err => console.error(err));
+    // }
+
+        function remove_task() {
+
+        }
+
+        function finish_task() {
+
+        }
+
+        function edit_task() {
+            
+        }
+
+        function create_board() {
+            
+        }
+        
+        function delete_board() {
+
+        }
+
+        function share_board() {
+            
+        }
+        
+        function edit_board() {
+            
+        }
+
+        function create_user() {
+            
+        }
+
+        function remove_user() {
+            
+        }
+        loadTasks();
+    </script>
+</html>
+

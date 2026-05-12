@@ -1,34 +1,46 @@
 body {
     margin: 0;
-    background-color: white;
-    margin-bottom: 2000px;
+    font-family: Inter, Arial;
 }
 
-.main {
-    background-color: white;
-    font-family: Inter;
+button, a {
+    cursor: pointer;
 }
 
-.menu {
-    display: grid; /* skapar en grid, som ett rutnät*/
-    grid-template-columns: 300px 1fr 300px; /* varje kolumns storlek. 1fr = 1 free space(?) felxibel storlek, anpassar sig efter sidan*/
-    margin: 20px;
-}
-
-.page-name {
+#header {
+    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
+    
+    color: white;
     font-weight: bold;
-    font-size: 3vw;
-    text-align: center;
-    float:left;
+    height: 20vh;
+    background-image: url("../images/naturbild.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    text-align: end;
+    padding: 20px;
+
+    display: flex;
 }
 
-.buttons {
-    margin-left: 10%;
-    float: left;
-    width: 100%;
+#title-text {
+    margin-left: auto;
+    margin-right: 10px;
 }
 
-.button {
+#main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+#board-btns-div {
+    position: relative;
+    margin-left: 20px;
+}
+
+.board-btns {
     display: block;
     background-color: #94C8F3;
     color: white;
@@ -41,26 +53,14 @@ body {
     border: none;
     border-radius: 10px;
 
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-right: 20px;
-    padding-left: 20px;
-}
-
-.button:hover {
-    background-color: #53aaf1;
-}
-
-.input-dropdown {
-    width: fit-content;
-    position: relative;
-    margin: 0;
-}
-
-.input{
-    position: absolute;
+    padding: 10px 20px;
     
-    display: none;
+}
+
+#add-board-alts {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
     border: none;
     background-color: white;
     border-radius: 20px;
@@ -68,207 +68,241 @@ body {
     padding: 20px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
     z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
-
 }
 
-.input.show-input {
-    display: block;
+#add-board-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.enter-name {
-    display: inline-block;
+#add-board-popup-title {
+    margin-right: auto;
 }
 
-#personal-opt {
-    display: block;
+.board-popup-close {
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: auto;
+    font-weight: bold;
 }
 
-#group-opt {
-    display: block;
-}
-
-.add-button {
-    display: inline-block;
+#add-btn {
+    width: 50px;
 
     background-color: #94C8F3;
     color: white;
     border: none;
+    border-radius: 5px;
 }
 
-.add-button:hover{
-    background-color: #53aaf1;
-    cursor: pointer;
-}
-
-.dropdown {
-    width: fit-content;
-    position: relative;
-    margin: 0;
-}
-
-.dropdown button:hover {
-    background-color: #53aaf1;
-}
-
-.alternatives {
-    position: absolute;
-    display: none;
-    border: none;
-    background-color: white;
-    border-radius: 20px;
+#boards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 150px);
+    gap: 80px;
+    justify-content: center;
     padding: 20px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    width: 90%;
-    z-index: 1; 
-    cursor: pointer;
+    margin-top: 50px;
 }
-
-.alternatives.show-alternatives {
-    display: block;
-}
-
-.dropdown a {
-    display: block;
-    text-decoration: none;
-    color: black;
-    background-color: white;
-    padding: 5px;
-}
-
-.dropdown a:hover {
-    background-color: hsl(0, 0%, 90%);
-}
-
-.sound {
-    margin-right: 10%;
-    display: block;
-    justify-content: end;
-
-    float: left;
-    width: 100%;
-}
-
-.sound button {
-    background-color: #94C8F3;
-    border-radius: 10px;
-    border: none;
-    font-size: 30px;
-    padding: 10px;
-    height: 50%;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    /* flex: 1; */
-}
-
-.sound:hover .sound-options {
-    display: block;
-}
-
-.sound:hover button {
-    background-color: #94c8f39a;
-}
-
-.sound .audio:hover {
-    background-color: hsl(0, 0%, 90%);
-}
-
-.sound .sound-options {
-    display: none;
-    position: absolute;
-    background-color: white;
-    top: 100%;
-    right: 0;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-    border-radius: 20px;
-    padding: 10px;
-}
-
-.sound .audio {
-    display: block;
-    color: black;
-    padding: 15px;
-}
-
-.sort_boards {
-    display: block;
-}
-
-.add_board:hover {
-    opacity: 0.85;
-}
-
-.add_board:active {
-    opacity: 0.5;
-}
-
-.boards-container {
-    display: flex;
-    justify-content: left;
-    flex-wrap: wrap;
-}
-
-.single_board_conatainer {
-    display: inline-block;
-    position: relative;
-
-    margin-right: 50px;
-    margin-bottom: 50px;
-
-}
-
 .board {
-    display: block;
     border-radius: 10px;
-
-    float: left;
-
-    height: 100%;
-    width: 100%;
-
+    height: 200px;
+    width: 150px;
     text-align: center;
     text-decoration: none;
-    font-size: 2vw;
+    font-size: 20px;
     color: black;
+    border: none;
+    position: relative;
     
-    margin-left: 50px;
-    margin-right: 50px;
+    /* margin-left: 50px;
+    margin-right: 50px; */
     margin-bottom: 20px;
 
     padding-bottom: 10px;
 
-    position: relative;
-}
-
-.board:hover{
-    cursor:default;
-}
-
-.remove_button {
-    position: absolute;
-    bottom: -5px;
-    right: -45px;
-
-    display: inline-block;
-
-    background-color: grey;
     
-    border-radius: 8px;
+}
+
+.board-personal {
+    background: #96CFA1;
+}
+
+.board-group {
+    background: rgb(121, 183, 242);
+}
+
+#your-boards-alts {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#your-boards-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#your-boards-popup-title {
+    margin-right: auto;
+}
+
+#all-boards, #personal-boards, #group-boards {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
     border: none;
 }
 
-.remove_button:hover{
-    cursor: pointer;
+#all-boards:hover, #personal-boards:hover, #group-boards:hover,
+#all-boards:active, #personal-boards:active, #group-boards:active {
+    background: lightgray;
 }
 
-.board.personal {
-    background-color: #96CFA1;
+
+/* Title */
+/* .page-name {
+    margin: 0;
+    font-weight: bold;
+    font-size: 3vw;
+    position: absolute;
+    left: 0%;
+    right: 0;
+    text-align: center;
+    
+} */
+
+/*Features-buttons*/
+#features-btns-div {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    
 }
 
-.board.group {
-    background-color: rgb(121, 183, 242);
+.feature-btns {
+    margin: 5px;
+    height: 50%;   
 }
 
-.board:hover {
-    opacity: 0.9;
+/* Sound */
+#sound-alts {
+    position: absolute;
+    
+    /* top: 260px;
+    right: 20px; */
+    right: 100%;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
 }
+
+#sound-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#sound-popup-title {
+    margin-right: auto;
+}
+
+#white-noise, #brown-noise, #pink-noise, #mute {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
+    border: none;
+}
+
+#white-noise:hover, #brown-noise:hover, #pink-noise:hover, #mute:hover,
+#white-noise:active, #brown-noise:active, #pink-noise:active, #mute:active{
+    background: lightgray;
+}
+
+/*Timer*/
+#timer-alts {
+    position: absolute;
+    
+    /* top: 260px;
+    right: 20px; */
+    right: 100%;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#timer-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#timer-popup-title {
+    margin-right: auto;
+}
+
+#pomodoro, #custom {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
+    border: none;
+}
+
+#pomodoro:hover, #custom:active {
+    background: lightgray;
+}
+
+#timer-text {
+    display: none;
+}
+
+.delete-board-btn {
+    margin-top: 10px;
+    background-color: rgb(149, 149, 149);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+
+/* #start{
+    background: rgb(86, 230, 14);
+}
+
+#stop {
+    background: rgb(246, 25, 25);
+}
+
+#reset {
+    background: rgb(24, 137, 242);
+} */
