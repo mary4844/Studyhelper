@@ -1,4 +1,4 @@
-
+import { saveBoard, loadboards } from "../script-API/startpage_API.js";
 // Add_board knappen
 const add_board_btn = document.getElementById("add-board-btn");
 const boards_container = document.getElementById("boards-container");
@@ -23,6 +23,48 @@ function applyBoardFilter(filter) {
         }
     });
 }
+
+async function displayBoards() {
+    const boards = await loadboards();
+
+    boards_container.innerHTML = "";
+
+    boards.forEach(board => {
+        const new_board = document.createElement("a");
+        new_board.href = `boardpage.html?boardId=${board.id}`;
+        new_board.classList.add("board");
+        new_board.dataset.id = board.id;
+
+        if (board.type === "personal") {
+            new_board.classList.add("board-personal");
+        } else if (board.type === "group") {
+            new_board.classList.add("board-group");
+        }
+
+        const board_title = document.createElement("p");
+        board_title.textContent = board.name;
+        board_title.style.fontWeight = "bold";
+        board_title.style.color = "white";
+
+        const delete_btn = document.createElement("button");
+        delete_btn.textContent = "Delete";
+        delete_btn.classList.add("delete-board-btn");
+
+        delete_btn.addEventListener("click", async (event) => {
+            event.preventDefault();
+
+            await deleteBoard(board.id);
+            await displayBoards();
+        });
+        new_board.append(board_title, delete_btn);
+        boards_container.append(new_board);
+    });
+
+    applyBoardFilter(selectedAltYourBoards);
+}
+
+displayBoards();
+
 add_board_btn.addEventListener("click", () => {
     // Check if already displayed
     const existing_alts = document.getElementById("add-board-alts");
@@ -115,7 +157,7 @@ add_board_btn.addEventListener("click", () => {
     const add_btn = document.createElement("button");
     add_btn.textContent = "Add"
     add_btn.id = "add-btn";
-    add_btn.addEventListener("click", () => {
+    add_btn.addEventListener("click", async () => {
         // Save alt
         const checkedRadio = board_type.querySelector(
             "input[name='board-type']:checked"
@@ -152,14 +194,13 @@ add_board_btn.addEventListener("click", () => {
                 new_board.remove();
             });
 
-            new_board.append(board_title, delete_btn);
-            boards_container.append(new_board);
+            await saveBoard(userInput, selectedAlt);
 
             if (selectedAltYourBoards !== "all" && selectedAltYourBoards !== selectedAlt) {
                 selectedAltYourBoards = selectedAlt;
             }
 
-            applyBoardFilter(selectedAltYourBoards);
+            await displayBoards();
         } else {
             return;
         }
