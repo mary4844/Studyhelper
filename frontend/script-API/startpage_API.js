@@ -17,7 +17,7 @@ export async function getAllBoards() {
 }
 
 //creates board and posts it in db
-export async function saveBoard(name, type) {
+export async function createBoard(name, type) {
   return await fetch("/boards", {
     method: "POST",
     headers: {
@@ -30,7 +30,7 @@ export async function saveBoard(name, type) {
 //avgör om den ska hämta personal, group eller alla
 //bättre att göra med 1 funktion än 3
 export async function getBoardsByType(type) {
-    return await fetch(`/boards/?type=${type}`)
+    return await fetch(`/boards/${type}`)
     .then(res => res.json());
 }
 
@@ -48,3 +48,4 @@ export async function patchBoardById(board_id, new_name) {
     })
     .then(res => res.json());
 }
+

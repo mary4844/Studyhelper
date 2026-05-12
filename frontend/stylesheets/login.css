@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    background-color: #96cfa1;
+    margin-bottom: 2000px;
+}
+
+.login {
+    /* margin-left: 30%; */
+    margin-top: 15%;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button {
+    background-color: #94C8F3;
+    color: white;
+    /* margin-top: 20px; */
+
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: bold;
+
+    border: none;
+    border-radius: 10px;
+
+    padding-top: 90px;
+    padding-bottom: 90px;
+    padding-right: 90px;
+    padding-left: 90px;
+}
+
+.button:hover {
+    background-color: #53aaf1;
+}

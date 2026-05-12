@@ -7,44 +7,39 @@
 
 //kommer card_id vara unikt igenom hela databasen?, då behövs inte board_id
 
-export async function createSubjectCard(board_id, card_name) {
-    return await fetch(`/cards`, {
+export async function createSubjectCard(board_id, subject_card_name) {
+    return await fetch(`/boards/${board_id}/cards`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ board_id, card_name })
+        body: JSON.stringify({ subject_card_name })
     }).then(res => res.json());
 }
 
-//behöver vi user id?
 export async function getAllSubjectCards(board_id) {
-    return await fetch(`/cards?board_id=${board_id}`)
+    return await fetch(`/boards/${board_id}/cards`)
     .then(res => res.json());
 }
 
-export async function getSubjectCardById(board_id, card_id) {
+export async function getSubjectCardById(board_id, subject_card_id) {
 
-    //board_id fås genom: const { board_id } = req.quary;
-    return await fetch(`/cards/${card_id}?board_id=${board_id}`)
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}`)
     .then(res => res.json());
 }
 
-
-export async function deleteSubjectCardById(board_id, card_id) {
-    
-    //board_id fås genom: const { board_id } = req.quary;
-    return await fetch(`/cards/${card_id}?board_id=${board_id}`, {
+export async function deleteSubjectCardById(board_id, subject_card_id) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}`, {
         method: 'DELETE'
-    })
+    });
 }
 
-export async function patchSubjectCardById(board_id, card_id, card_name) {
-    return await fetch(`/cards/${card_id}`, {
+export async function patchSubjectCardById(board_id, subject_card_id, subject_card_name) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}`, {
         method: 'PATCH',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ board_id, card_id, card_name })
-    })
-    .then(res => res.json());
+        body: JSON.stringify({ subject_card_name })
+    }).then(res => res.json());
 }
+
 
 // ----------------------- OM CARD ID:N ÄR GLOBALT UNIKA ------------
 
@@ -89,39 +84,31 @@ export async function patchSubjectCardById(board_id, card_id, card_name) {
 
 // samma som cards, om tasks alla har unika id:n så behövs parametrarna inte
 
-export async function createTask(board_id, card_id, task_name, deadline) {
-    return await fetch(`/tasks`, {
+export async function createTask(board_id, subject_card_id, task_name, deadline) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ board_id, card_id, task_name, deadline})
-    })
-    .then(res => res.json());
+        body: JSON.stringify({ task_name, deadline })
+    }).then(res => res.json());
 }
 
-export async function getTasks(board_id, card_id, task_id) {
+export async function getTasks(board_id, subject_card_id) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks`)
+        .then(res => res.json());
+}
 
-    //skickar med board_id och card_id, routen är fortarande "/tasks/${task_id}"
-    //fås genom: const { board_id, card_id } = req.query;
-    return await fetch(`/tasks/${task_id}?board_id=${board_id}&card_id=${card_id}`)
-    .then(res => res.json());
-} 
-
-export async function deleteTaskById(board_id, card_id, task_id) {
-    
-    //skickar med board_id och card_id, routen är fortarande "/tasks/${task_id}" 
-    //fås genom: const { board_id, card_id } = req.query;   
-    return await fetch(`/tasks/${task_id}?board_id=${board_id}&card_id=${card_id}`, {
+export async function deleteTaskById(board_id, subject_card_id, task_id) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks/${task_id}`, {
         method: 'DELETE'
-    })
+    });
 }
 
-export async function patchTaskById(board_id, card_id, task_id, new_name, new_deadline) {
-    return await fetch(`/tasks/${task_id}`, {
+export async function patchTaskById(board_id, subject_card_id, task_id, task_name) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks/${task_id}`, {
         method: 'PATCH',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ board_id, card_id, task_id, new_name, new_deadline })
-    })
-    .then(res => res.json());
+        body: JSON.stringify({ task_name })
+    }).then(res => res.json());
 }
 
 // ------------------------- OM TASKS ÄR GLOBALT UNIKA -----------------------
