@@ -30,7 +30,7 @@ export async function saveBoard(name, type) {
   }).then(res => res.json());
 }
 
-export async function getGruopBoard (type) {
+export async function getGroupBoard (type) {
     return await fetch(`/boards/${type}`)
         .then(res => res.json());
 }

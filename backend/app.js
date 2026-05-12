@@ -11,7 +11,8 @@ const path = require("path");       // modul för att hantera filvägar på dato
 // exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
 const tasksRouter = require("./routes/tasks");
 const boardsRouter = require("./routes/boards");
-const usersRouter = require("./routes/users");
+const subcardsRouter = require("./routes/subcards");
+// const usersRouter = require("./routes/users");
 
 const app = express();
 
@@ -44,11 +45,14 @@ app.use(async (req, res, next) => {
     if (req.oidc.isAuthenticated()) {
 
       const email = req.oidc.user.email;
+      const username = req.oidc.user.nickname;
 
       await pool.query(
-        'INSERT INTO users (user_name) VALUES ($1)',
+        'INSERT INTO users (user_mail) VALUES ($1) ON CONFLICT (user_mail) DO NOTHING RETURNING *',
         [email]);
+      await pool.query('UPDATE users SET user_name = $1 where user_mail = $2', [username, email]);
         //  ON CONFLICT (user_name) DO NOTHING RETURNING *
+        console.log(username);
       console.log("hello it success ja");
     }
     next();
@@ -70,6 +74,7 @@ app.get("/", (req, res) => {
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 app.use('/tasks', tasksRouter);
 app.use('/boards', boardsRouter);
+app.use('/subcards', subcardsRouter);
 // app.use('/users', usersRouter); //kanske inte behövs??
 //TODO: fortsätt skriva routs för resterande funkinoaliteter?
 
