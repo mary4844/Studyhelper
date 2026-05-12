@@ -21,23 +21,12 @@ io.on("connection", socket => {
 
   //rooms
 
-  
-  
   //man måste ange vilka rum från frontend, dvs en GET och sedan lista på boards
   socket.on('join room', async boardId => {
-
-    //dont need for testing sockets, restricted by db
-      //const hasAccess = await canUserAccessBoard(userId, boardId);
-      //if (!hasAccess) return;
 
     socket.join(String(boardId));
     console.log("joined:", socket.id, boardId);
   });
-  //frontenden kan se ut
-  //const boards = await fetch('/api/boards').then(r => r.json());
-  //boards.forEach(board => {
-  //socket.emit('join room', board.id);
-  //});
 
 })
 

@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", loadTasks);
-        
+//ta bort sen vid merge        
+const socket = io();
+socket.on("connect", msg => {
+    console.log(msg);
+})
         const list = document.getElementById("TaskList");
 
         function loadTasks() {

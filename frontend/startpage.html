@@ -99,7 +99,10 @@
         
     </div>
     
+    <script src="/socket.io/socket.io.min.js"></script>
     <script>
+        const socket = io();
+
         function show_adding_board() {
             const dropdown = document.querySelector(".input");
             dropdown.classList.toggle("show-input");
