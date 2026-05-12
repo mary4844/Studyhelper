@@ -3,9 +3,9 @@ const express = require("express");
 // Import the shared database pool from db.js.
 const { pool } = require("../pool");
 
-const { auth, requiresAuth } = require('express-openid-connect'); //new
+const { requiresAuth } = require('express-openid-connect'); //new
 
-//??
+//lets subcards hand off requests to tasks.js
 const tasksRouter = require("./tasks");
 
 // Create a router that will hold routes related to boards.
