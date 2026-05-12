@@ -39,24 +39,7 @@ router.get('/', requiresAuth(), async (req, res) => {
   }
 })
 
-//get board by id ?
-router.get('/:board_id', async (req, res) => {
-  try {
-    const { board_id } = req.params;
-
-    const result = await pool.query("SELECT * FROM board WHERE id = $1", [id]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json(result.rows[0])
-    }
-
-    return res.status(200).json(result.rows[0]);
-
-  } catch (error) {
-    console.error("error fetching board:", error);
-    return res.status(500).json({ error: "Server error" });
-  }
-})
+//lägg till getBoardById om den behövs, tror inte det. Finns i auth_new
 
 // Create one new board.
 router.post("/", requiresAuth(), async (req, res) => {
@@ -91,36 +74,46 @@ router.post("/", requiresAuth(), async (req, res) => {
 
     const result = await pool.query(`INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`, [user_id, board_id]);
 
-    //return the status code that the creation worked.
-    return res.status(201).json(result.rows[0]);
+    //return the status code that the creation worked and
+    //send the created board back to the frontend.
+    return res.status(201).json(board.rows[0]);
 
-    // Send the created board back to the frontend.
+    
   } catch (error) {
     // Log the real error in the terminal for debugging.
     console.error("Error creating board:", error);
     // Send a simple error message to the frontend.
-    res.status(500).json({ error: "Failed to create board" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 
 //get all boards from a specific user
 router.get('/:type', requiresAuth(), async (req, res) => {
   try {
-    const email = req.oidc.user.email;
+    const { type } = req.params;
 
+    //kollar om type är ok!
+    if (type !== 'personal' && 'type' !== group) {
+      return res.status(400).json({ error: "invalid type"});
+    }
+    //is_shared är en bool, kollar om typen är grupp = sant, annars falskt.
+    const is_shared = type === 'group';    
+    
+    const email = req.oidc.user.email;
     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
     if (!user.rows[0]) {
       return res.status(404).json({ error: 'Användaren hittades inte' });
     }
 
+    //använder is_shared i databasen för att hämta delade eller inte
     const result = await pool.query(
       `SELECT board.* 
       FROM board
       JOIN user_board ON board.board_id = user_board.board_id 
       WHERE user_board.user_id = $1
-      AND board.is_shared = true`,
-      [user.rows[0].user_id]);
+      AND board.is_shared = $2`,
+      [user.rows[0].user_id, is_shared]);
 
     return res.status(200).json(result.rows);
   } catch (error) {
@@ -129,52 +122,6 @@ router.get('/:type', requiresAuth(), async (req, res) => {
   }
 })
 
-//get personal boards
-router.get('/:type', requiresAuth(), async (req, res) => {
-  try {
-    const email = req.oidc.user.email;
-
-    const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
-
-    if (!user.rows[0]) {
-      return res.status(404).json({ error: 'Användaren hittades inte' });
-    }
-
-    //get all boards from a specific user
-    const result = await pool.query(
-      `SELECT board.* 
-      FROM board
-      JOIN user_board ON board.board_id = user_board.board_id 
-      WHERE user_board.user_id = $1
-      AND board.is_shared = false`,
-      [user.rows[0].user_id]);
-
-    return res.status(200).json(result.rows);
-  } catch (error) {
-    console.error("Error fetching personal boards:", error);
-    res.status(500).json({ error: "Failed to fetch boards" });
-  }
-})
-
-//delete all boards
-// router.delete('/', async (req, res) => {
-//   try {
-//     const email = req.oidc.user.email;
-
-//     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
-
-//     if (!user.rows[0]) {
-//       return res.status(404).json({ error: 'Användaren hittades inte' });
-//     }
-
-//     await pool.query("DELETE FROM board");
-//     return res.status(204).send();
-
-//   } catch (error) {
-//     console.log("Error failed to delete boards ");
-//     res.status(500).json({ error: "Failed to delete boards" });
-//   }
-// })
 
 //delete board by id
 router.delete('/:board_id', requiresAuth(), async (req, res) => {
@@ -195,13 +142,13 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
       `SELECT * FROM user_board 
       WHERE user_id = $1 
       AND board_id = $2`,
-      [user_id, id]);
+      [user_id, board_id]);
 
     if (!connection.rows[0]) {
       return res.status(404).json({ error: 'Ingen koppling?!' });
     }
 
-    const result = await pool.query("DELETE FROM board WHERE board_id = $1", [id]);
+    const result = await pool.query("DELETE FROM board WHERE board_id = $1", [board_id]);
 
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "result not found" });
