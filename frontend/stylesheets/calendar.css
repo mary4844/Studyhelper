@@ -1,0 +1,98 @@
+body {
+    font-family: Inter, Arial;
+    background-color: #fff;
+    margin-bottom: 70px;
+
+    /* box-sizing: border-box; */
+}
+.header {
+    display: flex;
+    height: 1vw;
+}
+
+.calendar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 5vw;
+}
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+.calendar-header button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+#month-year {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.calendar-weekdays, .calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+.calendar-weekdays {
+    background-color: #eaeef3;
+}
+.calendar-weekdays div {
+    text-align: center;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-weight: bold;
+    border: 2px solid white;
+}
+.calendar-dates {
+    width: 100%;
+    min-width: 0;
+}
+.calendar-dates > div {
+    position: relative;
+    height: 80px;
+    overflow: hidden;
+
+    background-color: lightgray;
+    cursor: pointer;
+    border: 2px solid white;
+
+    transition: 0.2s;
+}
+.date{
+    display: block;
+    padding-left: 0.2vw;
+    transition: 0.2s;
+
+    /* font-size: 1em; */
+    font-size: clamp(0.9rem, 1.8vw, 1.4rem);
+}
+.date-info {
+    display: inline-block;
+    padding: 0.2vw;
+    font-size: clamp(0.5rem, 0.9vw, 0.8rem);
+    color: black;
+
+    transition: 0.2s;
+
+    overflow-wrap: break-word;
+}
+.calendar-dates div.current-date{
+    background-color: #4d9df3;
+    color: #f1f1f1;
+}
+.calendar-dates div:hover, .calendar-dates div.current-date:hover {
+    background-color: #f1f1f1;
+    color: black;
+}
+@media (max-width: 400px) {
+    .calendar {
+        width: 100%;
+        padding: 0 10px;
+    }
+    .calendar-dates > div {
+        font-size: 15px;
+    }
+}
