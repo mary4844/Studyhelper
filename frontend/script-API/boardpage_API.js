@@ -48,38 +48,38 @@ export async function patchSubjectCardById(board_id, card_id, card_name) {
 
 // ----------------------- OM CARD ID:N ÄR GLOBALT UNIKA ------------
 
-export async function createSubjectCard(card_name) {
-    return await fetch('/cards', {
-        method: 'PATCH',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ card_name })
-    })
-    .then(res => res.json());
-}
+// export async function createSubjectCard(card_name) {
+//     return await fetch('/cards', {
+//         method: 'PATCH',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ card_name })
+//     })
+//     .then(res => res.json());
+// }
 
-export async function getAllSubjectCards(board_id) {
-    return await fetch('/cards')
-    .then(res => res.json());
-}
+// export async function getAllSubjectCards(board_id) {
+//     return await fetch('/cards')
+//     .then(res => res.json());
+// }
 
-export async function getSubjectCardById(card_id) {
-    return await fetch(`/cards/${card_id}`)
-    .then(res => res.json());
-}
+// export async function getSubjectCardById(card_id) {
+//     return await fetch(`/cards/${card_id}`)
+//     .then(res => res.json());
+// }
 
-export async function deleteSubjectCardById(card_id) {
-    return await fetch(`/cards/${card_id}`, {
-        method: 'DELETE'
-    })
-}
+// export async function deleteSubjectCardById(card_id) {
+//     return await fetch(`/cards/${card_id}`, {
+//         method: 'DELETE'
+//     })
+// }
 
-export async function patchSubjectCardById(card_id, card_name) {
-    return await fetch(`/cards/${card_id}`, {
-        method: 'PATCH',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ card_name })
-    })
-}
+// export async function patchSubjectCardById(card_id, card_name) {
+//     return await fetch(`/cards/${card_id}`, {
+//         method: 'PATCH',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ card_name })
+//     })
+// }
 
 
 // ----------------------- TASK FUNKTIONER -------------------------
@@ -126,31 +126,31 @@ export async function patchTaskById(board_id, card_id, task_id, new_name, new_de
 
 // ------------------------- OM TASKS ÄR GLOBALT UNIKA -----------------------
 
-export async function createTask(task_name, deadline) {
-    return await fetch('/tasks', {
-         method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_name, deadline })
-    })
-    .then(res => res.json());
-}
+// export async function createTask(task_name, deadline) {
+//     return await fetch('/tasks', {
+//          method: 'POST',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ task_name, deadline })
+//     })
+//     .then(res => res.json());
+// }
 
-export async function getTasks(task_id) {
-    return await fetch(`/tasks/${task_id}`)
-    .then(res => res.json());
-}
+// export async function getTasks(task_id) {
+//     return await fetch(`/tasks/${task_id}`)
+//     .then(res => res.json());
+// }
 
-export async function deleteTaskById(task_id) {
-    return await fetch(`/tasks/${task_id}`, {
-        method: 'DELETE'
-    })
-    .then(res => res.json());
-}
+// export async function deleteTaskById(task_id) {
+//     return await fetch(`/tasks/${task_id}`, {
+//         method: 'DELETE'
+//     })
+//     .then(res => res.json());
+// }
 
-export async function patchTaskById(task_id, new_name, deadline) {
-    return await fetch(`/tasks/${task_id}`, {
-        method: 'PATCH',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ new_name, deadline })
-    })
-}
+// export async function patchTaskById(task_id, new_name, deadline) {
+//     return await fetch(`/tasks/${task_id}`, {
+//         method: 'PATCH',
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ new_name, deadline })
+//     })
+// }
