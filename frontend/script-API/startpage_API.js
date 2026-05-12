@@ -11,7 +11,8 @@ export async function loadboards() {
 
 // -------------------- BOARD FUNKTIONER ------------------------
 
-//behöver man skicka med id?
+//ska man skicka tokens med auth0 på varje request?
+// eller ska man skicka med user_id?
 export async function getAllBoards() {
     return await fetch("/boards", {
         method: "GET",
