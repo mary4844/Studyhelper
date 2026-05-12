@@ -1,4 +1,4 @@
-const { type } = require("node:os");
+
 console.log("startpage_API.js loaded");
 
 
