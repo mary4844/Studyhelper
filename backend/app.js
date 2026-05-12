@@ -2,6 +2,7 @@
 // till olika route filer i backend/routes där funktionerna körs.
 
 
+const { pool } = require("./pool");
 
 const express = require("express");   //ramverket vi använder för att skapa vår backend server.
 const cors = require("cors");         //middelware som möjligör kommunikation mellan frontend och backend 
@@ -10,6 +11,7 @@ const path = require("path");       // modul för att hantera filvägar på dato
 // exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
 const tasksRouter = require("./routes/tasks");
 const boardsRouter = require("./routes/boards");
+const usersRouter = require("./routes/users");
 
 const app = express();
 
@@ -20,8 +22,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 //Auth0
-
-require('dotenv').config(); //new
+require('dotenv').config();
 const { auth, requiresAuth } = require('express-openid-connect'); //new
 // Auth0 configuration
 const config = {
@@ -33,8 +34,30 @@ const config = {
   issuerBaseURL: process.env.ISSUER_BASE_URL,
 };
 
-// Apply the auth middleware
+// Auth middleware - som alltid körs på varje request typ
 app.use(auth(config));
+
+app.use(async (req, res, next) => {
+  console.log('Middleware körs, isAuthenticated:', req.oidc.isAuthenticated());
+
+  try {
+    if (req.oidc.isAuthenticated()) {
+
+      const email = req.oidc.user.email;
+
+      await pool.query(
+        'INSERT INTO users (user_name) VALUES ($1)',
+        [email]);
+        //  ON CONFLICT (user_name) DO NOTHING RETURNING *
+      console.log("hello it success ja");
+    }
+    next();
+  } catch (error) {
+    console.error("Error inserting/creating user:", error);
+    res.status(500).json({ error: error.message });
+    next(error);
+  }
+});
 
 // omderigiera root url till startpage.html
 app.get("/", (req, res) => {
@@ -43,9 +66,11 @@ app.get("/", (req, res) => {
   // res.redirect("startpage.html");
 });
 
+
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 app.use('/tasks', tasksRouter);
 app.use('/boards', boardsRouter);
+// app.use('/users', usersRouter); //kanske inte behövs??
 //TODO: fortsätt skriva routs för resterande funkinoaliteter?
 
 
