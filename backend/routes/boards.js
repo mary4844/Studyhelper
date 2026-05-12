@@ -3,13 +3,34 @@ const express = require("express");
 // Import the shared database pool from db.js.
 const { pool } = require("../pool");
 
+const { auth, requiresAuth } = require('express-openid-connect'); //new
+
+const subcardRouter = require("./subcards");
+
 // Create a router that will hold routes related to boards.
-const router = express.Router();
+const router = express.Router({mergeParams: true});
+
+router.use('/:board_id/cards', subcardRouter);
 
 //get all boards
-router.get('/', async (req, res) => {
+router.get('/', requiresAuth(), async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM board");
+    const email = req.oidc.user.email;
+
+    const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
+
+    if (!user.rows[0]) {
+      return res.status(404).json({ error: 'Användaren hittades inte' });
+    }
+
+    //get all boards from a specific user
+    const result = await pool.query(
+      `SELECT board.* 
+      FROM board
+      JOIN user_board ON board.board_id = user_board.board_id 
+      WHERE user_board.user_id = $1`,
+      [user.rows[0].user_id]);
+
     return res.status(200).json(result.rows);
 
   } catch (error) {
@@ -18,13 +39,14 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.get('/:id', async (req, res) => {
+//get board by id ?
+router.get('/:board_id', async (req, res) => {
   try {
-    const { id } = req.params;
-    
+    const { board_id } = req.params;
+
     const result = await pool.query("SELECT * FROM board WHERE id = $1", [id]);
-    
-    if(result.rows.length === 0) {
+
+    if (result.rows.length === 0) {
       return res.status(404).json(result.rows[0])
     }
 
@@ -36,22 +58,39 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-
 // Create one new board.
-router.post("/", async (req, res) => {
+router.post("/", requiresAuth(), async (req, res) => {
   try {
+    const email = req.oidc.user.email;
+
+    const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
+
+    if (!user.rows[0]) {
+      return res.status(404).json({ error: 'Användaren hittades inte' });
+    }
+
+    const user_id = user.rows[0].user_id;
+
     // Read the board name sent from the frontend body.
     const { name } = req.body;
 
-    if(!name) {
-      return res.status(400).json({ error: 'Name is required'});
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
     }
 
     // Insert the new board and ask PostgreSQL to return the inserted row.
-    const result = await pool.query(
+    const board = await pool.query(
       "INSERT INTO board (board_name) VALUES ($1) RETURNING *",
-      [name],
-    );
+      [name]);
+
+    if (!board.rows[0]) {
+      return res.status(404).json({ error: 'Board skapas inte' });
+    }
+
+    const board_id = board.rows[0].board_id;
+
+    const result = await pool.query(`INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`, [user_id, board_id]);
+
     //return the status code that the creation worked.
     return res.status(201).json(result.rows[0]);
 
@@ -64,28 +103,108 @@ router.post("/", async (req, res) => {
   }
 });
 
-//delete all boards
-router.delete('/', async (req, res) => {
+//get all boards from a specific user
+router.get('/:type', requiresAuth(), async (req, res) => {
   try {
-    await pool.query("DELETE FROM board");
-    return res.status(204).send();
+    const email = req.oidc.user.email;
 
+    const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
+
+    if (!user.rows[0]) {
+      return res.status(404).json({ error: 'Användaren hittades inte' });
+    }
+
+    const result = await pool.query(
+      `SELECT board.* 
+      FROM board
+      JOIN user_board ON board.board_id = user_board.board_id 
+      WHERE user_board.user_id = $1
+      AND board.is_shared = true`,
+      [user.rows[0].user_id]);
+
+    return res.status(200).json(result.rows);
   } catch (error) {
-    console.log("Error failed to delete boards ");
-    res.status(500).json({error: "Failed to delete boards"});
+    console.error("Error fetching group boards:", error);
+    res.status(500).json({ error: "Failed to fetch boards" });
   }
 })
 
+//get personal boards
+router.get('/:type', requiresAuth(), async (req, res) => {
+  try {
+    const email = req.oidc.user.email;
+
+    const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
+
+    if (!user.rows[0]) {
+      return res.status(404).json({ error: 'Användaren hittades inte' });
+    }
+
+    //get all boards from a specific user
+    const result = await pool.query(
+      `SELECT board.* 
+      FROM board
+      JOIN user_board ON board.board_id = user_board.board_id 
+      WHERE user_board.user_id = $1
+      AND board.is_shared = false`,
+      [user.rows[0].user_id]);
+
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching personal boards:", error);
+    res.status(500).json({ error: "Failed to fetch boards" });
+  }
+})
+
+//delete all boards
+// router.delete('/', async (req, res) => {
+//   try {
+//     const email = req.oidc.user.email;
+
+//     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
+
+//     if (!user.rows[0]) {
+//       return res.status(404).json({ error: 'Användaren hittades inte' });
+//     }
+
+//     await pool.query("DELETE FROM board");
+//     return res.status(204).send();
+
+//   } catch (error) {
+//     console.log("Error failed to delete boards ");
+//     res.status(500).json({ error: "Failed to delete boards" });
+//   }
+// })
 
 //delete board by id
-router.delete('/:id', async (req, res) => {
+router.delete('/:board_id', requiresAuth(), async (req, res) => {
   try {
-    const { id } = req.params;
+    const email = req.oidc.user.email;
 
-    const result = await pool.query("DELETE FROM board WHERE id = $1", [id]);
+    const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
-    if(result.rowCount === 0) {
-      return res.status(404).json({ error: "result not found"});
+    if (!user.rows[0]) {
+      return res.status(404).json({ error: 'Användaren hittades inte' });
+    }
+
+    const user_id = user.rows[0].user_id;
+
+    const { board_id } = req.params;
+
+    const connection = await pool.query(
+      `SELECT * FROM user_board 
+      WHERE user_id = $1 
+      AND board_id = $2`,
+      [user_id, id]);
+
+    if (!connection.rows[0]) {
+      return res.status(404).json({ error: 'Ingen koppling?!' });
+    }
+
+    const result = await pool.query("DELETE FROM board WHERE board_id = $1", [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "result not found" });
     }
 
     res.status(204).send();
@@ -95,5 +214,6 @@ router.delete('/:id', async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 })
+
 // Export the router so app.js can mount it.
 module.exports = router;
