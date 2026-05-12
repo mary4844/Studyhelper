@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boardpage</title>
+    
+</head>
+<body style="background-color:LightBlue;">   
+    <h1 style="background-color:LightSeaGreen">My first Board</h1>
+    <picture>
+        <source
+            srcset="images/natur.jpg"
+            media="(orientation: portrait) " />
+        <img src = "images/natur.jpg" alt = ""/>
+        
+    </picture>
+        
+  
+    
+
+    <a href="startpage.html">  
+        <button type="button">Home</button>
+    </a>
+
+    <!-- skelett för hur en lista med tasks kan se ut -->
+    <div style="border: 1px solid black;">
+        <h2>My first Task List</h2>  <!-- Byt namn -->    
+        <ul id="TaskList"></ul>
+
+        <form id="Add task">
+            <input id ="name" placeholder="Task name">
+            <button type="submit" onclick="addTask()"> ✚ Add task</button>
+        </form>
+
+        <button type="button" onclick="clearList()">Clear List</button>
+
+    </div> 
+
+    <script src="scripts/boardpage.js"></script>
+
+</body>
+
+</html>
