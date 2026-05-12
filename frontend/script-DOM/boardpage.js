@@ -156,6 +156,62 @@ async function displayTasks() {
 
 displayTasks();
 
+const share_board_btn = document.getElementById("share-board-btn");
+
+share_board_btn.addEventListener("click", () => {
+    const existingPopup = document.getElementById("share-board-popup");
+
+    if (existingPopup) {
+        existingPopup.remove();
+        return;
+    }
+
+    const popup = document.createElement("div");
+    popup.id = "share-board-popup";
+
+    const header = document.createElement("div");
+    header.classList.add("add-task-popup-div");
+
+    const title = document.createElement("h3");
+    title.textContent = "Share Board";
+
+    const close_btn = document.createElement("button");
+    close_btn.textContent = "X";
+    close_btn.classList.add("task-popup-close");
+
+    close_btn.addEventListener("click", () => {
+        popup.remove();
+    });
+
+    header.append(title, close_btn);
+
+    const email_input = document.createElement("input");
+    email_input.type = "email";
+    email_input.placeholder = "Enter user email";
+
+    const share_btn = document.createElement("button");
+    share_btn.textContent = "Share";
+    share_btn.classList.add("add-btn");
+
+    share_btn.addEventListener("click", async () => {
+        const email = email_input.value.trim();
+
+        if (email === "") {
+            alert("Please enter an email");
+            return;
+        }
+
+        await shareBoard(boardId, email);
+
+        popup.remove();
+        alert("Board shared!");
+    });
+
+    popup.append(header, email_input, share_btn);
+
+    document.getElementById("features-btns-div").append(popup);
+});
+
 function applyTaskFilter(filter) {
     const allTasks = document.querySelectorAll(".task-wrapper");
 
