@@ -1,0 +1,308 @@
+body {
+    margin: 0;
+    font-family: Inter, Arial;
+}
+
+button, a {
+    cursor: pointer;
+}
+
+#header {
+    font-size: 5vw; /* gör att storleken på texten anpassar sig efter browser window */
+    
+    color: white;
+    font-weight: bold;
+    height: 20vh;
+    background-image: url("../images/naturbild.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    text-align: end;
+    padding: 20px;
+
+    display: flex;
+}
+
+#title-text {
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+#main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+#board-btns-div {
+    position: relative;
+    margin-left: 20px;
+}
+
+.board-btns {
+    display: block;
+    background-color: #94C8F3;
+    color: white;
+    margin-top: 20px;
+    
+    font-size: 20px;
+    font-family: Inter;
+    font-weight: bold;
+    
+    border: none;
+    border-radius: 10px;
+
+    padding: 10px 20px;
+    
+}
+
+#add-board-alts {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#add-board-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#add-board-popup-title {
+    margin-right: auto;
+}
+
+.board-popup-close {
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: auto;
+    font-weight: bold;
+}
+
+#add-btn {
+    width: 50px;
+
+    background-color: #94C8F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#boards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 150px);
+    gap: 80px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 50px;
+}
+.board {
+    border-radius: 10px;
+    height: 200px;
+    width: 150px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    border: none;
+    position: relative;
+    
+    /* margin-left: 50px;
+    margin-right: 50px; */
+    margin-bottom: 20px;
+
+    padding-bottom: 10px;
+
+    
+}
+
+.board-personal {
+    background: #96CFA1;
+}
+
+.board-group {
+    background: rgb(121, 183, 242);
+}
+
+#your-boards-alts {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#your-boards-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#your-boards-popup-title {
+    margin-right: auto;
+}
+
+#all-boards, #personal-boards, #group-boards {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
+    border: none;
+}
+
+#all-boards:hover, #personal-boards:hover, #group-boards:hover,
+#all-boards:active, #personal-boards:active, #group-boards:active {
+    background: lightgray;
+}
+
+
+/* Title */
+/* .page-name {
+    margin: 0;
+    font-weight: bold;
+    font-size: 3vw;
+    position: absolute;
+    left: 0%;
+    right: 0;
+    text-align: center;
+    
+} */
+
+/*Features-buttons*/
+#features-btns-div {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    
+}
+
+.feature-btns {
+    margin: 5px;
+    height: 50%;   
+}
+
+/* Sound */
+#sound-alts {
+    position: absolute;
+    
+    /* top: 260px;
+    right: 20px; */
+    right: 100%;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#sound-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#sound-popup-title {
+    margin-right: auto;
+}
+
+#white-noise, #brown-noise, #pink-noise, #mute {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
+    border: none;
+}
+
+#white-noise:hover, #brown-noise:hover, #pink-noise:hover, #mute:hover,
+#white-noise:active, #brown-noise:active, #pink-noise:active, #mute:active{
+    background: lightgray;
+}
+
+/*Timer*/
+#timer-alts {
+    position: absolute;
+    
+    /* top: 260px;
+    right: 20px; */
+    right: 100%;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: white;
+    border-radius: 20px;
+    
+    padding: 20px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+    z-index: 1; /* högre z-index placerar elementet framför element med lägre z--index*/
+}
+
+#timer-popup-div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#timer-popup-title {
+    margin-right: auto;
+}
+
+#pomodoro, #custom {
+    background: white;
+    font-size: 17px;
+    padding: 5px;
+    text-align: start;
+    border: none;
+}
+
+#pomodoro:hover, #custom:active {
+    background: lightgray;
+}
+
+#timer-text {
+    display: none;
+}
+
+.delete-board-btn {
+    margin-top: 10px;
+    background-color: rgb(149, 149, 149);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+
+/* #start{
+    background: rgb(86, 230, 14);
+}
+
+#stop {
+    background: rgb(246, 25, 25);
+}
+
+#reset {
+    background: rgb(24, 137, 242);
+} */
