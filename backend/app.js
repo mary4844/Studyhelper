@@ -8,10 +8,11 @@ const cors = require("cors");         //middelware som möjligör kommunikation 
 const path = require("path");       // modul för att hantera filvägar på datorns filsysten oavsett OS
 
 // exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
-const tasksRouter = require("./routes/tasks");
 const boardsRouter = require("./routes/boards");
 const calendarRouter = require("./routes/calendar");
-const subcardsRouter = require("./routes/subcards");
+
+// const tasksRouter = require("./routes/tasks");
+// const subcardsRouter = require("./routes/subcards");
 
 const app = express();
 
