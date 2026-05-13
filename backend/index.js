@@ -10,7 +10,7 @@ const io = new Server(httpServer, {
   cors: { origin: "*" }
 })
 
-app.use(io, io);
+app.use('io', io);
 
 io.on('connection', (socket) => {
   //skickar när en client connectar
