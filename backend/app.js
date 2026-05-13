@@ -41,6 +41,10 @@ app.use(express.static(path.join(__dirname, "../frontend/html/")));
 app.use(express.static(path.join(__dirname, "../frontend/")));
 
 app.use(async (req, res, next) => {
+
+  //till testen
+  if (!req.oidc) return next();
+
   console.log('Middleware körs, isAuthenticated:', req.oidc.isAuthenticated());
 
   try {
