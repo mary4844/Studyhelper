@@ -39,15 +39,19 @@ const authEnabled = Boolean(
   config.clientID &&
   config.issuerBaseURL
 );
+const devBypassAuth = process.env.DEV_BYPASS_AUTH === "true";
 
 // Auth middleware - enabled only when the required Auth0 env vars exist.
 if (authEnabled) {
   app.use(auth(config));
 } else {
   app.use((req, res, next) => {
+    req.devAuthBypass = devBypassAuth;
     req.oidc = {
-      isAuthenticated: () => false,
-      user: null,
+      isAuthenticated: () => devBypassAuth,
+      user: devBypassAuth
+        ? { email: "dev@example.com", nickname: "dev-user" }
+        : null,
     };
     next();
   });
