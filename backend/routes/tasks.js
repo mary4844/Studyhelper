@@ -94,7 +94,7 @@ router.patch("/:task_id", requiresAuth(), async (req, res) => {
     }
 
     const result = await pool.query(
-      `UPDATE task SET task_name = $1 WHERE task_id = $2 RETURNING *`,
+      `UPDATE tasks SET task_name = $1 WHERE task_id = $2 RETURNING *`,
       [task_name, task_id]
     );
 
