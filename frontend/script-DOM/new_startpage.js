@@ -1,3 +1,4 @@
+import { createBoard, getAllBoards } from "../script-API/startpage_API.js";
 
 // Add_board knappen
 const add_board_btn = document.getElementById("add-board-btn");
@@ -5,6 +6,49 @@ const boards_container = document.getElementById("boards-container");
 let userInput = null;
 let selectedAlt = null;
 let selectedAltYourBoards = "all";
+
+function renderBoard(boardName, boardType, boardId) {
+    const new_board = document.createElement("a");
+    new_board.classList.add("board");
+    new_board.href = `new_boardpage_v1.html?board_id=${boardId}`;
+
+    if (boardType === "personal") {
+        new_board.classList.add("board-personal");
+    } else if (boardType === "group") {
+        new_board.classList.add("board-group");
+    } else {
+        return;
+    }
+
+    const board_title = document.createElement("p");
+    board_title.textContent = boardName;
+    board_title.style.fontWeight = "bold";
+    board_title.style.color = "white";
+
+    const delete_btn = document.createElement("button");
+    delete_btn.textContent = "Delete";
+    delete_btn.classList.add("delete-board-btn");
+
+    delete_btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        new_board.remove();
+    });
+
+    new_board.append(board_title, delete_btn);
+    boards_container.append(new_board);
+    applyBoardFilter(selectedAltYourBoards);
+}
+
+async function loadExistingBoards() {
+    try {
+        const boards = await getAllBoards();
+        boards.forEach((board) => {
+            renderBoard(board.board_name, board.is_shared ? "group" : "personal", board.board_id);
+        });
+    } catch (error) {
+        console.error("Could not load boards:", error);
+    }
+}
 
 function applyBoardFilter(filter) {
     const allBoards = document.querySelectorAll(".board");
@@ -23,6 +67,9 @@ function applyBoardFilter(filter) {
         }
     });
 }
+
+loadExistingBoards();
+
 add_board_btn.addEventListener("click", () => {
     // Check if already displayed
     const existing_alts = document.getElementById("add-board-alts");
@@ -115,7 +162,7 @@ add_board_btn.addEventListener("click", () => {
     const add_btn = document.createElement("button");
     add_btn.textContent = "Add"
     add_btn.id = "add-btn";
-    add_btn.addEventListener("click", () => {
+    add_btn.addEventListener("click", async () => {
         // Save alt
         const checkedRadio = board_type.querySelector(
             "input[name='board-type']:checked"
@@ -127,8 +174,21 @@ add_board_btn.addEventListener("click", () => {
         // Save the input field
         userInput = board_name.value.trim();
         if(!(userInput === null || userInput === "")) {
+            if (selectedAlt !== "personal" && selectedAlt !== "group") {
+                return;
+            }
+
+            let createdBoard = null;
+            try {
+                createdBoard = await createBoard(userInput, selectedAlt);
+            } catch (error) {
+                console.error("Could not create board:", error);
+                alert("Could not create board. Check the server terminal.");
+                return;
+            }
             // lägg till ny board med namnet
             const new_board = document.createElement("a");
+            new_board.href = `new_boardpage_v1.html?board_id=${createdBoard.board_id}`;
             if (selectedAlt === "personal") {
                 new_board.classList.add("board");
                 new_board.classList.add("board-personal");

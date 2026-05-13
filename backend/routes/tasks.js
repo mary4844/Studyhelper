@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
     result = await pool.query(
       `SELECT * 
       FROM tasks 
-      WHERE card_id = $1 
+      WHERE subject_card_id = $1 
       ORDER BY task_id`,
       [subject_card_id]);
 
@@ -42,9 +42,9 @@ router.post("/", async (req, res) => {
     //går det att lägga in deadline också?
     const result = await pool.query(
       `INSERT INTO tasks
-      (subject_card_id, task_name) 
-      VALUES ($1, $2) RETURNING *`,
-      [subject_card_id, task_name]);
+      (subject_card_id, task_name, deadline) 
+      VALUES ($1, $2, $3) RETURNING *`,
+      [subject_card_id, task_name, deadline || null]);
 
     //kanske lägga till user_id senare för att kunna "ta över en task" i gruppboardsen
     //ska mna typ lägga in deadline direkt?? 
