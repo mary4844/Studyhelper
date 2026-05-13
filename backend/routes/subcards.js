@@ -62,10 +62,6 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
             WHERE board_id = $1`,
             [board_id]);
 
-        if (!result.rows) {
-            //ska det stå så? eller behöver man inte ens nån?
-            return res.status(404).json('404 error: no cards found');
-        }
         //behöver ingen emit
         return res.status(200).json(result.rows);
     } catch (error) {
