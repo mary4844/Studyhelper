@@ -155,7 +155,7 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
 })
 
 //lägg till
-router.patch()
+// router.patch();
 
 // Export the router so app.js can mount it.
 module.exports = router;

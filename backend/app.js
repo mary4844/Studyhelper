@@ -1,7 +1,6 @@
 //app.js är en samling av olika routes som deligerar olika request i frontend 
 // till olika route filer i backend/routes där funktionerna körs.
 
-
 const { pool } = require("./pool");
 
 const express = require("express");   //ramverket vi använder för att skapa vår backend server.
@@ -11,10 +10,8 @@ const path = require("path");       // modul för att hantera filvägar på dato
 // exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
 const tasksRouter = require("./routes/tasks");
 const boardsRouter = require("./routes/boards");
-;const calendarRouter = require("./routes/calendar");
-// const usersRouter = require("./routes/users");
+const calendarRouter = require("./routes/calendar");
 const subcardsRouter = require("./routes/subcards");
-
 
 const app = express();
 
@@ -22,7 +19,6 @@ const app = express();
 app.use(cors());
 // JSON bodies kommande från frontend körs om till JS-objekt så express kan läsa dem
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../frontend")));
 
 //Auth0
 require('dotenv').config();
@@ -39,6 +35,9 @@ const config = {
 
 // Auth middleware - som alltid körs på varje request typ
 app.use(auth(config));
+
+app.use(express.static(path.join(__dirname, "../frontend/html/")));
+app.use(express.static(path.join(__dirname, "../frontend/")));
 
 app.use(async (req, res, next) => {
   console.log('Middleware körs, isAuthenticated:', req.oidc.isAuthenticated());
@@ -68,17 +67,15 @@ app.use(async (req, res, next) => {
 // omderigiera root url till startpage.html
 app.get("/", (req, res) => {
   const isAuthenticated = req.oidc.isAuthenticated();
-  isAuthenticated ? res.redirect("startpage.html") : res.redirect("login.html");
+  isAuthenticated ? res.redirect("new_startpage.html") : res.redirect("login.html");
   // res.redirect("startpage.html");
 });
 
 
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
-app.use('/tasks', tasksRouter);
+// app.use('/tasks', tasksRouter);
 app.use('/boards', boardsRouter);
 //TODO: fortsätt skriva routs för resterande funkinoaliteter?
-
-
 
 // Export the app so route tests can import it later.
 module.exports = { app };
