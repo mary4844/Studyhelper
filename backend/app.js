@@ -75,6 +75,14 @@ app.get("/", (req, res) => {
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 // app.use('/tasks', tasksRouter);
 app.use('/boards', boardsRouter);
+app.use('/calendar', calendarRouter);
+
+// borde inte behövas eftersom nested routing
+// boards routar till subcards som routar till tasks
+// app.use('/tasks', tasksRouter);
+// app.use('/subcards', subcardsRouter);
+
+
 //TODO: fortsätt skriva routs för resterande funkinoaliteter?
 
 // Export the app so route tests can import it later.

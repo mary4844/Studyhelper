@@ -10,7 +10,10 @@ router.get('/:task_id', async (req, res) => {
     try {
         const { task_id } = req.params;
 
-        const result = await pool.query("SELECT * FROM tasks WHERE id = $1"[task_id]);
+        //behöver plocka datumet specifikt?
+        const result = await pool.query(
+            "SELECT deadline FROM tasks WHERE task_id = $1",
+            [task_id]);
 
         if (result.rows.length === 0) {
             return res.status(404).json({
