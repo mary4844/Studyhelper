@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
     }
 
     //går det att lägga in deadline också?
-    result = await pool.query(
+    const result = await pool.query(
       `INSERT INTO tasks
       (subject_card_id, task_name) 
       VALUES ($1, $2) RETURNING *`,

@@ -27,8 +27,8 @@ export async function createBoard(name, type) {
   }).then(res => res.json());
 }
 
-//avgör om den ska hämta personal, group eller alla
-//bättre att göra med 1 funktion än 3
+//avgör om den ska hämta personal eller group
+//bättre att göra med 1 funktion än 2
 export async function getBoardsByType(type) {
     return await fetch(`/boards/${type}`)
     .then(res => res.json());

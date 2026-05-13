@@ -17,7 +17,6 @@ router.use('/:board_id/cards', subcardRouter);
 router.get('/', requiresAuth(), async (req, res) => {
   try {
     const email = req.oidc.user.email;
-
     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
     if (!user.rows[0]) {
@@ -46,7 +45,6 @@ router.get('/', requiresAuth(), async (req, res) => {
 router.post("/", requiresAuth(), async (req, res) => {
   try {
     const email = req.oidc.user.email;
-
     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
     if (!user.rows[0]) {
@@ -54,7 +52,6 @@ router.post("/", requiresAuth(), async (req, res) => {
     }
 
     const user_id = user.rows[0].user_id;
-
     // Read the board name sent from the frontend body.
     const { name } = req.body;
 
@@ -72,14 +69,12 @@ router.post("/", requiresAuth(), async (req, res) => {
     }
 
     const board_id = board.rows[0].board_id;
-
-    const result = await pool.query(`INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`, [user_id, board_id]);
+    await pool.query(`INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`, [user_id, board_id]);
 
     //return the status code that the creation worked and
     //send the created board back to the frontend.
     return res.status(201).json(board.rows[0]);
 
-    
   } catch (error) {
     // Log the real error in the terminal for debugging.
     console.error("Error creating board:", error);
@@ -92,9 +87,8 @@ router.post("/", requiresAuth(), async (req, res) => {
 router.get('/:type', requiresAuth(), async (req, res) => {
   try {
     const { type } = req.params;
-
     //kollar om type är ok!
-    if (type !== 'personal' && 'type' !== group) {
+    if (type !== 'personal' && type !== 'group') {
       return res.status(400).json({ error: "invalid type"});
     }
     //is_shared är en bool, kollar om typen är grupp = sant, annars falskt.
@@ -128,7 +122,6 @@ router.get('/:type', requiresAuth(), async (req, res) => {
 router.delete('/:board_id', requiresAuth(), async (req, res) => {
   try {
     const email = req.oidc.user.email;
-
     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
     if (!user.rows[0]) {
@@ -136,9 +129,7 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
     }
 
     const user_id = user.rows[0].user_id;
-
     const { board_id } = req.params;
-
     const connection = await pool.query(
       `SELECT * FROM user_board 
       WHERE user_id = $1 
@@ -162,6 +153,9 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 })
+
+//lägg till
+router.patch()
 
 // Export the router so app.js can mount it.
 module.exports = router;
