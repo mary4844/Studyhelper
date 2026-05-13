@@ -11,8 +11,10 @@ const path = require("path");       // modul för att hantera filvägar på dato
 // exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
 const tasksRouter = require("./routes/tasks");
 const boardsRouter = require("./routes/boards");
-const subcardsRouter = require("./routes/subcards");
+;const subcardsRouter = require("./routes/subcards");
 // const usersRouter = require("./routes/users");
+const subcardsRouter = require("./routes/subcards");
+
 
 const app = express();
 
@@ -74,8 +76,6 @@ app.get("/", (req, res) => {
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
 app.use('/tasks', tasksRouter);
 app.use('/boards', boardsRouter);
-app.use('/cards', subcardsRouter);
-// app.use('/users', usersRouter); //kanske inte behövs??
 //TODO: fortsätt skriva routs för resterande funkinoaliteter?
 
 
