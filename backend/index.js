@@ -2,15 +2,15 @@ const PORT = 3000;
 const { app } = require("./app");
 
 //till socket
-const { createServer } = require('/http');
-const { Server } = require('/socket.io');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: { origin: "*" }
 })
 
-app.use('io', io);
+app.set('io', io);
 
 io.on('connection', (socket) => {
   //skickar när en client connectar
@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
   })
 
   //when a client disconnects
-  socket.on('disconnect', (socket) => {
+  socket.on('disconnect', () => {
     console.log("en användare har disconnectat:", socket.id);
   })
 })

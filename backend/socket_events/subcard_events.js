@@ -1,18 +1,24 @@
 
-//datan är datan som ex fetch('/cards) hämtar från databasen
 
-socket.on('create-card', (data) => {
-    io.to(board_id).emit('create-card', data);
-})
+function emitCardCreated(io, board_id, result) {
+    io.to(board_id).emit("card-created", result);
+}
 
-socket.on('delete-card', () => {
-    io.to(board_id).emit('delete-card');
-})
+function emitCardDeleted(io, board_id, subject_card_id) {
+    io.to(board_id).emit("card-deleted", subject_card_id);
+}
 
-socket.on('delete-all-cards', () => {
-    io.to(board_id).emit('delete-all-cards');
-})
+function emitAllCardsDeleted(io, board_id) {
+    io.to(board_id).emit("all-cards-deleted");
+}
 
-socket.on('edit-card', (data) => {
-    io.to(board_id).emit('edit-card', data);
-})
+function emitCardEdit(io, board_id, result) {
+    io.to(board_id).emit("card-edited", result);
+}
+
+module.exports = {
+    emitCardCreated,
+    emitCardDeleted,
+    emitAllCardsDeleted,
+    emitCardEdit
+}

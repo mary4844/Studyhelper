@@ -13,11 +13,18 @@ const router = express.Router({ mergeParams: true });
 
 router.use('/:subject_card_id/tasks', tasksRouter);
 
+const { emitCardCreated, 
+        emitAllCardsDeleted, //funktionen kanske inte behövs, finns inte just nu
+        emitCardDeleted, 
+        emitCardEdit } = 
+require('../socket_events/subcard_events')
+
 //create subject card
 router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
     try {
-        const { board_id } = req.params;
+        const io = req.app.get('io');
 
+        const { board_id } = req.params;
         const { subject_card_name } = req.body;
 
         if (!subject_card_name) {
@@ -26,7 +33,7 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
 
         //vi tänker att man inte behöver veta mer än såhär att det borde funka iallafall. 
 
-        result = await pool.query(
+        const result = await pool.query(
             `INSERT INTO subject_cards
             (board_id, subject_card_name)
             VALUES ($1, $2) RETURNING *`,
@@ -36,7 +43,9 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
             return res.status(404).json({ error: 'subject card skapas inte' });
         }
 
+        emitCardCreated(io, board_id, result.rows[0]);
         return res.status(201).json(result.rows[0]);
+
     } catch (error) {
         console.error("Error creating subcard:", error);
         res.status(500).json({ error: "Failed to create subcard" });
@@ -48,7 +57,7 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
     try {
         const { board_id } = req.params;
 
-        result = await pool.query(
+        const result = await pool.query(
             `SELECT * 
             FROM subject_cards 
             WHERE board_id = $1`,
@@ -58,7 +67,7 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
             //ska det stå så? eller behöver man inte ens nån?
             return res.status(404).json('404 error: no cards found');
         }
-
+        //behöver ingen emit
         return res.status(200).json(result.rows);
     } catch (error) {
         console.error("Error fetching subject cards:", error);
@@ -69,9 +78,10 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
 // deleteSubjectCardById
 router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requires auth ?
     try {
+        const io = req.app.get('io');
         const { board_id, subject_card_id } = req.params;
 
-        result = await pool.query(
+        const result = await pool.query(
             `DELETE FROM subject_cards 
             WHERE subject_card_id = $1 
             AND board_id = $2 RETURNING *`,
@@ -80,7 +90,7 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
         if (!result.rows) {
             return res.status(404).json({ error: 'Koppling finns inte; FEL!' });
         }
-
+        emitCardDeleted(io, board_id, subject_card_id);
         res.status(204).send();
     } catch (error) {
         console.error("error deleting subcard:", error);
@@ -91,6 +101,8 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
 //edit a card
 router.patch('/:subject_card_id', requiresAuth(), async (req, res) => {
     try {
+        const io = req.app.get('io');
+
         const { board_id, subject_card_id } = req.params;
         const { subject_card_name } = req.body;
 
@@ -107,7 +119,9 @@ router.patch('/:subject_card_id', requiresAuth(), async (req, res) => {
             return res.status(404).json({ error: 'Kort saknas'});
         }
 
+        emitCardEdit(io, board_id, result.rows[0]);
         res.status(200).json(result.rows[0]);
+
     }catch (error) {
         console.error("Error updating card:", error);
         return res.status(500).json({ error: "Server error" });

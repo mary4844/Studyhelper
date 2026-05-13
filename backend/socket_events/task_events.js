@@ -1,18 +1,24 @@
 
-//data är datan som post(/tasks) får från databasen 
 
-socket.on('task-created', (data) => {
-    io.to(board_id).emit('task-created', data);
-})
+function emitTaskCreated(io, board_id, result) {
+    io.to(board_id).emit("task-created", result);
+}
 
-socket.on('task-deleted', (data) => {
-    io.to(board_id).emit('task-deleted');
-})
+function emitTaskDeleted(io, board_id, task_id) {
+    io.to(board_id).emit("task-deleted", task_id);
+}
 
-socket.on('all-tasks-deleted', () => {
-    io.to(board_id).emit('all-tasks-deleted');
-})
+function emitAllTasksDeleted(io, board_id) {
+    io.to(board_id).emit("all-tasks-deleted");
+}
 
-socket.on('task-edited', (data) => {
-    io.to(board_id).emit("task-edited", data);
-})
+function emitTaskEdit(io, board_id, result) {
+    io.to(board_id).emit("task-edited", result);
+}
+
+module.exports = {
+    emitTaskCreated,
+    emitTaskDeleted,
+    emitAllTasksDeleted,
+    emitTaskEdit
+}
