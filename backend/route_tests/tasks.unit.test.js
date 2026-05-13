@@ -1,80 +1,167 @@
-//Mål: testa backend-logiken isolerat utan riktig DB.
 
-const request = require("supertest");
-const { app } = require("../app");
-const { pool } = require("../pool"); //Pool är ett backend-objekt som hanterar databasanslutningar
+// mock auth0
+jest.mock('express-openid-connect', () => ({
+    auth: () => (req, res, next) => next(),
+    requiresAuth: () => (req, res, next) => {
+        req.oidc = {
+            isAuthenticated: () => true,
+            user: { email: 'test@test.com', nickname: 'testuser' }
+        };
+        next();
+    }
+}));
 
-const originalQuery = pool.query;
+const request = require('supertest');
+const { app } = require('../app');
 
-afterEach(() => {
-  //bra praxis att resta efter varje test
-  pool.query = originalQuery;
+// mock db
+jest.mock('../pool', () => ({
+    pool: { query: jest.fn() }
+}));
+
+const { pool } = require('../pool');
+
+// mock socket.io
+app.set('io', {
+    to: () => ({ emit: jest.fn() })
 });
 
-describe("Tasks routes with mocked database", () => {
-  test("GET /tasks returns a JSON array of tasks", async () => {
-    pool.query = async () => ({
-      //mockad anrop till db
-      rows: [
-        { task_id: 1, task_name: "Mock task one" },
-        { task_id: 2, task_name: "Mock task two" },
-      ],
+// base url since tasks are nested
+const BASE = '/boards/1/cards/1/tasks'
+
+describe('task routes', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
 
-    const response = await request(app).get("/tasks"); //backend returnerar efter anropet via frontend
+    describe('/GET /boards/:board_id/cards/:subject_card_id/tasks', () => {
 
-    expect(response.status).toBe(200);
-    expect(response.headers["content-type"]).toMatch(/json/);
-    expect(response.body).toEqual([
-      // vi har mockat datan o skriver in det här
-      { task_id: 1, task_name: "Mock task one" },
-      { task_id: 2, task_name: "Mock task two" },
-    ]);
-  });
+      it('should return all tasks for authenticated users', async () => {
+        pool.query
+          .mockResolvedValueOnce({
+                rows: [
+                    { task_id: 1, task_name: 'Task 1', subject_card_id: 1 },
+                    { task_id: 2, task_name: 'Task 2', subject_card_id: 1 }
+                ]
+          });
 
-  test("POST /tasks returns the created task", async () => {
-    const mockTaskName = "Mock created task";
+        const res = await request(app).get(BASE);
 
-    pool.query = async (sql, values) => {
-      expect(sql).toBe("INSERT INTO tasks (task_name) VALUES ($1) RETURNING *");
-      expect(values).toEqual([mockTaskName]);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.length).toBe(2);
+      })
 
-      return { rows: [{ task_id: 3, task_name: mockTaskName }] };
-    };
+      it('should return empty array if no task is found', async () => {
+        pool.query
+          .mockResolvedValueOnce({ rows: [] });
 
-    const response = await request(app)
-      .post("/tasks")
-      .send({ name: mockTaskName })
-      .set("Content-Type", "application/json");
+        const res = await request(app).get(BASE);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      task_id: 3,
-      task_name: mockTaskName,
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual([]);
+      })
+
+       it('should return 500 if db crashes', async () => {
+            pool.query.mockRejectedValueOnce(new Error('DB crashed'));
+
+            const res = await request(app).get(BASE);
+
+            expect(res.statusCode).toBe(500);
+            expect(res.body).toHaveProperty('error');
+        });
+    })
+
+    describe('/POST /boards/:board_id/cards/:subject_card_id/tasks', () => {
+      
+      it('should create a task and return statusboard 200', async () => {
+        pool.query
+          .mockResolvedValueOnce({
+                rows: [{ task_id: 1, task_name: 'New Task', subject_card_id: 1 }]
+          });
+
+        const res = await request(app).post(BASE).send({ task_name: 'New Task' });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('task_name', 'New Task');
+      })
+
+      it('should return statuscode 400', async () => {
+         const res = await request(app).post(BASE).send({});
+
+          expect(res.statusCode).toBe(400);
+          expect(res.body).toHaveProperty('error', 'Name is required');;
+      })
+    })
+
+    describe('/DELETE /boards/:board_id/cards/:subject_card_id/tasks/:id', () => {
+
+      //does it return the deleted task?
+      it('should delete task and return the deleted task', async () => {
+            pool.query.mockResolvedValueOnce({
+                rows: [{ task_id: 1, task_name: 'Deleted Task' }]
+            });
+
+            const res = await request(app).delete(`${BASE}/1`);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toHaveProperty('task_name', 'Deleted Task');
+        });
+
+        it('should return 500 if db crashes', async () => {
+            pool.query.mockRejectedValueOnce(new Error('DB crashed'));
+
+            const res = await request(app).delete(`${BASE}/1`);
+
+            expect(res.statusCode).toBe(500);
+            expect(res.body).toHaveProperty('error');
+        });
+    })
+
+    describe('/PATCH /boards/:board_id/cards/:subject_card_id/tasks/:id', () => {
+      
+      it('should update task name and return 200', async () => {
+            pool.query.mockResolvedValueOnce({
+                rows: [{ task_id: 1, task_name: 'Updated Task' }],
+                rowCount: 1
+            });
+
+            const res = await request(app)
+                .patch(`${BASE}/1`)
+                .send({ task_name: 'Updated Task' });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toHaveProperty('task_name', 'Updated Task');
+        });
+
+        it('should return 400 if task_name is missing', async () => {
+            const res = await request(app)
+                .patch(`${BASE}/1`)
+                .send({});
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body).toHaveProperty('error', 'New name is required');
+        });
+
+        it('should return 404 if task not found', async () => {
+            pool.query.mockResolvedValueOnce({ rows: [], rowCount: 0 });
+
+            const res = await request(app)
+                .patch(`${BASE}/1`)
+                .send({ task_name: 'Updated Task' });
+
+            expect(res.statusCode).toBe(404);
+            expect(res.body).toHaveProperty('error', 'Task not found');
+        });
+
+        it('should return 500 if db crashes', async () => {
+            pool.query.mockRejectedValueOnce(new Error('DB crashed'));
+
+            const res = await request(app)
+                .patch(`${BASE}/1`)
+                .send({ task_name: 'Updated Task' });
+
+            expect(res.statusCode).toBe(500);
+            expect(res.body).toHaveProperty('error');
+        });
     });
-  });
-
-  test("DELETE /tasks/:id deletes a task by its id", async () => {
-    const taskId = 3;
-
-    pool.query = async (sql, values) => {
-      expect(sql).toBe("DELETE FROM tasks WHERE task_id = $1 RETURNING *");
-      expect(values).toEqual([taskId]);
-      return { rows: [{ task_id: taskId, task_name: "Mock created task" }] };
-    };
-
-    const response = await request(app).delete(`/tasks/${taskId}`);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      task_id: taskId,
-      task_name: "Mock created task",
-    });
-  });
-
-
-
-
-
-  
-});
+}) 
