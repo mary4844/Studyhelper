@@ -8,7 +8,6 @@ const router = express.Router({ mergeParams: true }); // create a small route co
 
 const { emitTaskCreated,
         emitTaskDeleted,
-        emitAllTasksDeleted, //finns inte 
         emitTaskEdit } =
 require('../socket_events/task_events');
 

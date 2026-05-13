@@ -14,7 +14,6 @@ const router = express.Router({ mergeParams: true });
 router.use('/:subject_card_id/tasks', tasksRouter);
 
 const { emitCardCreated, 
-        emitAllCardsDeleted, //funktionen kanske inte behövs, finns inte just nu
         emitCardDeleted, 
         emitCardEdit } = 
 require('../socket_events/subcard_events')
