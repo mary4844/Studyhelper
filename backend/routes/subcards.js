@@ -62,6 +62,10 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
             WHERE board_id = $1`,
             [board_id]);
 
+        //venne hur viktigt dethär är, kan ju inte hända (tror jag)
+        if(!result.rows) {
+            return res.status(400).json({ error: 'board saknas'})
+        }    
         //behöver ingen emit
         return res.status(200).json(result.rows);
     } catch (error) {
