@@ -1,4 +1,4 @@
-import
+import { getDeadlineTask } from "../script-API/calendar_API.js"
 
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
@@ -14,7 +14,7 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-function renderCalendar(month, year) {
+async function renderCalendar(month, year) {
     calendarDates.innerHTML = '';
     monthYear.textContent = `${months[month]} ${year}`;
 
@@ -35,6 +35,10 @@ function renderCalendar(month, year) {
 
     // Populate the days
     for (let i = 1; i <= daysInMonth; i++) {
+
+        const formattedDate = "XXXX-MM-DD";
+        const deadlinedTasks = await getDeadlineTask(formattedDate);
+
         const day = document.createElement('div');
 
         const date = document.createElement('div');
@@ -42,7 +46,10 @@ function renderCalendar(month, year) {
         date.classList.add('date')
 
         const dateInfo = document.createElement('div');
-        dateInfo.textContent = 'Testar att skriva något som är längre Testar att skriva något som är längre Testar att skriva något som är längre'
+        if (deadlinedTasks > 0) {
+            dateInfo.textContent = 
+                "Deadline: " + deadlinedTasks[0].task_name;
+        }
         dateInfo.classList.add('date-info')
 
         // Highlight today's date
@@ -53,7 +60,7 @@ function renderCalendar(month, year) {
         ) {
             day.classList.add('current-date');
         }
-        
+
         day.appendChild(date);
         day.appendChild(dateInfo);
         
