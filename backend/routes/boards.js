@@ -84,7 +84,7 @@ router.post("/", requiresAuth(), async (req, res) => {
 });
 
 //get all boards from a specific user
-router.get('/:type', requiresAuth(), async (req, res) => {
+router.get('/type/:type', requiresAuth(), async (req, res) => {
   try {
     const { type } = req.params;
     //kollar om type är ok!

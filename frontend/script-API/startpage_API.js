@@ -30,7 +30,7 @@ export async function createBoard(name, type) {
 //avgör om den ska hämta personal eller group
 //bättre att göra med 1 funktion än 2
 export async function getBoardsByType(type) {
-    return await fetch(`/boards/${type}`)
+    return await fetch(`/boards/type/${type}`)
     .then(res => res.json());
 }
 
