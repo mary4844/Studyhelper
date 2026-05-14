@@ -32,38 +32,44 @@ describe('calendar routes', () => {
 
     describe('/calendar/2026-05-14', () => {
         
-        it('should return the task that is associated with the date', async () => {
-            pool.query
-                .mockResolvedValueOnce({ rows: [{ 
-                    task_id: 1, 
-                    task_name: "task1",
-                    user_id: 'testuser',
+        it('should return the tasks for the given date', async () => {
+            pool.query.mockResolvedValueOnce({
+                rows: [{
+                    task_id: 1,
+                    task_name: 'task1',
                     deadline: '2026-05-14',
-                    status: false,
                     subject_card_id: 1
-                }] 
-            })
-            const result = await request(app).get('/calendar/2026-05-14');
+                }]
+            });
 
-            expect(result.statusCode).toBe(200);
-            expect(result.body).toMatchObject({
-                task_id: 1, 
-                task_name: "task1",
-                user_id: 'testuser',
+            const res = await request(app).get('/calendar/2026-05-14');
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.length).toBe(1);
+            expect(res.body[0]).toMatchObject({
+                task_id: 1,
+                task_name: 'task1',
                 deadline: '2026-05-14',
-                status: false,
-                subject_card_id: 1,
-            })
-        })
+                subject_card_id: 1
+            });
+        });
 
-        it('should return an empty object', async () => {
-            pool.query
-                .mockResolvedValueOnce({ rows: [] })
+        it('should return empty array if no tasks found for that date', async () => {
+            pool.query.mockResolvedValueOnce({ rows: [] });
 
-            const result = await request(app).get('/calendar/2026-05-14');
+            const res = await request(app).get('/calendar/2026-05-14');
 
-            expect(result.statusCode).toBe(200);
-            expect(result.body).toEqual("");
-        })
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toEqual([]);
+        });
+
+        it('should return 500 if db crashes', async () => {
+            pool.query.mockRejectedValueOnce(new Error('DB crashed'));
+
+            const res = await request(app).get('/calendar/2026-05-14');
+
+            expect(res.statusCode).toBe(500);
+            expect(res.body).toHaveProperty('error', 'Server error');
+        });
     })
 })

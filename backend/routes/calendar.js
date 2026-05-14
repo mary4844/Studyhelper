@@ -15,9 +15,7 @@ router.get('/:date', async (req, res) => {
             "SELECT * FROM tasks WHERE deadline = $1",
             [date]);
         
-        
-        
-        return res.status(200).json(result.rows[0]);
+        return res.status(200).json(result.rows);
 
     } catch (error) {
         console.error("error fetching board:", error);

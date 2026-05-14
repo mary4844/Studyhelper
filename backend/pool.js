@@ -4,12 +4,14 @@
 // Import Pool from pg so we can talk to PostgreSQL.
 const { Pool } = require("pg");
 
+const isTest = process.env.NODE_ENV === 'test';
+
 // Create one shared database connection pool for the whole backend.
 const pool = new Pool({ 
-  user: "postgres",
+  user: "olof",
   host: "localhost",
-  database: "study_tracker",
-  password: "1337",
+  database: isTest ? "studyhacker_test" : "studyhacker",
+  password: "password123",
   port: 5432,
 });
 

@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand --verbose",
-    "test:tasks": "jest --runInBand --verbose route_tests/tasks.unit.test.js",
-    "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js",
-    "test:calendar": "jest --runInBand --verbose route_tests/calendar.unit.test.js"
+    "test:tasks": "NODE_ENV=test jest --runInBand --verbose route_tests/tasks.unit.test.js",
+    "test:calendar": "NODE_ENV=test jest --runInBand --verbose route_tests/calendar.unit.test.js",
+    "test:boards": "NODE_ENV=test jest --runInBand --verbose route_tests/boards.unit.test.js",
+    "test:routes": "NODE_ENV=test jest --runInBand --verbose route_tests/",
+    "test:integration": "NODE_ENV=test jest --runInBand --verbose integration_tests/"
   },
   "keywords": [],
   "author": "",
