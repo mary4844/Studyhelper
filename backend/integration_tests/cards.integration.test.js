@@ -24,12 +24,12 @@ describe('calendar integration tests', () => {
         //clean database before each test
         await pool.query('DELETE FROM tasks'); 
         await pool.query('DELETE FROM subject_cards');
-        await pool.query('DELETE FROM board+');        
+        await pool.query('DELETE FROM board');        
     })
 
     afterAll(async () => {
         await pool.end(); //close connection to database when done
     })
 
-    
+    describe()
 })
