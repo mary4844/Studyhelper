@@ -1,4 +1,4 @@
-import { getDeadlineTask } from "../script-API/calendar_API.js"
+//import { getDeadlineTask } from "../script-API/calendar_API.js"
 
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
@@ -36,8 +36,8 @@ async function renderCalendar(month, year) {
     // Populate the days
     for (let i = 1; i <= daysInMonth; i++) {
 
-        const formattedDate = "XXXX-MM-DD";
-        const deadlinedTasks = await getDeadlineTask(formattedDate);
+        const formattedDate =`${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        // const deadlinedTasks = await getDeadlineTask(formattedDate);
 
         const day = document.createElement('div');
 
@@ -46,10 +46,14 @@ async function renderCalendar(month, year) {
         date.classList.add('date')
 
         const dateInfo = document.createElement('div');
-        if (deadlinedTasks > 0) {
-            dateInfo.textContent = 
-                "Deadline: " + deadlinedTasks[0].task_name;
-        }
+        // if (deadlinedTasks.length > 0) {
+        //     deadlinedTasks.forEach(task => {
+        //         const taskElement = document.createElement('div');
+        //         taskElement.textContent = 
+        //             "Deadline: " + deadlinedTasks.task_name;
+        //         dateInfo.appendChild(taskElement);
+        //     });
+        // }
         dateInfo.classList.add('date-info')
 
         // Highlight today's date
