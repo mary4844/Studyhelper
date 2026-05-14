@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand --verbose",
-    "test:routes": "jest --runInBand --verbose route_tests/tasks.routes.test.js",
-    "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js"
+    "test:tasks": "jest --runInBand --verbose route_tests/tasks.unit.test.js",
+    "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js",
+    "test:calendar": "jest --runInBand --verbose route_tests/calendar.unit.test.js"
   },
   "keywords": [],
   "author": "",
