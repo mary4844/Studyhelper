@@ -38,6 +38,7 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
             VALUES ($1, $2) RETURNING *`,
             [board_id, subject_card_name]);
 
+        //den här delen funkar inte den returnerar 500 om det inte finns någon board
         if (!result.rows[0]) {
             return res.status(404).json({ error: 'subject card skapas inte' });
         }
@@ -61,11 +62,7 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
             FROM subject_cards 
             WHERE board_id = $1`,
             [board_id]);
-
-        //venne hur viktigt dethär är, kan ju inte hända (tror jag)
-        if(!result.rows) {
-            return res.status(400).json({ error: 'board saknas'})
-        }    
+ 
         //behöver ingen emit
         return res.status(200).json(result.rows);
     } catch (error) {
@@ -86,8 +83,8 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
             AND board_id = $2 RETURNING *`,
             [subject_card_id, board_id]);
 
-        if (!result.rows) {
-            return res.status(404).json({ error: 'Koppling finns inte; FEL!' });
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Card is not connected to this board' });
         }
         emitCardDeleted(io, board_id, subject_card_id);
         res.status(204).send();
