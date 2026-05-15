@@ -9,7 +9,7 @@ const { requiresAuth } = require('express-openid-connect'); //new
 const subcardRouter = require("./subcards");
 
 // Create a router that will hold routes related to boards.
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.use('/:board_id/cards', subcardRouter);
 
@@ -53,7 +53,8 @@ router.post("/", requiresAuth(), async (req, res) => {
 
     const user_id = user.rows[0].user_id;
     // Read the board name sent from the frontend body.
-    const { name } = req.body;
+    const { name, type } = req.body;
+    const is_shared = type === "group";
 
     if (!name) {
       return res.status(400).json({ error: 'Name is required' });
@@ -61,8 +62,8 @@ router.post("/", requiresAuth(), async (req, res) => {
 
     // Insert the new board and ask PostgreSQL to return the inserted row.
     const board = await pool.query(
-      "INSERT INTO board (board_name) VALUES ($1) RETURNING *",
-      [name]);
+      "INSERT INTO board (board_name, is_shared) VALUES ($1, $2) RETURNING *",
+      [name, is_shared]);
 
     if (!board.rows[0]) {
       return res.status(404).json({ error: 'Board skapas inte' });
@@ -89,11 +90,11 @@ router.get('/type/:type', requiresAuth(), async (req, res) => {
     const { type } = req.params;
     //kollar om type är ok!
     if (type !== 'personal' && type !== 'group') {
-      return res.status(400).json({ error: "invalid type"});
+      return res.status(400).json({ error: "invalid type" });
     }
     //is_shared är en bool, kollar om typen är grupp = sant, annars falskt.
-    const is_shared = type === 'group';    
-    
+    const is_shared = type === 'group';
+
     const email = req.oidc.user.email;
     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
@@ -154,8 +155,10 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
   }
 })
 
+
 //lägg till
 // router.patch();
+
 
 // Export the router so app.js can mount it.
 module.exports = router;

@@ -23,10 +23,15 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
     try {
         const io = req.app.get('io');
 
+<<<<<<< HEAD
         const { board_id } = req.params;
         const { subject_card_name } = req.body;
+=======
+        const { subject_card_name, subject_name } = req.body;
+        const cardName = subject_card_name || subject_name;
+>>>>>>> 0778b158a410d75271c7baeb7b6c9cb98f19a6c0
 
-        if (!subject_card_name) {
+        if (!cardName) {
             return res.status(400).json({ error: 'Name is required' });
         }
 
@@ -34,9 +39,9 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
 
         const result = await pool.query(
             `INSERT INTO subject_cards
-            (board_id, subject_card_name)
+            (board_id, subject_name)
             VALUES ($1, $2) RETURNING *`,
-            [board_id, subject_card_name]);
+            [board_id, cardName]);
 
         if (!result.rows[0]) {
             return res.status(404).json({ error: 'subject card skapas inte' });
@@ -103,15 +108,16 @@ router.patch('/:subject_card_id', requiresAuth(), async (req, res) => {
         const io = req.app.get('io');
 
         const { board_id, subject_card_id } = req.params;
-        const { subject_card_name } = req.body;
+        const { subject_card_name, subject_name } = req.body;
+        const cardName = subject_card_name || subject_name;
 
-        if(!subject_card_name) {
+        if(!cardName) {
             return res.status(400).json({ error: 'Behöver ett nytt namn'})
         }
 
         const result = await pool.query(
-        `UPDATE subject_cards SET subject_card_name = $1 WHERE subject_card_id = $2 RETURNING *`,
-        [subject_card_name, subject_card_id]
+        `UPDATE subject_cards SET subject_name = $1 WHERE subject_card_id = $2 RETURNING *`,
+        [cardName, subject_card_id]
         );
 
         if(result.rowCount === 0) {

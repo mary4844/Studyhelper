@@ -1,3 +1,10 @@
+import {
+    createSubjectCard,
+    getAllSubjectCards,
+    createTask,
+    getTasks,
+    deleteTaskById,
+} from "../script-API/boardpage_API.js";
 
 // Add_task knappen
 let page_color_name = "blue";
@@ -10,8 +17,85 @@ const add_task_btn = document.getElementById("add-task-btn");
 const tasks_container = document.getElementById("tasks-container");
 let userInput = null;
 let selectedAlt = null;
+const boardId = new URLSearchParams(window.location.search).get("board_id");
+let subjectCardId = null;
 
 let selectedAltYourTasks = "all";
+
+async function getDefaultSubjectCardId() {
+    if (!boardId) {
+        alert("Missing board id. Go back and open a board from the start page.");
+        throw new Error("Missing board_id in URL");
+    }
+
+    const cards = await getAllSubjectCards(boardId);
+    if (cards.length > 0) {
+        return cards[0].subject_card_id;
+    }
+
+    const createdCard = await createSubjectCard(boardId, "General");
+    return createdCard.subject_card_id;
+}
+
+function renderTask(taskName, taskId) {
+    const task_wrapper = document.createElement("div");
+    task_wrapper.classList.add("task-wrapper");
+    task_wrapper.dataset.taskId = taskId;
+
+    const new_task = document.createElement("span");
+    new_task.style.background = page_color;
+    new_task.classList.add("task");
+
+    const task_title = document.createElement("h2");
+    task_title.textContent = taskName;
+    task_title.style.fontWeight = "bold";
+    task_title.style.color = "white";
+    task_title.classList.add("task-title");
+
+    const task_header = document.createElement("div");
+    task_header.classList.add("task-header");
+    task_header.append(task_title);
+
+    const check_btn = document.createElement("button");
+    check_btn.style.fontSize = "100%";
+    check_btn.classList.add("check-task-btn");
+    check_btn.addEventListener("click", () => {
+        check_btn.textContent = check_btn.textContent === "" ? "✔️" : "";
+        applyTaskFilter(selectedAltYourTasks);
+    });
+
+    const delete_btn = document.createElement("button");
+    delete_btn.textContent = "Delete";
+    delete_btn.classList.add("delete-task-btn");
+    delete_btn.addEventListener("click", async () => {
+        if (subjectCardId && taskId) {
+            await deleteTaskById(boardId, subjectCardId, taskId);
+        }
+        task_wrapper.remove();
+    });
+
+    const task_tail = document.createElement("div");
+    task_tail.classList.add("task-tail");
+    const task_tail_confirm_btns = document.createElement("div");
+    task_tail_confirm_btns.classList.add("task-tail-confirm-btns");
+    task_tail_confirm_btns.append(check_btn, delete_btn);
+    task_tail.append(task_tail_confirm_btns);
+
+    new_task.append(task_header, task_tail);
+    task_wrapper.append(new_task);
+    tasks_container.append(task_wrapper);
+    applyTaskFilter(selectedAltYourTasks);
+}
+
+async function loadExistingTasks() {
+    try {
+        subjectCardId = await getDefaultSubjectCardId();
+        const tasks = await getTasks(boardId, subjectCardId);
+        tasks.forEach((task) => renderTask(task.task_name, task.task_id));
+    } catch (error) {
+        console.error("Could not load tasks:", error);
+    }
+}
 
 function applyTaskFilter(filter) {
     const allTasks = document.querySelectorAll(".task-wrapper");
@@ -30,6 +114,8 @@ function applyTaskFilter(filter) {
         }
     });
 }
+
+loadExistingTasks();
 
 const other_alts = document.querySelector(".your-tasks-alts");
 add_task_btn.addEventListener("click", () => {
@@ -73,10 +159,21 @@ add_task_btn.addEventListener("click", () => {
     const add_btn = document.createElement("button");
     add_btn.textContent = "Add"
     add_btn.classList.add("add-btn");
-    add_btn.addEventListener("click", () => {
+    add_btn.addEventListener("click", async () => {
         // Save the input field
         userInput = task_name.value.trim();
         if(!(userInput === null || userInput === "")) {
+            try {
+                if (!subjectCardId) {
+                    subjectCardId = await getDefaultSubjectCardId();
+                }
+                await createTask(boardId, subjectCardId, userInput, null);
+            } catch (error) {
+                console.error("Could not create task:", error);
+                alert("Could not create task. Check the server terminal.");
+                return;
+            }
+
             // lägg till ny task med namnet
             const new_task = document.createElement("span");
             new_task.style.background = page_color;

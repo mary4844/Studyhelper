@@ -3,16 +3,18 @@
 
 // Import Pool from pg so we can talk to PostgreSQL.
 const { Pool } = require("pg");
+require("dotenv").config();
 
 const isTest = process.env.NODE_ENV === 'test';
 
 // Create one shared database connection pool for the whole backend.
+
 const pool = new Pool({ 
-  user: "olof",
-  host: "localhost",
-  database: isTest ? "studyhacker_test" : "studyhacker",
-  password: "password123",
-  port: 5432,
+  user: process.env.DB_USER || "postgres",
+  host: process.env.DB_HOST || "localhost",
+  database: process.env.DB_NAME || "studyhelper",
+  password: process.env.DB_PASSWORD || "asdf",
+  port: Number(process.env.DB_PORT || 5432),
 });
 
 // exportera poolen (databasanalutningen) så att andra filer kan komma åt databasen.
