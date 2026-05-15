@@ -23,13 +23,10 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
     try {
         const io = req.app.get('io');
 
-<<<<<<< HEAD
         const { board_id } = req.params;
-        const { subject_card_name } = req.body;
-=======
+
         const { subject_card_name, subject_name } = req.body;
         const cardName = subject_card_name || subject_name;
->>>>>>> 0778b158a410d75271c7baeb7b6c9cb98f19a6c0
 
         if (!cardName) {
             return res.status(400).json({ error: 'Name is required' });

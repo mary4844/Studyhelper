@@ -48,15 +48,6 @@ router.post("/", async (req, res) => {
       //går det att lägga in deadline också?
     const result = await pool.query(
       `INSERT INTO tasks
-<<<<<<< HEAD
-      (subject_card_id, task_name) 
-      VALUES ($1, $2) RETURNING *`,
-      [subject_card_id, task_name]);
-        
-        //kanske lägga till user_id senare för att kunna "ta över en task" i gruppboardsen
-        //ska mna typ lägga in deadline direkt?? 
-        
-=======
       (subject_card_id, task_name, deadline) 
       VALUES ($1, $2, $3) RETURNING *`,
       [subject_card_id, task_name, deadline || null]);
@@ -64,7 +55,6 @@ router.post("/", async (req, res) => {
     //kanske lägga till user_id senare för att kunna "ta över en task" i gruppboardsen
     //ska mna typ lägga in deadline direkt?? 
 
->>>>>>> 0778b158a410d75271c7baeb7b6c9cb98f19a6c0
     if (!result.rows[0]) {
       return res.status(404).json({ error: "Task skapas inte" });
     }
