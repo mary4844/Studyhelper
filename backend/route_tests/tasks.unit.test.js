@@ -96,15 +96,15 @@ describe('task routes', () => {
     describe('/DELETE /boards/:board_id/cards/:subject_card_id/tasks/:id', () => {
 
       //does it return the deleted task?
-      it('should delete task and return the deleted task', async () => {
+      it('should delete task', async () => {
             pool.query.mockResolvedValueOnce({
                 rows: [{ task_id: 1, task_name: 'Deleted Task' }]
             });
 
             const res = await request(app).delete(`${BASE}/1`);
 
-            expect(res.statusCode).toBe(200);
-            expect(res.body).toHaveProperty('task_name', 'Deleted Task');
+            expect(res.statusCode).toBe(204);
+            
         });
 
         it('should return 500 if db crashes', async () => {

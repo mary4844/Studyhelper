@@ -1,144 +1,488 @@
-//Integrationstest filen; testar backendkoden mot vår db, för just tasks routes.
-//Jest-funktioner som describe, test, expect, afterEach, afterAll osv.
-//supertest avänds för att skicka HTTP-requests mot vår ecpress app under testet ex request(app).get(...).
+jest.mock('express-openid-connect', () => ({
+    auth: () => (req, res, next) => next(),
+    requiresAuth: () => (req, res, next) => {
+        req.oidc = {
+            isAuthenticated: () => true,
+            user: { email: 'test@test.com', nickname: 'testuser' }
+        };
+        next();
+    }
+}));
 
-const request = require("supertest"); // Supertest är verktyget för att skicka requests till vår Express app.
-const { app } = require("../app"); //importera appen
-const { pool } = require("../pool");
+const request = require('supertest');
+const { app } = require('../app');
+const { pool } = require('../pool'); // real pool, no mock
 
-// sprar namn på tasks som läggs til i db under testkörningen
-const createdTaskNames = new Set();
-
-// efter varje test ta bort skapade tasks från db (testerna ska ej påverka varandra)
-afterEach(async () => {
-  for (const taskName of createdTaskNames) {
-    await pool.query("DELETE FROM tasks WHERE task_name = $1", [taskName]); // ta bort matcher i db
-  }
-  createdTaskNames.clear();
+app.set('io', {
+    to: () => ({ emit: jest.fn() })
 });
 
-// Efter alla tester stäng av db anslutningen (pga jest)
-afterAll(async () => {
-  await pool.end();
-});
+describe('tasks integration tests', () => {
+    
+    beforeEach(async () => {
+        //clean database before each test
+        await pool.query('DELETE FROM tasks');
+        await pool.query('DELETE FROM subject_cards');
+        await pool.query('DELETE FROM user_board');
+        await pool.query('DELETE FROM board');
+        await pool.query('DELETE FROM users');         
+    })
 
-describe("Tasks integration tests with real database", () => {
-  test("GET /tasks returns an array from PostgreSQL, atm empty", async () => {
-    const response = await request(app).get("/tasks"); //skicka en GET request till /tasks route i vår app,
-    // obs! vi anger endpoint som annars redan står i URL:en i frontend
+    afterAll(async () => {
+        await pool.end(); //close connection to database when done
+    })
 
-    // kolla repsons statuset, och att det är av typ json samt en array.
-    expect(response.status).toBe(200);
-    expect(response.headers["content-type"]).toMatch(/json/);
-    expect(Array.isArray(response.body)).toBe(true);
-  });
+    describe('tasks integration tests', () => {
 
-  // Test that POST /tasks/add writes a real row to the real database.
-  test("POST /tasks inserts a real task into PostgreSQL", async () => {
-    // Build a unique task name so this test does not clash with existing rows.
-    const testTaskName = `integration-task-${Date.now()}`;
+        describe('GET /tasks', () => {
 
-    // Send a real POST request that should insert a row into PostgreSQL.
-    const response = await request(app)
-      .post("/tasks")
-      .send({ name: testTaskName })
-      .set("Content-Type", "application/json");
+            //get tasks doesnt use statuscodes for success
+            it('should return all tasks in a card in task_id order (higher id if inserted later)', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
 
-    // spara i setet för att ta bort det i aftereach
-    createdTaskNames.add(testTaskName);
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
 
-    //kontroller
-    expect(response.status).toBe(200);
-    expect(response.body.task_name).toBe(testTaskName);
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card']
+                );
 
-    // Verifiera att datan finns i db
-    const dbResult = await pool.query(
-      "SELECT * FROM tasks WHERE task_name = $1",
-      [testTaskName],
-    );
+                //insert real data
+                const task1 = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
+                    [card.rows[0].subject_card_id, 'test task 1', '2026-05-14']
+                );
 
-    expect(dbResult.rows.length).toBe(1); // kanske inte behövs?
-    expect(dbResult.rows[0].task_name).toBe(testTaskName);
-  });
+                const task2 = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
+                    [card.rows[0].subject_card_id, 'test task 2', '2026-05-15']
+                )
 
-  test("PATCH /tasks/:id edits a task name in table", async () => {
-    const testTaskName = `integration-task-${Date.now()}`;
-    const updatedTaskName = `${testTaskName}-updated`; //adds extra text to the string
+                const res = await request(app).get(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks`)
 
-    // Create task first.
-    const createResponse = await request(app)
-      .post("/tasks")
-      .send({ name: testTaskName })
-      .set("Content-Type", "application/json");
+                expect(res.statusCode).toBe(200);
+                expect(res.body.length).toBe(2);
+                expect(res.body[0].task_name).toBe('test task 1');
+                expect(res.body[1].task_name).toBe('test task 2');
+            });
 
-    createdTaskNames.add(testTaskName);
+            it('should return an empty array if there are no tasks', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
 
-    expect(createResponse.status).toBe(200);
-    expect(createResponse.body.task_name).toBe(testTaskName);
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
 
-    const taskId = createResponse.body.task_id;
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card']
+                );
 
-    // Update created task name by id.
-    const patchResponse = await request(app)
-      .patch(`/tasks/${taskId}`)
-      .send({ name: updatedTaskName })
-      .set("Content-Type", "application/json");
+                const res = await request(app).get(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks`);
 
-    // Cleanup set should track the updated name.
-    createdTaskNames.delete(testTaskName);
-    createdTaskNames.add(updatedTaskName);
+                expect(res.statusCode).toBe(200);
+                expect(res.body.length).toBe(0);
+                expect(res.body).toMatchObject([]);
+            })
 
-    expect(patchResponse.status).toBe(200);
-    expect(patchResponse.body.task_id).toBe(taskId);
-    expect(patchResponse.body.task_name).toBe(updatedTaskName);
+            it('should return an error if the card_id doesnt exist', async () => {
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
 
-    const dbResult = await pool.query(
-      "SELECT * FROM tasks WHERE task_id = $1",
-      [taskId],
-    );
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
 
-    expect(dbResult.rows.length).toBe(1);
-    expect(dbResult.rows[0].task_name).toBe(updatedTaskName);
-  });
+                const res = await request(app).get(`/boards/${board.rows[0].board_id}/99999/tasks`)
+                
+                expect(res.statusCode).toBe(404);
+            });
+        })
+      
 
-  test("DELETE /tasks/:id delete a task by id from table", async () => {
-    //create a task and verify it
-    const testTaskName = `integration-task-${Date.now()}`;
-    const createResponse = await request(app)
-      .post("/tasks")
-      .send({ name: testTaskName })
-      .set("Content-Type", "application/json");
+        describe('POST /tasks', () => {
+            
+            it('should return 400 if the task has no name', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
 
-    createdTaskNames.add(testTaskName);
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
 
-    expect(createResponse.status).toBe(200);
-    expect(createResponse.body.task_name).toBe(testTaskName);
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card']
+                );
 
-    const taskId = createResponse.body.task_id;
-    const response = await request(app) //respons ifrån backend efter att ha kallat clear tasks
-      .delete(`/tasks/${taskId}`)
-      .set("Content-Type", "application/json");
+                const res = await request(app)
+                    .post(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks`)
+                    .send({});
 
-    expect(response.status).toBe(200);
+                expect(res.statusCode).toBe(400);
+                expect(res.body).toHaveProperty('error', 'Name is required');
+            })
 
-    const dbResult = await pool.query(
-      "SELECT * FROM tasks WHERE task_id = $1",
-      [taskId],
-    );
+            it('should still create the task if there is no date', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
 
-    expect(dbResult.rows.length).toBe(0);
-  });
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
 
-  test("POST /tasks clear delete all tasks from table", async () => {
-    const response = await request(app) //respons ifrån backend efter att ha kallat clear tasks
-      .delete("/tasks")
-      .set("Content-Type", "application/json");
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card']
+                );
 
-    expect(response.status).toBe(200);
+                const res = await request(app)
+                    .post(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks`)
+                    .send({ task_name: "new task"});
 
-    const dbResult = await pool.query(
-      "SELECT COUNT(*)::int AS count FROM tasks",
-    );
-    expect(dbResult.rows[0].count).toBe(0);
-  });
-});
+                expect(res.statusCode).toBe(200);
+                expect(res.body.task_name).toBe('new task');
+                expect(res.body.deadline).toBe(null);
+            })
+
+            it('the object that is returned should contain date', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card']
+                );
+
+                const res = await request(app)
+                    .post(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks`)
+                    .send({ task_name: "new task", deadline: "2026-05-16"});
+
+                expect(res.statusCode).toBe(200);
+                expect(res.body.task_name).toBe('new task');
+                // vi borde ändra så potgrez inte använder dom konstiga sakerna på datum
+                // det kan man göra genom att ha tabellen i date istället för timestamp
+                expect(res.body.deadline).toBe('2026-05-15T22:00:00.000Z');
+            })
+
+            it('should not create a task if there is no valid card_id, return status code 404', async () => {
+                
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                const res = await request(app).get(`/boards/${board.rows[0].board_id}/99999/tasks`)
+                
+                expect(res.statusCode).toBe(404);
+            })
+        })
+
+        describe('DELETE /task/:task', () => {
+
+            it('should send status 404 if the subject_card_id doesnt have the task', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card1 = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                const card2 = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 2']
+                );
+
+                //insert real data
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3) RETURNING *`,
+                    [card1.rows[0].subject_card_id, 'test task 1', '2026-05-14']
+                );
+
+                const res = await request(app)
+                    .delete(`/boards/${board.rows[0].board_id}/cards/${card2.rows[0].subject_card_id}/tasks/${task.rows[0].task_id}`);
+
+                expect(res.statusCode).toBe(404);
+                expect(res.body).toHaveProperty('error', 'Koppling finns inte; FEL!')
+            })
+
+            it('should return status 204 if the delete was successful', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card1 = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                //insert real data
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3) RETURNING *`,
+                    [card1.rows[0].subject_card_id, 'test task 1', '2026-05-14']
+                );
+
+                const res = await request(app)
+                    .delete(`/boards/${board.rows[0].board_id}/cards/${card1.rows[0].subject_card_id}/tasks/${task.rows[0].task_id}`);
+
+                expect(res.statusCode).toBe(204);
+
+                const deleted = await pool.query(
+                    `SELECT * FROM tasks WHERE subject_card_id = $1`,
+                    [card1.rows[0].subject_card_id]
+                )
+
+                expect(deleted.rows.length).toBe(0);
+            })
+        })
+
+        describe('POST /task', () => {
+
+            it('shoud return 400 error if new input has no name', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card1 = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                //insert real data
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name) VALUES ($1, $2) RETURNING *`,
+                    [card1.rows[0].subject_card_id, 'test task 1']
+                );
+
+                const res = await request(app)
+                    .patch(`/boards/${board.rows[0].board_id}/cards/${card1.rows[0].subject_card_id}/tasks/${task.rows[0].task_id}`)
+                    .send({});
+
+                expect(res.statusCode).toBe(400);
+                expect(res.body).toHaveProperty('error', 'New name is required');
+            })
+
+            it('should return 404 if there is no task with the id that should be changed', async () => {
+            // test setup    
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );
+
+                // insert board
+                const board = await pool.query(
+                    `INSERT INTO board (board_name, is_shared) VALUES ($1, $2) RETURNING *`,
+                    ['Test Board 1', false]
+                );
+
+                  // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert card
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                const res = await request(app)
+                                .patch(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks/99999`)
+                                .send({ task_name: 'cant change name if card doesnt exist'});
+
+                expect(res.statusCode).toBe(404);
+                expect(res.body).toHaveProperty('error', 'Task not found')
+            })
+
+            it('should return 200 if the PATCH works and the changed card', async () => {
+            //test setup
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                //insert real data
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name) VALUES ($1, $2) RETURNING *`,
+                    [card.rows[0].subject_card_id, 'test task 1']
+                );
+
+                const res = await request(app)
+                    .patch(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks/${task.rows[0].task_id}`)
+                    .send({ task_name: 'new card name' });
+                
+                expect(res.statusCode).toBe(200);
+                expect(res.body).toMatchObject({ 
+                    task_id : task.rows[0].task_id, 
+                    task_name : 'new card name'
+                });
+            })
+        })  
+    })
+})

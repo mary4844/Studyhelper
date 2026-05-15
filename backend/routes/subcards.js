@@ -30,7 +30,15 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
             return res.status(400).json({ error: 'Name is required' });
         }
 
-        //vi tänker att man inte behöver veta mer än såhär att det borde funka iallafall. 
+        // det här kan man använda för att kolla om en board finns eller inte
+        // tror det är det som den delen som inte funkar försöker göra 
+
+        // const board = await pool.query(
+        //     `SELECT * FROM board WHERE board_id = $1`, [board_id]
+        // );
+        // if (!board.rows[0]) {
+        //     return res.status(404).json({ error: 'Board hittades inte' });
+        // }
 
         const result = await pool.query(
             `INSERT INTO subject_cards
@@ -86,6 +94,7 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Card is not connected to this board' });
         }
+        //kanske inte behövs subject_card_id i emiten
         emitCardDeleted(io, board_id, subject_card_id);
         res.status(204).send();
     } catch (error) {

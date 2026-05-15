@@ -15,6 +15,8 @@ require('../socket_events/task_events');
 router.get("/", async (req, res) => {
   try {
     const { subject_card_id } = req.params;
+
+    //kolla om subject card finns med quary
     
     const result = await pool.query(
       `SELECT * 
@@ -23,6 +25,7 @@ router.get("/", async (req, res) => {
       ORDER BY task_id`,
       [subject_card_id]);
 
+      //skickar hela objektet0 som innehåller task_name, task_id, deadline, user etc.
       res.json(result.rows);
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -48,9 +51,9 @@ router.post("/", async (req, res) => {
       //går det att lägga in deadline också?
     const result = await pool.query(
       `INSERT INTO tasks
-      (subject_card_id, task_name) 
-      VALUES ($1, $2) RETURNING *`,
-      [subject_card_id, task_name]);
+      (subject_card_id, task_name, deadline) 
+      VALUES ($1, $2, $3) RETURNING *`,
+      [subject_card_id, task_name, deadline]);
         
         //kanske lägga till user_id senare för att kunna "ta över en task" i gruppboardsen
         //ska mna typ lägga in deadline direkt?? 
@@ -61,6 +64,7 @@ router.post("/", async (req, res) => {
         
     emitTaskCreated(io, board_id, result.rows[0]);
       // Send the created task back to the frontend.
+
     res.json(result.rows[0]);
   } catch (error) {
     console.error("Error creating task:", error);
@@ -81,13 +85,13 @@ router.delete("/:task_id", async (req, res) => {
       AND task_id = $2 RETURNING *`,
       [subject_card_id, task_id]);
 
-    if (!result.rows) {
-      return res.status(400).json({ error: 'Koppling finns inte; FEL!' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Koppling finns inte; FEL!' });
     }
 
-    //kanske bugg, kommer databasen skicka nått tillbaka. Annars skicka task_id
+    //Kanske inte behövs task_id i emiten
     emitTaskDeleted(io, board_id, task_id)
-    res.json(result.rows[0]); //skicka db restultatet som JSON så slipper frontend göra en GET för att uppdatera
+    res.status(204).send(); 
   } catch (error) {
     console.error("Error failed to clear list:", error);
     res.status(500).json({ error: "Failed to clear list" });

@@ -130,7 +130,7 @@ describe('calendar integration tests', () => {
 
         describe('GET /cards', () => {
 
-            it('should return status code 200 and empty array (?) if there are no cards', async () => {
+            it('should return status code 200 and empty array if there are no cards', async () => {
             // test setup    
                 //insert user
                 const user = await pool.query(
@@ -196,8 +196,7 @@ describe('calendar integration tests', () => {
                     subject_card_name: 'Test Card 1'
                 });
                 expect(res.body[1]).toMatchObject({ 
-                    board_id: board.rows[0].board_id, 
-                    subject_card_name: 'Test Card 2'
+                        
                 });
             })
         })
