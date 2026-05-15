@@ -53,7 +53,10 @@ router.post("/", requiresAuth(), async (req, res) => {
 
     const user_id = user.rows[0].user_id;
     // Read the board name sent from the frontend body.
-    const { name } = req.body;
+    const { name, type } = req.body;
+
+    // om typen är group => sant, annars falskt
+    const is_shared = type === 'group'
 
     if (!name) {
       return res.status(400).json({ error: 'Name is required' });
@@ -61,8 +64,9 @@ router.post("/", requiresAuth(), async (req, res) => {
 
     // Insert the new board and ask PostgreSQL to return the inserted row.
     const board = await pool.query(
-      "INSERT INTO board (board_name) VALUES ($1) RETURNING *",
-      [name]);
+      "INSERT INTO board (board_name, is_shared) VALUES ($1, $2) RETURNING *",
+      [name, is_shared]
+    );
 
     if (!board.rows[0]) {
       return res.status(404).json({ error: 'Board skapas inte' });
@@ -130,6 +134,7 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
 
     const user_id = user.rows[0].user_id;
     const { board_id } = req.params;
+    
     const connection = await pool.query(
       `SELECT * FROM user_board 
       WHERE user_id = $1 
@@ -140,6 +145,10 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
       return res.status(404).json({ error: 'Ingen koppling?!' });
     }
 
+    //ta bort kopplingen mellan user och board
+    await pool.query(`DELETE FROM user_board WHERE board_id = $1`, [board_id]);
+
+    //ta bort board
     const result = await pool.query("DELETE FROM board WHERE board_id = $1", [board_id]);
 
     if (result.rowCount === 0) {
