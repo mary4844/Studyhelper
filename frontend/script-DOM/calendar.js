@@ -1,3 +1,5 @@
+//import { getDeadlineTask } from "../script-API/calendar_API.js"
+
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
 const prevMonthBtn = document.getElementById('prev-month');
@@ -12,7 +14,7 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-function renderCalendar(month, year) {
+async function renderCalendar(month, year) {
     calendarDates.innerHTML = '';
     monthYear.textContent = `${months[month]} ${year}`;
 
@@ -33,6 +35,10 @@ function renderCalendar(month, year) {
 
     // Populate the days
     for (let i = 1; i <= daysInMonth; i++) {
+
+        const formattedDate =`${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        // const deadlinedTasks = await getDeadlineTask(formattedDate);
+
         const day = document.createElement('div');
 
         const date = document.createElement('div');
@@ -40,7 +46,14 @@ function renderCalendar(month, year) {
         date.classList.add('date')
 
         const dateInfo = document.createElement('div');
-        dateInfo.textContent = 'Testar att skriva något som är längre Testar att skriva något som är längre Testar att skriva något som är längre'
+        // if (deadlinedTasks.length > 0) {
+        //     deadlinedTasks.forEach(task => {
+        //         const taskElement = document.createElement('div');
+        //         taskElement.textContent = 
+        //             "Deadline: " + deadlinedTasks.task_name;
+        //         dateInfo.appendChild(taskElement);
+        //     });
+        // }
         dateInfo.classList.add('date-info')
 
         // Highlight today's date
@@ -51,7 +64,7 @@ function renderCalendar(month, year) {
         ) {
             day.classList.add('current-date');
         }
-        
+
         day.appendChild(date);
         day.appendChild(dateInfo);
         

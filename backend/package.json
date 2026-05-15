@@ -5,8 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand --verbose",
-    "test:routes": "jest --runInBand --verbose route_tests/tasks.routes.test.js" ,
-    "test:integration": "jest --runInBand --verbose route_tests/tasks.integration.test.js"
+    "test:tasks": "NODE_ENV=test jest --runInBand --verbose route_tests/tasks.unit.test.js",
+    "test:cards": "NODE_ENV=test jest --runInBand --verbose route_tests/subcards.unit.test.js",
+    "test:boards": "NODE_ENV=test jest --runInBand --verbose route_tests/boards.unit.test.js",
+    "test:calendar": "NODE_ENV=test jest --runInBand --verbose route_tests/calendar.unit.test.js",
+    "test:routes": "NODE_ENV=test jest --runInBand --verbose route_tests/",
+
+    "test:intgr_tasks": "NODE_ENV=test jest --runInBand --verbose integration_tests/tasks.integration.test.js",
+    "test:intgr_cards": "NODE_ENV=test jest --runInBand --verbose integration_tests/cards.integration.test.js",
+    "test:intgr_boards": "NODE_ENV=test jest --runInBand --verbose integration_tests/boards.integration.test.js",
+    "test:intgr_calendar": "NODE_ENV=test jest --runInBand --verbose integration_tests/calendar.integration.test.js",
+    "test:integration": "NODE_ENV=test jest --runInBand --verbose integration_tests/"
+    
   },
   "keywords": [],
   "author": "",
@@ -14,7 +24,9 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-openid-connect": "^2.20.2",
     "pg": "^8.20.0"
   },
   "devDependencies": {
