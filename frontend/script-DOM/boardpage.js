@@ -4,7 +4,7 @@ import {
     createTask,
     getTasks,
     deleteTaskById,
-} from "../script-API/boardpage_API.js";
+} from "/script-API/boardpage_API.js";
 
 // Add_task knappen
 let page_color_name = "blue";

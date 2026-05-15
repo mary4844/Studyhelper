@@ -10,7 +10,7 @@ let selectedAltYourBoards = "all";
 function renderBoard(boardName, boardType, boardId) {
     const new_board = document.createElement("a");
     new_board.classList.add("board");
-    new_board.href = `new_boardpage_v1.html?board_id=${boardId}`;
+    new_board.href = `boardpage.html?board_id=${boardId}`;
 
     if (boardType === "personal") {
         new_board.classList.add("board-personal");
@@ -188,7 +188,7 @@ add_board_btn.addEventListener("click", () => {
             }
             // lägg till ny board med namnet
             const new_board = document.createElement("a");
-            new_board.href = `new_boardpage_v1.html?board_id=${createdBoard.board_id}`;
+            new_board.href = `boardpage.html?board_id=${createdBoard.board_id}`;
             if (selectedAlt === "personal") {
                 new_board.classList.add("board");
                 new_board.classList.add("board-personal");

@@ -10,9 +10,8 @@ const path = require("path");       // modul för att hantera filvägar på dato
 // exempel tasksRouter blir variabeln som pekar på den routern vi skapar i routes/tasks.js
 const boardsRouter = require("./routes/boards");
 const calendarRouter = require("./routes/calendar");
-
-// const tasksRouter = require("./routes/tasks");
-// const subcardsRouter = require("./routes/subcards");
+const tasksRouter = require("./routes/tasks");
+const subcardsRouter = require("./routes/subcards");
 
 const app = express();
 
@@ -58,7 +57,6 @@ if (authEnabled) {
   });
 }
 
-app.use(express.static(path.join(__dirname, "../frontend/html/")));
 app.use(express.static(path.join(__dirname, "../frontend/")));
 
 app.use(async (req, res, next) => {
@@ -93,13 +91,13 @@ app.use(async (req, res, next) => {
 // omderigiera root url till startpage.html
 app.get("/", (req, res) => {
   const isAuthenticated = req.oidc.isAuthenticated();
-  isAuthenticated ? res.redirect("new_startpage.html") : res.redirect("login.html");
+  isAuthenticated ? res.redirect("startpage.html") : res.redirect("login.html");
   // res.redirect("startpage.html");
 });
 
 
 // Föravidare all /task routes requests på vår app from frontend ex. GET /tasks/add till task.js
-// app.use('/tasks', tasksRouter);
+app.use('/tasks', tasksRouter);
 app.use('/boards', boardsRouter);
 app.use('/calendar', calendarRouter);
 
