@@ -24,22 +24,29 @@ router.post('/', requiresAuth(), async (req, res) => { //requires auth ?
         const io = req.app.get('io');
 
         const { board_id } = req.params;
+        const { subject_name } = req.body;
 
-        const { subject_card_name, subject_name } = req.body;
-        const cardName = subject_card_name || subject_name;
-
-        if (!cardName) {
+        if (!subject_name) {
             return res.status(400).json({ error: 'Name is required' });
         }
 
-        //vi tänker att man inte behöver veta mer än såhär att det borde funka iallafall. 
+        // det här kan man använda för att kolla om en board finns eller inte
+        // tror det är det som den delen som inte funkar försöker göra 
+
+        // const board = await pool.query(
+        //     `SELECT * FROM board WHERE board_id = $1`, [board_id]
+        // );
+        // if (!board.rows[0]) {
+        //     return res.status(404).json({ error: 'Board hittades inte' });
+        // }
 
         const result = await pool.query(
             `INSERT INTO subject_cards
             (board_id, subject_name)
             VALUES ($1, $2) RETURNING *`,
-            [board_id, cardName]);
+            [board_id, subject_name]);
 
+        //den här delen funkar inte den returnerar 500 om det inte finns någon board
         if (!result.rows[0]) {
             return res.status(404).json({ error: 'subject card skapas inte' });
         }
@@ -63,11 +70,7 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
             FROM subject_cards 
             WHERE board_id = $1`,
             [board_id]);
-
-        //venne hur viktigt dethär är, kan ju inte hända (tror jag)
-        if(!result.rows) {
-            return res.status(400).json({ error: 'board saknas'})
-        }    
+ 
         //behöver ingen emit
         return res.status(200).json(result.rows);
     } catch (error) {
@@ -88,9 +91,10 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
             AND board_id = $2 RETURNING *`,
             [subject_card_id, board_id]);
 
-        if (!result.rows) {
-            return res.status(404).json({ error: 'Koppling finns inte; FEL!' });
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Card is not connected to this board' });
         }
+        //kanske inte behövs subject_card_id i emiten
         emitCardDeleted(io, board_id, subject_card_id);
         res.status(204).send();
     } catch (error) {
@@ -105,16 +109,15 @@ router.patch('/:subject_card_id', requiresAuth(), async (req, res) => {
         const io = req.app.get('io');
 
         const { board_id, subject_card_id } = req.params;
-        const { subject_card_name, subject_name } = req.body;
-        const cardName = subject_card_name || subject_name;
+        const { subject_name } = req.body;
 
-        if(!cardName) {
+        if(!subject_name) {
             return res.status(400).json({ error: 'Behöver ett nytt namn'})
         }
 
         const result = await pool.query(
         `UPDATE subject_cards SET subject_name = $1 WHERE subject_card_id = $2 RETURNING *`,
-        [cardName, subject_card_id]
+        [subject_name, subject_card_id]
         );
 
         if(result.rowCount === 0) {

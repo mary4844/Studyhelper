@@ -40,8 +40,8 @@ describe('subcards routes', () => {
         pool.query
           .mockResolvedValueOnce({
             rows: [
-                { subject_card_id: 1, subject_card_name: 'card 1' },
-                { subject_card_id: 2, subject_card_name: 'card 2' }]
+                { subject_card_id: 1, subject_name: 'card 1' },
+                { subject_card_id: 2, subject_name: 'card 2' }]
           });
 
         const res = await request(app).get(BASE);
@@ -76,13 +76,13 @@ describe('subcards routes', () => {
         pool.query
           .mockResolvedValueOnce({
                rows: [
-                { subject_card_id: 1, subject_card_name: 'New card' }
+                { subject_card_id: 1, subject_name: 'New card' }
            ]});
 
-        const res = await request(app).post(BASE).send({ subject_card_name: 'New card' });
+        const res = await request(app).post(BASE).send({ subject_name: 'New card' });
 
         expect(res.statusCode).toBe(201);
-        expect(res.body).toHaveProperty('subject_card_name', 'New card');
+        expect(res.body).toHaveProperty('subject_name', 'New card');
       })
 
       it('should return statuscode 400', async () => {
@@ -98,7 +98,7 @@ describe('subcards routes', () => {
       //does it return the deleted task?
       it('should delete task and return the deleted task', async () => {
             pool.query.mockResolvedValueOnce({
-                rows: [{ subject_card_id: 1, subject_card_name: 'Deleted card' }]
+                rows: [{ subject_card_id: 1, subject_name: 'Deleted card' }]
             });
 
             const res = await request(app).delete(`${BASE}/1`);
@@ -120,19 +120,19 @@ describe('subcards routes', () => {
       
       it('should update task name and return 200', async () => {
             pool.query.mockResolvedValueOnce({
-                rows: [{ subject_card_id: 1, subject_card_name: 'Updated card' }],
+                rows: [{ subject_card_id: 1, subject_name: 'Updated card' }],
                 rowCount: 1
             });
 
             const res = await request(app)
                 .patch(`${BASE}/1`)
-                .send({ subject_card_name: 'Updated card' });
+                .send({ subject_name: 'Updated card' });
 
             expect(res.statusCode).toBe(200);
-            expect(res.body).toHaveProperty('subject_card_name', 'Updated card');
+            expect(res.body).toHaveProperty('subject_name', 'Updated card');
         });
 
-        it('should return 400 if subject_card_name is missing', async () => {
+        it('should return 400 if subject_name is missing', async () => {
             const res = await request(app)
                 .patch(`${BASE}/1`)
                 .send({});
@@ -146,7 +146,7 @@ describe('subcards routes', () => {
 
             const res = await request(app)
                 .patch(`${BASE}/1`)
-                .send({ subject_card_name: 'Updated card' });
+                .send({ subject_name: 'Updated card' });
 
             expect(res.statusCode).toBe(404);
             expect(res.body).toHaveProperty('error', 'Kort saknas');
@@ -157,7 +157,7 @@ describe('subcards routes', () => {
 
             const res = await request(app)
                 .patch(`${BASE}/1`)
-                .send({ subject_card_name: 'Updated card' });
+                .send({ subject_name: 'Updated card' });
 
             expect(res.statusCode).toBe(500);
             expect(res.body).toHaveProperty('error');

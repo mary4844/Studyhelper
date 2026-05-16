@@ -64,7 +64,7 @@ ALTER SEQUENCE public.board_board_id_seq OWNED BY public.board.board_id;
 CREATE TABLE public.subject_cards (
     subject_card_id integer NOT NULL,
     board_id integer,
-    subject_card_name character varying NOT NULL
+    subject_name character varying NOT NULL
 );
 
 

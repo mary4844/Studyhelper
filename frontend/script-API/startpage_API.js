@@ -17,6 +17,7 @@ export async function getAllBoards() {
 }
 
 //creates board and posts it in db
+// type måste vara 'personal' eller 'group', exakt så
 export async function createBoard(name, type) {
   return await fetch("/boards", {
     method: "POST",
