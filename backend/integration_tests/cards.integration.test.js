@@ -18,7 +18,7 @@ app.set('io', {
     to: () => ({ emit: jest.fn() })
 });
 
-describe('calendar integration tests', () => {
+describe('subcards integration tests', () => {
     
     beforeEach(async () => {
         //clean database before each test
@@ -32,8 +32,6 @@ describe('calendar integration tests', () => {
     afterAll(async () => {
         await pool.end(); //close connection to database when done
     })
-
-    describe('subcards integration tests', () => {
 
         describe('POST /cards', () => {
             
@@ -81,7 +79,7 @@ describe('calendar integration tests', () => {
 
             //     const res = await request(app)
             //                     .post(`/boards/1/cards`)
-            //                     .send({ subject_card_name: 'new subcard' });
+            //                     .send({ subject_name: 'new subcard' });
 
             //     expect(res.statusCode).toBe(404);
             //     expect(res.body).toHaveProperty('error', 'subject card skapas inte')
@@ -92,7 +90,7 @@ describe('calendar integration tests', () => {
             it('should return 500 if board does not exist', async () => {
                 const res = await request(app)
                     .post('/boards/99999/cards') //Random board that doesnt exist
-                    .send({ subject_card_name: 'new subcard' });
+                    .send({ subject_name: 'new subcard' });
 
                 expect(res.statusCode).toBe(500); // FK constraint violation
             });
@@ -120,10 +118,10 @@ describe('calendar integration tests', () => {
 
                 const res = await request(app)
                                 .post(`/boards/${new_board.rows[0].board_id}/cards`)
-                                .send({ subject_card_name: 'new_subcard' });
+                                .send({ subject_name: 'new_subcard' });
 
                 expect(res.statusCode).toBe(201);
-                expect(res.body).toMatchObject({ subject_card_name: "new_subcard"})
+                expect(res.body).toMatchObject({ subject_name: "new_subcard"})
 
             })
         })
@@ -178,12 +176,12 @@ describe('calendar integration tests', () => {
 
                 // insert card
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
                 const card2 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 2']
                 );
 
@@ -193,7 +191,7 @@ describe('calendar integration tests', () => {
                 expect(res.body.length).toBe(2);
                 expect(res.body[0]).toMatchObject({ 
                     board_id: board.rows[0].board_id,
-                    subject_card_name: 'Test Card 1'
+                    subject_name: 'Test Card 1'
                 });
                 expect(res.body[1]).toMatchObject({ 
                         
@@ -234,7 +232,7 @@ describe('calendar integration tests', () => {
 
                 // create card ON BOARD 1
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board1.rows[0].board_id, 'Test Card']
                 );
 
@@ -271,12 +269,12 @@ describe('calendar integration tests', () => {
 
                 // insert card
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
                 const card2 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 2']
                 );
 
@@ -318,7 +316,7 @@ describe('calendar integration tests', () => {
 
                 // insert card
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -353,13 +351,13 @@ describe('calendar integration tests', () => {
 
                 // insert card
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
                 const res = await request(app)
                                 .patch(`/boards/${board.rows[0].board_id}/cards/999999`)
-                                .send({ subject_card_name: 'cant change name if card doesnt exist'});
+                                .send({ subject_name: 'cant change name if card doesnt exist'});
 
                 expect(res.statusCode).toBe(404);
                 expect(res.body).toHaveProperty('error', 'Kort saknas')
@@ -387,25 +385,25 @@ describe('calendar integration tests', () => {
 
                 // insert card
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
                 const card2 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 2']
                 );
 
                 const res = await request(app)
                                 .patch(`/boards/${board.rows[0].board_id}/cards/${card1.rows[0].subject_card_id}`)
-                                .send({ subject_card_name: 'new card name'});
+                                .send({ subject_name: 'new card name'});
 
                 expect(res.statusCode).toBe(200);
                 expect(res.body).toMatchObject({ 
                     subject_card_id: card1.rows[0].subject_card_id, 
-                    subject_card_name: 'new card name'
-                });
-            })
+                    subject_name: 'new card name'
+            });
         })
     })
 })
+

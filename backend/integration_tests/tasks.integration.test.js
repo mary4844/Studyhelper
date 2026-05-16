@@ -59,7 +59,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card']
                 );
 
@@ -104,7 +104,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card']
                 );
 
@@ -164,7 +164,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card']
                 );
 
@@ -198,7 +198,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card']
                 );
 
@@ -233,7 +233,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card']
                 );
 
@@ -294,7 +294,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card']
                 );
 
@@ -333,12 +333,12 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
                 const card2 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 2']
                 );
 
@@ -377,7 +377,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -425,7 +425,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card1 = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -465,7 +465,7 @@ describe('tasks integration tests', () => {
 
                 // insert card
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -499,7 +499,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -545,7 +545,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -585,7 +585,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 
@@ -623,7 +623,7 @@ describe('tasks integration tests', () => {
 
                 // insert subject card with that board_id
                 const card = await pool.query(
-                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                     [board.rows[0].board_id, 'Test Card 1']
                 );
 

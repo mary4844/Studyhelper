@@ -24,6 +24,7 @@ describe('calendar integration tests', () => {
         //clean database before each test
         await pool.query('DELETE FROM tasks'); 
         await pool.query('DELETE FROM subject_cards');
+        await pool.query('DELETE FROM user_board');
         await pool.query('DELETE FROM board');        
     })
 
@@ -43,7 +44,7 @@ describe('calendar integration tests', () => {
 
             // insert subject card with that board_id
             const card = await pool.query(
-                `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                 [board.rows[0].board_id, 'Test Card']
             );
 
@@ -76,7 +77,7 @@ describe('calendar integration tests', () => {
 
             // insert subject card with that board_id
             const card = await pool.query(
-                `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                 [board.rows[0].board_id, 'Test Card']
             );
 
@@ -96,7 +97,7 @@ describe('calendar integration tests', () => {
 
             // insert subject card with that board_id
             const card = await pool.query(
-                `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
                 [board.rows[0].board_id, 'Test Card']
             );
 
