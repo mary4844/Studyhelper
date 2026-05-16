@@ -25,7 +25,7 @@ describe('tasks integration tests', () => {
         await pool.query('DELETE FROM subject_cards');
         await pool.query('DELETE FROM user_board');
         await pool.query('DELETE FROM board');
-        await pool.query('DELETE FROM users');         
+        await pool.query('DELETE FROM users');
     })
 
     afterAll(async () => {
@@ -267,9 +267,45 @@ describe('tasks integration tests', () => {
                     [user.rows[0].user_id, board.rows[0].board_id]
                 );
 
-                const res = await request(app).get(`/boards/${board.rows[0].board_id}/99999/tasks`)
+                const res = await request(app)
+                    .get(`/boards/${board.rows[0].board_id}/99999/tasks`)
+                    .send({ task_name: "test task"})
                 
                 expect(res.statusCode).toBe(404);
+            })
+
+            it('should set the status to false when a task is created', async () => {
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card']
+                );
+
+                const res = await request(app)
+                    .post(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks`)
+                    .send({ task_name: "test task" });
+
+                expect(res.statusCode).toBe(200);
+                expect(res.body.deadline).toBe(null);
+                expect(res.body.task_name).toBe('test task');
+                expect(res.body.status).toBe(false);
             })
         })
 
@@ -365,7 +401,7 @@ describe('tasks integration tests', () => {
             })
         })
 
-        describe('POST /task', () => {
+        describe('PATCH /task', () => {
 
             it('shoud return 400 error if new input has no name', async () => {
             // test setup    
@@ -484,5 +520,125 @@ describe('tasks integration tests', () => {
                 });
             })
         })  
+
+        describe('PATCH /task/status', () => {
+
+            it('should set status to true if it is false', async () => {
+                 //test setup
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                //insert real data
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, status) VALUES ($1, $2, $3) RETURNING *`,
+                    [card.rows[0].subject_card_id, 'test task 1', false]
+                );
+
+                const res = await request(app)
+                    .patch(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks/${task.rows[0].task_id}/status`);
+
+                expect(res.statusCode).toBe(200);
+                expect(res.body.task_name).toBe('test task 1');
+                expect(res.body.status).toBe(true);
+            })
+
+            it('should set status to false if it is true', async () => {
+             //test setup
+                //insert user
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                //insert real data
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, status) VALUES ($1, $2, $3) RETURNING *`,
+                    [card.rows[0].subject_card_id, 'test task 1', true]
+                );
+
+                const res = await request(app)
+                    .patch(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks/${task.rows[0].task_id}/status`);
+
+                expect(res.statusCode).toBe(200);
+                expect(res.body.task_name).toBe('test task 1');
+                expect(res.body.status).toBe(false);
+            })
+
+            it('should return 400 if there is no task found', async () => {
+                const user = await pool.query(
+                    `INSERT INTO users (user_mail) VALUES ($1) RETURNING *`,
+                    ['test@test.com'] // matches the mocked email
+                );  
+                
+                // insert board first
+                const board = await pool.query(
+                    `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
+                    ['Test Board']
+                );
+
+                // link user to board
+                await pool.query(
+                    `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2)`,
+                    [user.rows[0].user_id, board.rows[0].board_id]
+                );
+
+                // insert subject card with that board_id
+                const card = await pool.query(
+                    `INSERT INTO subject_cards (board_id, subject_card_name) VALUES ($1, $2) RETURNING *`,
+                    [board.rows[0].board_id, 'Test Card 1']
+                );
+
+                //insert task
+                const task = await pool.query(
+                    `INSERT INTO tasks (subject_card_id, task_name, status) VALUES ($1, $2, $3) RETURNING *`,
+                    [card.rows[0].subject_card_id, 'test task 1', true]
+                );
+
+                const res = await request(app)
+                    .patch(`/boards/${board.rows[0].board_id}/cards/${card.rows[0].subject_card_id}/tasks/999/status`); //task_id that doesnt exist
+
+                expect(res.statusCode).toBe(404);
+                expect(res.body).toHaveProperty('error', 'Task not found');
+            })
+        })
     })
 })

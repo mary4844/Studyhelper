@@ -39,8 +39,6 @@ router.get('/', requiresAuth(), async (req, res) => {
   }
 })
 
-//lägg till getBoardById om den behövs, tror inte det. Finns i auth_new
-
 // Create one new board.
 router.post("/", requiresAuth(), async (req, res) => {
   try {

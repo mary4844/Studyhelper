@@ -164,4 +164,65 @@ describe('task routes', () => {
             expect(res.body).toHaveProperty('error');
         });
     });
+
+    describe('PATCH /task/status', () => {
+         
+        it('should toggle status from false to true', async () => {
+            pool.query
+                .mockResolvedValueOnce({ rows: [{ status: false }] })  // SELECT status
+                .mockResolvedValueOnce({ rowCount: 1, rows: [{ task_id: 1, task_name: 'test task', status: true, subject_card_id: 1 }] }); // UPDATE
+
+            const res = await request(app).patch(`${BASE}/1/status`);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.status).toBe(true);
+            expect(res.body.task_name).toBe('test task');
+        });
+
+        it('should toggle status from true to false', async () => {
+            pool.query
+                .mockResolvedValueOnce({ rows: [{ status: true }] })   // SELECT status
+                .mockResolvedValueOnce({ rowCount: 1, rows: [{ task_id: 1, task_name: 'test task', status: false, subject_card_id: 1 }] }); // UPDATE
+
+            const res = await request(app).patch(`${BASE}/1/status`);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body.status).toBe(false);
+            expect(res.body.task_name).toBe('test task');
+        });
+
+        it('should return 404 if task_id does not exist', async () => {
+            pool.query
+                .mockResolvedValueOnce({ rows: [] })         // SELECT returns nothing
+                .mockResolvedValueOnce({ rowCount: 0, rows: [] }); // UPDATE finds nothing
+
+            const res = await request(app).patch(`${BASE}/99999/status`);
+
+            expect(res.statusCode).toBe(404);
+            expect(res.body).toHaveProperty('error', 'Task not found');
+        });
+
+        it('should return the full task object, not just the status', async () => {
+            pool.query
+                .mockResolvedValueOnce({ rows: [{ status: false }] })
+                .mockResolvedValueOnce({ rowCount: 1, rows: [{ task_id: 1, task_name: 'test task', status: true, subject_card_id: 1 }] });
+
+            const res = await request(app).patch(`${BASE}/1/status`);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toHaveProperty('task_id');
+            expect(res.body).toHaveProperty('task_name');
+            expect(res.body).toHaveProperty('status');
+            expect(res.body).toHaveProperty('subject_card_id');
+        });
+
+        it('should return 500 if the database throws', async () => {
+            pool.query.mockRejectedValueOnce(new Error('db error'));
+
+            const res = await request(app).patch(`${BASE}/1/status`);
+
+            expect(res.statusCode).toBe(500);
+            expect(res.body).toHaveProperty('error', 'Server error');
+        });
+    })
 }) 
