@@ -8,6 +8,8 @@ const { requiresAuth } = require('express-openid-connect'); //new
 //lets boards route hand off requests to subcards
 const subcardRouter = require("./subcards");
 
+const { emitUserAdded } = require('../socket_events/board_events');
+
 // Create a router that will hold routes related to boards.
 const router = express.Router({mergeParams: true});
 
@@ -161,8 +163,81 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
   }
 })
 
-//lägg till
 // router.patch();
+
+router.post('/:board_id/share', requiresAuth(), async (req, res) => {
+  try{
+      const io = req.app.get('io');
+      //behöver man göra någon auth check för dethär?
+      const { new_user_mail } = req.body;
+      const { board_id } = req.params;
+
+      //kollar authentication för user som lägger till
+      const requesting_user = await pool.query(
+        'SELECT * FROM users WHERE user_mail = $1',
+        [req.oidc.user.email]
+      );
+
+      //om requesting user inte finns
+      if(!requesting_user.rows[0]) {
+        return res.status(404).json({ error: 'Requesting user not found'})
+      }
+
+      //kollar om usern man ska lägga till finns
+      const user_to_add = await pool.query(
+        'SELECT * FROM users WHERE user_mail = $1',
+        [new_user_mail]
+      )
+
+      //om den nya usern inte finns
+      if(!user_to_add.rows[0]) {
+        return res.status(404).json({ error: 'Användaren hittades inte'})
+      }
+
+      //kollar om requesting user har tillgång till boarden
+      const membership = await pool.query(
+        'SELECT * FROM user_board WHERE user_id = $1 AND board_id = $2',
+        [requesting_user.rows[0].user_id, board_id]
+      )
+
+      //om requesting user inte har tillgång (men tror den alltid kommer ha det)
+      if (!membership.rows[0]) {
+        return res.status(403).json({ error: 'du har inte tillgång till den här boarden'})
+      }
+
+      //kollar om den nya usern redan är med
+      const alreadyMember = await pool.query(
+          'SELECT * FROM user_board WHERE user_id = $1 AND board_id = $2',
+          [user_to_add.rows[0].user_id, board_id]
+      );
+
+      //om den nya usern redan är med
+      if (alreadyMember.rows[0]) {
+          return res.status(409).json({ error: 'Användaren är redan med i boarden' });
+      }
+
+      //updaterar borden till is_shared = true om den inte redan är det
+      await pool.query(
+          'UPDATE board SET is_shared = true WHERE board_id = $1 AND is_shared = false',
+          [board_id]
+      );
+
+      //lägger till den nya usern
+      const result = await pool.query(
+        `INSERT INTO user_board (user_id, board_id) VALUES ($1, $2) RETURNING *`, 
+        [user_to_add.rows[0].user_id, board_id]
+      )
+
+      // om det ska updateras i real time när någon delar med en
+      // hur ska det funka med rum o sånt?
+      emitUserAdded(io, board_id, result.rows[0]);
+      return res.status(200).json(result.rows[0]);
+
+  } catch (error) {
+    console.error("error deleting board:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+})
 
 // Export the router so app.js can mount it.
 module.exports = router;
