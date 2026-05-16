@@ -1,3 +1,4 @@
+import { json } from "body-parser";
 
 console.log("startpage_API.js loaded");
 
@@ -50,3 +51,11 @@ export async function patchBoardById(board_id, new_name) {
     .then(res => res.json());
 }
 
+export async function addUserToBoard(board_id, new_user_mail) {
+    return await fetch(`/boards/${board_id}/share`, {
+        method: 'POST',
+        headers: { "Content-Type": "applicaition/json" },
+        body: JSON.stringify({ user_new_mail })
+    })
+    .then(res => res.json());
+}

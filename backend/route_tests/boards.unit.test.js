@@ -206,6 +206,90 @@ describe('board routes', () => {
                 expect(res.statusCode).toBe(500);
             });
         });
-    });
 
+        describe('POST /:board_id/share', () => {
+
+            it('should return 404 if the requesting user is not found', async () => {
+                pool.query.mockResolvedValueOnce({ rows: [] }); // requesting user SELECT
+
+                const res = await request(app)
+                    .post('/boards/1/share')
+                    .send({ new_user_email: 'add@test.com' });
+
+                expect(res.statusCode).toBe(404);
+                expect(res.body).toHaveProperty('error', 'Requesting user not found');
+            });
+
+            it('should return 404 if the user to add is not found', async () => {
+                pool.query
+                    .mockResolvedValueOnce({ rows: [{ user_id: 1 }] })  // requesting user
+                    .mockResolvedValueOnce({ rows: [] });                 // user to add
+
+                const res = await request(app)
+                    .post('/boards/1/share')
+                    .send({ new_user_email: 'notexist@test.com' });
+
+                expect(res.statusCode).toBe(404);
+                expect(res.body).toHaveProperty('error', 'Användaren hittades inte');
+            });
+
+            it('should return 403 if the requesting user is not a member of the board', async () => {
+                pool.query
+                    .mockResolvedValueOnce({ rows: [{ user_id: 1 }] })  // requesting user
+                    .mockResolvedValueOnce({ rows: [{ user_id: 2 }] })  // user to add
+                    .mockResolvedValueOnce({ rows: [] });                 // membership check
+
+                const res = await request(app)
+                    .post('/boards/1/share')
+                    .send({ new_user_email: 'add@test.com' });
+
+                expect(res.statusCode).toBe(403);
+                expect(res.body).toHaveProperty('error', 'du har inte tillgång till den här boarden');
+            });
+
+            it('should return 409 if the user to add is already a member', async () => {
+                pool.query
+                    .mockResolvedValueOnce({ rows: [{ user_id: 1 }] })  // requesting user
+                    .mockResolvedValueOnce({ rows: [{ user_id: 2 }] })  // user to add
+                    .mockResolvedValueOnce({ rows: [{ user_id: 1, board_id: 1 }] })  // membership check
+                    .mockResolvedValueOnce({ rows: [{ user_id: 2, board_id: 1 }] }); // already member check
+
+                const res = await request(app)
+                    .post('/boards/1/share')
+                    .send({ new_user_email: 'add@test.com' });
+
+                expect(res.statusCode).toBe(409);
+                expect(res.body).toHaveProperty('error', 'Användaren är redan med i boarden');
+            });
+
+            it('should return 200 and add the user to the board', async () => {
+                pool.query
+                    .mockResolvedValueOnce({ rows: [{ user_id: 1 }] })  // requesting user
+                    .mockResolvedValueOnce({ rows: [{ user_id: 2 }] })  // user to add
+                    .mockResolvedValueOnce({ rows: [{ user_id: 1, board_id: 1 }] })  // membership check
+                    .mockResolvedValueOnce({ rows: [] })                 // already member check
+                    .mockResolvedValueOnce({ rows: [] })                 // update is_shared
+                    .mockResolvedValueOnce({ rows: [{ user_id: 2, board_id: 1 }] }); // insert
+
+                const res = await request(app)
+                    .post('/boards/1/share')
+                    .send({ new_user_email: 'add@test.com' });
+
+                expect(res.statusCode).toBe(200);
+                expect(res.body).toHaveProperty('user_id', 2);
+                expect(res.body).toHaveProperty('board_id', 1);
+            });
+
+            it('should return 500 if the database throws', async () => {
+                pool.query.mockRejectedValueOnce(new Error('db error'));
+
+                const res = await request(app)
+                    .post('/boards/1/share')
+                    .send({ new_user_email: 'add@test.com' });
+
+                expect(res.statusCode).toBe(500);
+                expect(res.body).toHaveProperty('error', 'Server error');
+            });
+        });
+    });
 });
