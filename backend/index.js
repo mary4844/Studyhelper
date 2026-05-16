@@ -15,8 +15,19 @@ app.set('io', io);
 io.on('connection', (socket) => {
   //skickar när en client connectar
   console.log("en användare har anslutit:", socket.id)
+  
+  // ------------------ USER ROOMS -----------------------------
+ 
+  //in frontend on login: socket.emit('joinUserRoom', currentUserId);
 
-  // ----------------- ROOMS -----------------------------
+  socket.on('joinUserRoom', (user_id) => {
+    socket.join(`user_${user_id}`);
+    console.log(`${socket.id} joined personal room user_${user_id}`);
+  });
+
+
+
+  // ----------------- BOARD ROOMS -----------------------------
 
   //when a user opens a board, join that rooms board
   socket.on('joinBoard', (board_id) => {

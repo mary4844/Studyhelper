@@ -228,9 +228,7 @@ router.post('/:board_id/share', requiresAuth(), async (req, res) => {
         [user_to_add.rows[0].user_id, board_id]
       )
 
-      // om det ska updateras i real time när någon delar med en
-      // hur ska det funka med rum o sånt?
-      emitUserAdded(io, board_id, result.rows[0]);
+      emitUserAdded(io, user_to_add.rows[0].user_id, result.rows[0]);
       return res.status(200).json(result.rows[0]);
 
   } catch (error) {
