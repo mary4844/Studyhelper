@@ -1,4 +1,3 @@
-import { json } from "body-parser";
 
 console.log("startpage_API.js loaded");
 
@@ -37,7 +36,7 @@ export async function getBoardsByType(type) {
 }
 
 export async function deleteBoardById(board_id) {
-    return await fetch(`/boards/${board_id}`, {
+    await fetch(`/boards/${board_id}`, {
         method: 'DELETE'
     }) 
 }
