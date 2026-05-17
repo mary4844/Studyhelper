@@ -2,11 +2,6 @@
 console.log("startpage_API.js loaded");
 
 
-export async function loadboards() {
-    const boards = await getAllBoards();
-    console.log(boards);
-}
-
 // -------------------- BOARD FUNKTIONER ------------------------
 
 //ska man skicka tokens med auth0 på varje request?

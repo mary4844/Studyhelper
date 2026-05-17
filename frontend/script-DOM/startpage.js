@@ -1,7 +1,6 @@
 import { 
     createBoard, 
     getAllBoards,
-    loadboards,
     deleteBoardById
 } from "/script-API/startpage_API.js";
 
@@ -75,24 +74,24 @@ function applyBoardFilter(filter) {
 }
 
 async function displayBoards() {
-    const boards = await loadboards();
+    const boards = await getAllBoards();
 
     boards_container.innerHTML = "";
 
     boards.forEach(board => {
         const new_board = document.createElement("a");
-        new_board.href = `boardpage.html?boardId=${board.id}`;
+        new_board.href = `boardpage.html?boardId=${board.board_id}`;
         new_board.classList.add("board");
-        new_board.dataset.id = board.id;
+        new_board.dataset.id = board.board_id;
 
-        if (board.type === "personal") {
+        if (board.is_shared === false) {
             new_board.classList.add("board-personal");
-        } else if (board.type === "group") {
+        } else if (board.is_shared === true) {
             new_board.classList.add("board-group");
         }
 
         const board_title = document.createElement("p");
-        board_title.textContent = board.name;
+        board_title.textContent = board.board_name;
         board_title.style.fontWeight = "bold";
         board_title.style.color = "white";
 
@@ -103,7 +102,7 @@ async function displayBoards() {
         delete_btn.addEventListener("click", async (event) => {
             event.preventDefault();
 
-            await deleteBoard(board.id);
+            await deleteBoardById(board.board_id);
             await displayBoards();
         });
         new_board.append(board_title, delete_btn);
