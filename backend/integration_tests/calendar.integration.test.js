@@ -22,8 +22,8 @@ describe('calendar integration tests', () => {
     
     beforeEach(async () => {
         //clean database before each test
-        await pool.query('DELETE FROM tasks'); 
-        await pool.query('DELETE FROM subject_cards');
+        await pool.query('DELETE FROM subtask'); 
+        await pool.query('DELETE FROM task');
         await pool.query('DELETE FROM user_board');
         await pool.query('DELETE FROM board');        
     })
@@ -34,7 +34,7 @@ describe('calendar integration tests', () => {
 
     describe('GET /calendar/:date', () => {
 
-        it('should return tasks with matching deadline from read db', async () => {
+        it('should return subtasks with matching deadline from read db', async () => {
             
             // insert board first
             const board = await pool.query(
@@ -42,21 +42,21 @@ describe('calendar integration tests', () => {
                 ['Test Board']
             );
 
-            // insert subject card with that board_id
-            const card = await pool.query(
-                `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
-                [board.rows[0].board_id, 'Test Card']
+            // insert task_name with that board_id
+            const task = await pool.query(
+                `INSERT INTO task (board_id, task_name) VALUES ($1, $2) RETURNING *`,
+                [board.rows[0].board_id, 'Test task']
             );
 
             //insert real data
             await pool.query(
-                `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
-                [card.rows[0].subject_card_id, 'test task 1', '2026-05-14']
+                `INSERT INTO subtask (task_id, subtask_name, deadline) VALUES ($1, $2, $3)`,
+                [task.rows[0].task_id, 'Test subtask 1', '2026-05-14']
             );
 
             await pool.query(
-                `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
-                [card.rows[0].subject_card_id, 'test task 2', '2026-05-15']
+                `INSERT INTO subtask (task_id, subtask_name, deadline) VALUES ($1, $2, $3)`,
+                [task.rows[0].task_id, 'Test subtask 2', '2026-05-15']
             )
 
             const res = await request(app).get('/calendar/2026-05-14')
@@ -64,7 +64,7 @@ describe('calendar integration tests', () => {
             expect(res.statusCode).toBe(200);
             expect(res.body.length).toBe(1);
             expect(res.body[0]).toMatchObject({
-                task_name: 'test task 1',
+                subtask_name: 'Test subtask 1',
             });
         });
 
@@ -75,9 +75,9 @@ describe('calendar integration tests', () => {
                 ['Test Board']
             );
 
-            // insert subject card with that board_id
-            const card = await pool.query(
-                `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
+            // insert task with that board_id
+            const task = await pool.query(
+                `INSERT INTO task (board_id, task_name) VALUES ($1, $2) RETURNING *`,
                 [board.rows[0].board_id, 'Test Card']
             );
 
@@ -88,41 +88,41 @@ describe('calendar integration tests', () => {
             expect(res.body).toEqual([]);
         })
 
-        it('should return more than 1 task object if several match', async () => {
+        it('should return more than 1 subtask object if several match', async () => {
              // insert board first
             const board = await pool.query(
                 `INSERT INTO board (board_name) VALUES ($1) RETURNING *`,
                 ['Test Board']
             );
 
-            // insert subject card with that board_id
-            const card = await pool.query(
-                `INSERT INTO subject_cards (board_id, subject_name) VALUES ($1, $2) RETURNING *`,
-                [board.rows[0].board_id, 'Test Card']
+            // insert task with that board_id
+            const task = await pool.query(
+                `INSERT INTO task (board_id, task_name) VALUES ($1, $2) RETURNING *`,
+                [board.rows[0].board_id, 'Test task']
             );
 
             //insert real data
             await pool.query(
-                `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
-                [card.rows[0].subject_card_id, 'test task 1', '2026-05-14'] //date matches
+                `INSERT INTO subtask (task_id, subtask_name, deadline) VALUES ($1, $2, $3)`,
+                [task.rows[0].task_id, 'test subtask 1', '2026-05-14'] // Date matches
             );
 
             await pool.query(
-                `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
-                [card.rows[0].subject_card_id, 'test task 2', '2026-05-15'] //date doesnt match
+                `INSERT INTO subtask (task_id, subtask_name, deadline) VALUES ($1, $2, $3)`,
+                [task.rows[0].task_id, 'test subtask 2', '2026-05-15'] // Date doesn't match
             )
 
             await pool.query(
-                `INSERT INTO tasks (subject_card_id, task_name, deadline) VALUES ($1, $2, $3)`,
-                [card.rows[0].subject_card_id, 'test task 3', '2026-05-14'] //date matches
+                `INSERT INTO subtask (task_id, subtask_name, deadline) VALUES ($1, $2, $3)`,
+                [task.rows[0].task_id, 'test subtask 3', '2026-05-14'] // Date matches
             )
 
             const res = await request(app).get('/calendar/2026-05-14');
 
             expect(res.statusCode).toBe(200);
             expect(res.body.length).toBe(2);
-            expect(res.body[0]).toMatchObject({ task_name: 'test task 1' });
-            expect(res.body[1]).toMatchObject({ task_name: 'test task 3' });
+            expect(res.body[0]).toMatchObject({ subtask_name: 'test subtask 1' });
+            expect(res.body[1]).toMatchObject({ subtask_name: 'test subtask 3' });
         });
     });
 })

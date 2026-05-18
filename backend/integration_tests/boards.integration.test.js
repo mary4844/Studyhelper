@@ -21,8 +21,8 @@ describe('calendar integration tests', () => {
     
     beforeEach(async () => {
         //clean database before each test
-        await pool.query('DELETE FROM tasks');
-        await pool.query('DELETE FROM subject_cards');
+        await pool.query('DELETE FROM subtask');
+        await pool.query('DELETE FROM task');
         await pool.query('DELETE FROM user_board');
         await pool.query('DELETE FROM board');
         await pool.query('DELETE FROM users');       

@@ -55,7 +55,7 @@ describe('board routes', () => {
                 
         it('should return all boards for authenticated users', async () => {
             pool.query
-                // first quary is for user lookup second is the boards
+                // first query is for user lookup second is the boards
                 .mockResolvedValueOnce({rows: [{ user_id: 1 }] }) 
                 .mockResolvedValueOnce({rows: [{ board_id: 1, board_name: 'Test1'}, 
                                                { board_id: 2, board_name: 'Test2'}] })
@@ -78,7 +78,7 @@ describe('board routes', () => {
             expect(res.body).toEqual([]);
         })
 
-        it('should return 404 if user not fount', async () => {
+        it('should return 404 if user not found', async () => {
             pool.query.mockResolvedValueOnce({ rows: [] })
 
             const res = await request(app).get('/boards');

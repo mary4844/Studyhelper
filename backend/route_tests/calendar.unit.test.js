@@ -32,13 +32,13 @@ describe('calendar routes', () => {
 
     describe('/calendar/2026-05-14', () => {
         
-        it('should return the tasks for the given date', async () => {
+        it('should return the subtasks for the given date', async () => {
             pool.query.mockResolvedValueOnce({
                 rows: [{
-                    task_id: 1,
-                    task_name: 'task1',
+                    subtask_id: 1,
+                    subtask_name: 'subtask1',
                     deadline: '2026-05-14',
-                    subject_card_id: 1
+                    task_id: 1
                 }]
             });
 
@@ -47,10 +47,10 @@ describe('calendar routes', () => {
             expect(res.statusCode).toBe(200);
             expect(res.body.length).toBe(1);
             expect(res.body[0]).toMatchObject({
-                task_id: 1,
-                task_name: 'task1',
+                subtask_id: 1,
+                subtask_name: 'subtask1',
                 deadline: '2026-05-14',
-                subject_card_id: 1
+                task_id: 1
             });
         });
 

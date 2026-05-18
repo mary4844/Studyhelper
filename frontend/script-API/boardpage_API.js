@@ -4,36 +4,36 @@
 // board_id=${board_id} används i url:en men behövs inte i routes, används bara för att 
 // skicka board_id eftersom GET inte har någon body.
 
-export async function createSubjectCard(board_id, subject_name) {
-    return await fetch(`/boards/${board_id}/cards`, {
+export async function createTask(board_id, task_name) {
+    return await fetch(`/boards/${board_id}/tasks`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject_name })
-    }).then(res => res.json());
+        body: JSON.stringify({ task_name })
+    }).then(res => res.json()); 
 }
 
-export async function getAllSubjectCards(board_id) {
-    return await fetch(`/boards/${board_id}/cards`)
+export async function getAllTasks(board_id) {
+    return await fetch(`/boards/${board_id}/tasks`)
     .then(res => res.json());
 }
 
-export async function getSubjectCardById(board_id, subject_card_id) {
+export async function getTaskById(board_id, task_id) {
 
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}`)
+    return await fetch(`/boards/${board_id}/tasks/${task_id}`)
     .then(res => res.json());
 }
 
-export async function deleteSubjectCardById(board_id, subject_card_id) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}`, {
+export async function deleteTaskById(board_id, task_id) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}`, {
         method: 'DELETE'
     });
 }
 
-export async function patchSubjectCardById(board_id, subject_card_id, subject_name) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}`, {
+export async function patchTaskById(board_id, task_id, task_name) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}`, {
         method: 'PATCH',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject_name })
+        body: JSON.stringify({ task_name })
     }).then(res => res.json());
 }
 
@@ -43,35 +43,35 @@ export async function patchSubjectCardById(board_id, subject_card_id, subject_na
 // parametrarna, behövs inte i routen
 
 //om man inte skickar med deadline blir den automatiskt null
-export async function createTask(board_id, subject_card_id, task_name, deadline = null) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks`, {
+export async function createSubTask(board_id, task_id, subtask_name, deadline = null) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}/subtasks`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_name, deadline })
+        body: JSON.stringify({ subtask_name, deadline })
     }).then(res => res.json());
 }
 
-export async function getTasks(board_id, subject_card_id) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks`)
+export async function getSubTasks(board_id, task_id) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}/subtasks`)
         .then(res => res.json());
 }
 
-export async function deleteTaskById(board_id, subject_card_id, task_id) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks/${task_id}`, {
+export async function deleteSubTaskById(board_id, task_id, subtask_id) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}/subtasks/${subtask_id}`, {
         method: 'DELETE'
     });
 }
 
-export async function patchTaskById(board_id, subject_card_id, task_id, task_name) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks/${task_id}`, {
+export async function patchTaskById(board_id, task_id, subtask_id, subtask_name) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}/subtasks/${subtask_id}`, {
         method: 'PATCH',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_name })
+        body: JSON.stringify({ subtask_name })
     }).then(res => res.json());
 }
 
-export async function patchTaskStatus(board_id, subject_card_id, task_id) {
-    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/tasks/${task_id}/status`, {
+export async function patchTaskStatus(board_id, task_id, subtask_id) {
+    return await fetch(`/boards/${board_id}/tasks/${task_id}/subtasks/${subtask_id}/status`, {
         method: 'PATCH',
         headers: { "Content-Type": "application/json" },
     }).then(res => res.json());

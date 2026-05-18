@@ -6,14 +6,14 @@ const { pool } = require("../pool");
 const { requiresAuth } = require('express-openid-connect'); //new
 
 //lets boards route hand off requests to subcards
-const subcardRouter = require("./subcards");
+const tasksRouter = require("./tasks");
 
 const { emitUserAdded } = require('../socket_events/board_events');
 
 // Create a router that will hold routes related to boards.
 const router = express.Router({ mergeParams: true });
 
-router.use('/:board_id/cards', subcardRouter);
+router.use('/:board_id/tasks', tasksRouter);
 
 //get all boards
 router.get('/', requiresAuth(), async (req, res) => {

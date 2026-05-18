@@ -12,13 +12,8 @@ function emitTaskEdit(io, board_id, result) {
     io.to(board_id).emit("task-edited", result);
 }
 
-function emitTaskStatus(io, board_id, result) {
-    io.to(board_id).emit("task-status-updated", result);
-}
-
 module.exports = {
     emitTaskCreated,
     emitTaskDeleted,
-    emitTaskEdit,
-    emitTaskStatus
+    emitTaskEdit
 }

@@ -12,7 +12,7 @@ router.get('/:date', async (req, res) => {
 
         //behöver plocka datumet specifikt?
         const result = await pool.query(
-            "SELECT * FROM tasks WHERE deadline = $1",
+            "SELECT * FROM subtask WHERE deadline = $1",
             [date]);
         
         return res.status(200).json(result.rows);

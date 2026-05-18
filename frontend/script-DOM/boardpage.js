@@ -1,9 +1,15 @@
 import {
-    createSubjectCard,
-    getAllSubjectCards,
     createTask,
-    getTasks,
+    getAllTasks,
+    getTaskById,
     deleteTaskById,
+    patchTaskById,
+    createSubTask, 
+    getSubTasks,
+    deleteSubTaskById,
+    patchTaskById,
+    patchTaskStatus,
+    
 } from "/script-API/boardpage_API.js";
 
 console.log("Current board id:", boardId);
@@ -240,6 +246,7 @@ function applyTaskFilter(filter) {
 loadExistingTasks();
 
 const other_alts = document.querySelector(".your-tasks-alts");
+
 add_task_btn.addEventListener("click", () => {
     let checked = false;
     let deleted = false;
