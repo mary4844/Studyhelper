@@ -1,4 +1,13 @@
-import { addUserToBoard, createSubjectCard, createTask, deleteSubjectCardById, deleteTaskById, getAllSubjectCards, getTasks, patchSubjectCardById, patchTaskStatus } from "/script-API/boardpage_API.js";
+import { addUserToBoard, 
+    createSubjectCard, 
+    createTask, 
+    deleteSubjectCardById, 
+    deleteTaskById, 
+    getAllSubjectCards, 
+    getTasks, 
+    patchSubjectCardById, 
+    patchTaskStatus 
+} from "/script-API/boardpage_API.js";
 
 // Rest of your board page code below
 // Add_task knappen

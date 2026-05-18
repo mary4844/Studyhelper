@@ -11,49 +11,49 @@ let userInput = null;
 let selectedAlt = null;
 let selectedAltYourBoards = "all";
 
-function renderBoard(boardName, boardType, boardId) {
-    const new_board = document.createElement("a");
-    new_board.classList.add("board");
-    new_board.href = `boardpage.html?board_id=${boardId}`;
+// function renderBoard(boardName, boardType, boardId) {
+//     const new_board = document.createElement("a");
+//     new_board.classList.add("board");
+//     new_board.href = `boardpage.html?board_id=${boardId}`;
 
-    if (boardType === "personal") {
-        new_board.classList.add("board-personal");
-    } else if (boardType === "group") {
-        new_board.classList.add("board-group");
-    } else {
-        return;
-    }
+//     if (boardType === "personal") {
+//         new_board.classList.add("board-personal");
+//     } else if (boardType === "group") {
+//         new_board.classList.add("board-group");
+//     } else {
+//         return;
+//     }
 
-    const board_title = document.createElement("p");
-    board_title.textContent = boardName;
-    board_title.style.fontWeight = "bold";
-    board_title.style.color = "white";
+//     const board_title = document.createElement("p");
+//     board_title.textContent = boardName;
+//     board_title.style.fontWeight = "bold";
+//     board_title.style.color = "white";
 
-    const delete_btn = document.createElement("button");
-    delete_btn.textContent = "Delete";
-    delete_btn.classList.add("delete-board-btn");
+//     const delete_btn = document.createElement("button");
+//     delete_btn.textContent = "Delete";
+//     delete_btn.classList.add("delete-board-btn");
 
-    delete_btn.addEventListener("click", async (event) => {
-        event.preventDefault();
-        await deleteBoardById(boardId);
-        new_board.remove();
-    });
+//     delete_btn.addEventListener("click", async (event) => {
+//         event.preventDefault();
+//         await deleteBoardById(boardId);
+//         new_board.remove();
+//     });
 
-    new_board.append(board_title, delete_btn);
-    boards_container.append(new_board);
-    applyBoardFilter(selectedAltYourBoards);
-}
+//     new_board.append(board_title, delete_btn);
+//     boards_container.append(new_board);
+//     applyBoardFilter(selectedAltYourBoards);
+// }
 
-async function loadExistingBoards() {
-    try {
-        const boards = await getAllBoards();
-        boards.forEach((board) => {
-            renderBoard(board.board_name, board.is_shared ? "group" : "personal", board.board_id);
-        });
-    } catch (error) {
-        console.error("Could not load boards:", error);
-    }
-}
+// async function loadExistingBoards() {
+//     try {
+//         const boards = await getAllBoards();
+//         boards.forEach((board) => {
+//             renderBoard(board.board_name, board.is_shared ? "group" : "personal", board.board_id);
+//         });
+//     } catch (error) {
+//         console.error("Could not load boards:", error);
+//     }
+// }
 
 function applyBoardFilter(filter) {
     const allBoards = document.querySelectorAll(".board");
@@ -80,7 +80,7 @@ async function displayBoards() {
 
     boards.forEach(board => {
         const new_board = document.createElement("a");
-        new_board.href = `boardpage.html?boardId=${board.board_id}`;
+        new_board.href = `boardpage.html?board_id=${board.board_id}`;
         new_board.classList.add("board");
         new_board.dataset.id = board.board_id;
 
