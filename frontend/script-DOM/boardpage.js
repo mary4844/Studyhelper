@@ -9,7 +9,6 @@ import {
     deleteSubTaskById,
     patchTaskById,
     patchTaskStatus,
-    
 } from "/script-API/boardpage_API.js";
 
 console.log("Current board id:", boardId);
