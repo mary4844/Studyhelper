@@ -32,7 +32,7 @@ async function createTaskElement(task) {
     new_task.classList.add("task");
 
     const dropdown_btn = document.createElement("button");
-    dropdown_btn.textContent = "▼";
+    dropdown_btn.textContent = "↘";
     dropdown_btn.style.background = page_color;
     dropdown_btn.classList.add("dropdown-btn");
 
@@ -134,10 +134,10 @@ async function createTaskElement(task) {
     dropdown_btn.addEventListener("click", () => {
         if (subtasks_container.style.display === "none") {
             subtasks_container.style.display = "flex";
-            dropdown_btn.textContent = "▼";
+            dropdown_btn.textContent = "↘";
         } else {
             subtasks_container.style.display = "none";
-            dropdown_btn.textContent = "▶";
+            dropdown_btn.textContent = "→";
         }
     });
 

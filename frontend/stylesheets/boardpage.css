@@ -1,6 +1,7 @@
 body {
     margin: 0;
     font-family: Inter, Arial;
+    margin-bottom: 150px;
 }
 
 button, a {
@@ -131,26 +132,20 @@ button, a {
     flex-direction: column;
     justify-content: center;
     padding: 20px;
-    margin-top: 50px;
+    margin-top: 25px;
 }
 .task {
     display: flex;
     justify-content: space-between;
+    position: relative;
+    
     border-radius: 10px;
-    /* height: 200px;
-    width: 150px; */
-    /* text-align: start; */
     text-decoration: none;
     font-size: 20px;
-    color: black;
     border: none;
-    position: relative;
-    border: 3px solid black;
-    
-    /* margin-left: 50px;
-    margin-right: 50px; */
-    margin-top: 20px;
+    /* border: 3px solid black; */
 
+    margin-top: 20px;
     padding-bottom: 0px;   
 }
 
@@ -259,9 +254,11 @@ button, a {
     padding: 0px 10px 0 10px;
     padding-bottom: 0px;
     border-radius: 10px;
-    border: 3px solid black;
+    /* border: 3px solid black; */
 
     color: white;
+
+    margin-top: 0.2%;
 }
 
 .subtask-tail {
