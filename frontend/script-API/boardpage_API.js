@@ -77,6 +77,15 @@ export async function patchTaskStatus(board_id, subject_card_id, task_id) {
     }).then(res => res.json());
 }
 
+export async function addUserToBoard(board_id, new_user_mail) {
+    return await fetch(`/boards/${board_id}/share`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ new_user_mail })
+    })
+    .then(res => res.json());
+}
+
 // ----------------------- OM CARD ID:N ÄR GLOBALT UNIKA ------------
 
 // export async function createSubjectCard(card_name) {

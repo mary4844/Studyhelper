@@ -1,12 +1,4 @@
-import {
-    createSubjectCard,
-    getAllSubjectCards,
-    createTask,
-    getTasks,
-    deleteTaskById,
-} from "/script-API/boardpage_API.js";
-
-console.log("Current board id:", boardId);
+import { addUserToBoard, createSubjectCard, createTask, deleteSubjectCardById, deleteTaskById, getAllSubjectCards, getTasks, patchSubjectCardById, patchTaskStatus } from "/script-API/boardpage_API.js";
 
 // Rest of your board page code below
 // Add_task knappen
@@ -36,7 +28,7 @@ async function createTaskElement(task) {
     dropdown_btn.classList.add("dropdown-btn");
 
     const task_title = document.createElement("h2");
-    task_title.textContent = task.name;
+    task_title.textContent = task.subject_name;
     task_title.style.fontWeight = "bold";
     task_title.style.color = "white";
     task_title.classList.add("task-title");
@@ -54,16 +46,17 @@ async function createTaskElement(task) {
         check_btn.addEventListener("click", async () => {
         const newCompletedState = !task.completed;
 
-        await updateTask(task.id, newCompletedState);
+        await patchSubjectCardById(boardId, task.subject_card_id, newCompletedState);
 
         await displayTasks();
     });
+
 
     const delete_btn = document.createElement("button");
     delete_btn.textContent = "Delete";
     delete_btn.classList.add("delete-task-btn");
     delete_btn.addEventListener("click", async () => {
-        await deleteTask(task.id);
+        await deleteSubjectCardById(boardId, task.subject_card_id);
         await displayTasks();
     });
 
@@ -73,7 +66,7 @@ async function createTaskElement(task) {
 
     const subtasks_container = document.createElement("div");
     subtasks_container.classList.add("subtasks-container");
-    const subtasks = await loadSubtasks(task.id);
+    const subtasks = await getTasks(boardId, task.subject_card_id);
 
     subtasks.forEach(subtask => {
         const subtaskElement = document.createElement("div");
@@ -81,14 +74,14 @@ async function createTaskElement(task) {
         subtaskElement.style.background = page_color;
 
         const subtaskTitle = document.createElement("h3");
-        subtaskTitle.textContent = subtask.name;
+        subtaskTitle.textContent = subtask.task_name;
 
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
         deleteBtn.classList.add("delete-task-btn");
 
         deleteBtn.addEventListener("click", async () => {
-            await deleteSubtask(subtask.id);
+            await deleteTaskById(boardId, task.subject_card_id, subtask.task_id);
             await displayTasks();
         });
 
@@ -100,7 +93,7 @@ async function createTaskElement(task) {
         }
 
         checkBtn.addEventListener("click", async () => {
-            await updateSubtask(subtask.id, !subtask.completed);
+            await patchTaskStatus(boardId, task.subject_card_id, subtask.task_id);
             await displayTasks();
         });
 
@@ -120,7 +113,7 @@ async function createTaskElement(task) {
             return;
         }
 
-        await saveSubtask(task.id, subInput.trim());
+        await createTask(boardId, task.subject_card_id, subInput.trim());
         await displayTasks();
     });
     subtask_controls.append(add_subtask_btn);
@@ -149,7 +142,7 @@ async function createTaskElement(task) {
 }
 
 async function displayTasks() {
-    const tasks = await loadTasks(boardId);
+    const tasks = await getAllSubjectCards(boardId);
 
     tasks_container.innerHTML = "";
 
@@ -208,7 +201,7 @@ share_board_btn.addEventListener("click", () => {
             return;
         }
 
-        await shareBoard(boardId, email);
+        await addUserToBoard(boardId, email);
 
         popup.remove();
         alert("Board shared!");
@@ -237,7 +230,7 @@ function applyTaskFilter(filter) {
     });
 }
 
-loadExistingTasks();
+getAllSubjectCards(boardId);
 
 const other_alts = document.querySelector(".your-tasks-alts");
 add_task_btn.addEventListener("click", () => {
@@ -285,7 +278,7 @@ add_task_btn.addEventListener("click", () => {
         // Save the input field
         userInput = task_name.value.trim();
         if (!(userInput === null || userInput === "")) {
-            await saveTask(boardId, userInput);
+            await createSubjectCard(boardId, userInput);
 
             selectedAltYourTasks = "active";
             await displayTasks();
