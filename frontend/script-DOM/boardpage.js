@@ -30,6 +30,62 @@ let subjectCardId = null;
 
 let selectedAltYourTasks = "all";
 
+// ------------------------------ SOCKETS ----------------------------------
+
+// import {
+//     createTask,
+//     getAllTasks,
+//     getTaskById,
+//     deleteTaskById,
+//     patchTaskById,
+//     createSubTask, 
+//     getSubTasks,
+//     deleteSubTaskById,
+//     patchTaskById,
+//     patchTaskStatus,
+// } from "/script-API/boardpage_API.js";
+
+// import { io } from "socket.io-client";
+
+// console.log("Current board id:", boardId);
+
+// // Rest of your board page code below
+// // Add_task knappen
+// let page_color_name = "blue";
+// let page_color = null;
+// let board_name = null;
+// if(page_color_name === "blue") {
+//     page_color = "#94C8F3";
+// }
+// const add_task_btn = document.getElementById("add-task-btn");
+// const tasks_container = document.getElementById("tasks-container");
+// let userInput = null;
+// let selectedAlt = null;
+// const socket = io("http://localhost:3000");
+// const boardId = new URLSearchParams(window.location.search).get("board_id");
+// let subjectCardId = null;
+
+// let selectedAltYourTasks = "all";
+
+// socket.emit("joinBoard", boardId);
+
+// window.addEventListener("beforeunload", () => {
+//     socket.emit("leaveBoard", boardId);
+// });
+
+// socket.on("task-created", () => displayTasks());
+// socket.on("task-deleted", () => displayTasks());
+// socket.on("task-edited", () => displayTasks());
+
+// socket.on("subtask-created", () => displayTasks());
+// socket.on("subtask-deleted", () => displayTasks());
+// socket.on("subtask-edited", () => displayTasks());
+// socket.on("subtask-status-updated", () => displayTasks());
+
+// socket.on("User added", () => displayTasks());
+
+//-------------------------------------------------------------------------
+
 async function createTaskElement(task) {
     const new_task = document.createElement("span");
     new_task.style.background = page_color;
