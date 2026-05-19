@@ -252,28 +252,37 @@ button, a {
     position: relative;
 
     padding: 0px 10px 0 10px;
-    padding-bottom: 0px;
-    border-radius: 10px;
-    /* border: 3px solid black; */
-
     color: white;
-
     margin-top: 0.2%;
+    border-radius: 10px;
 }
 
 .subtask-tail {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    margin-right: 10px;
+    gap: 8px;
+}
+.check-subtask-btn{
+    background: white;
+    height: 40px;
+    width: 40px;
+    margin-right: 8px;
 }
 
-#sub-check-task-btn {
+.delete-subtask-btn{
+    background-color: rgb(149, 149, 149);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/* #sub-check-task-btn {
     margin-top: 5px;
     margin-bottom: 0;
-}
+} */
 
 /* #sub-delete-task-btn {
     margin-right: 10px;

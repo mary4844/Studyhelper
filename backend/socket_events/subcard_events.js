@@ -12,8 +12,13 @@ function emitCardEdit(io, board_id, result) {
     io.to(board_id).emit("card-edited", result);
 }
 
+function emitCardStatus(io, board_id, result) {
+    io.to(board_id).emit("card-status-updated", result);
+}
+
 module.exports = {
     emitCardCreated,
     emitCardDeleted,
-    emitCardEdit
+    emitCardEdit,
+    emitCardStatus
 }

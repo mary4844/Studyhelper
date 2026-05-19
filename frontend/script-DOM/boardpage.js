@@ -57,7 +57,9 @@ async function createTaskElement(task) {
         check_btn.addEventListener("click", async () => {
             const newCompletedState = !task.status;
             await patchSubjectCardStatus(boardId, task.subject_card_id, newCompletedState);
-            await displayTasks();
+            task.status = !task.status;
+            check_btn.textContent = task.status ? "✔️" : "";
+            applyTaskFilter(selectedAltYourTasks);
         });
 
 
@@ -87,7 +89,7 @@ async function createTaskElement(task) {
 
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "Delete";
-        deleteBtn.classList.add("delete-task-btn");
+        deleteBtn.classList.add("delete-subtask-btn");
 
         deleteBtn.addEventListener("click", async () => {
             await deleteTaskById(boardId, task.subject_card_id, subtask.task_id);
@@ -95,7 +97,7 @@ async function createTaskElement(task) {
         });
 
         const checkBtn = document.createElement("button");
-        checkBtn.classList.add("check-task-btn");
+        checkBtn.classList.add("check-subtask-btn");
 
         if (subtask.completed) {
             checkBtn.textContent = "✔️";
@@ -106,7 +108,11 @@ async function createTaskElement(task) {
             await displayTasks();
         });
 
-        subtaskElement.append(subtaskTitle, checkBtn, deleteBtn);
+        const subtaskTail = document.createElement("div");
+        subtaskTail.classList.add("subtask-tail");
+
+        subtaskTail.append(checkBtn, deleteBtn);
+        subtaskElement.append(subtaskTitle, subtaskTail);
         subtasks_container.append(subtaskElement);
     });
     const subtask_controls = document.createElement("div");

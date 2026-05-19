@@ -15,7 +15,9 @@ router.use('/:subject_card_id/tasks', tasksRouter);
 
 const { emitCardCreated, 
         emitCardDeleted, 
-        emitCardEdit } = 
+        emitCardEdit,
+        emitCardStatus
+    } = 
 require('../socket_events/subcard_events')
 
 //create subject card
@@ -124,7 +126,7 @@ router.patch('/:subject_card_id/status', async (req, res) => {
       return res.status(404).json({ error: "Subject card not found" })
     }
 
-    emitTaskStatus(io, board_id, new_status.rows[0]);
+    emitCardStatus(io, board_id, new_status.rows[0]);
     return res.status(200).json(new_status.rows[0]);
     
   } catch (error) {
