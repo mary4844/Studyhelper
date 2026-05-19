@@ -19,6 +19,7 @@ CREATE TABLE user_board (
 CREATE TABLE subject_cards (
     subject_card_id SERIAL PRIMARY KEY,
     board_id INT REFERENCES board(board_id),
+    status BOOLEAN DEFAULT false,
     subject_name VARCHAR NOT NULL
 );
 

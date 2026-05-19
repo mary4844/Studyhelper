@@ -37,6 +37,14 @@ export async function patchSubjectCardById(board_id, subject_card_id, subject_na
     }).then(res => res.json());
 }
 
+export async function patchSubjectCardStatus(board_id, subject_card_id) {
+    return await fetch(`/boards/${board_id}/cards/${subject_card_id}/status/`, {
+        method: 'PATCH',
+        headers: { "Content-Type": "application/json" },
+    }).then(res => res.json());
+}
+
+
 // ----------------------- TASK FUNKTIONER -------------------------
 
 // ?cards=${card_id} och ?boards=${board_id} används i GET för att skicka

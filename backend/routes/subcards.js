@@ -103,6 +103,36 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
     }
 })
 
+// Update task status
+router.patch('/:subject_card_id/status', async (req, res) => {
+  try{
+    const io = req.app.get('io');
+    const {board_id, subject_card_id} = req.params;
+
+    const status = await pool.query(
+      'SELECT status FROM subject_cards WHERE subject_card_id = $1',
+      [subject_card_id]
+    )
+
+    const current = status.rows[0]?.status;
+    const new_status = await pool.query(
+      `UPDATE subject_cards SET status = $1 WHERE subject_card_id = $2 RETURNING *`,
+      [!current, subject_card_id]
+    )
+
+    if(new_status.rowCount === 0) {
+      return res.status(404).json({ error: "Subject card not found" })
+    }
+
+    emitTaskStatus(io, board_id, new_status.rows[0]);
+    return res.status(200).json(new_status.rows[0]);
+    
+  } catch (error) {
+    console.error("Error updating status:", error);
+    return res.status(500).json({ error: "Server error"})
+  }
+})
+
 //edit a card
 router.patch('/:subject_card_id', requiresAuth(), async (req, res) => {
     try {
@@ -116,8 +146,8 @@ router.patch('/:subject_card_id', requiresAuth(), async (req, res) => {
         }
 
         const result = await pool.query(
-        `UPDATE subject_cards SET subject_name = $1 WHERE subject_card_id = $2 RETURNING *`,
-        [subject_name, subject_card_id]
+            `UPDATE subject_cards SET subject_name = $1 WHERE subject_card_id = $2 RETURNING *`,
+            [subject_name, subject_card_id]
         );
 
         if(result.rowCount === 0) {

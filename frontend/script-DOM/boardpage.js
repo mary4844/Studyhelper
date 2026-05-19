@@ -1,4 +1,5 @@
-import { addUserToBoard, 
+import { 
+    addUserToBoard, 
     createSubjectCard, 
     createTask, 
     deleteSubjectCardById, 
@@ -6,6 +7,7 @@ import { addUserToBoard,
     getAllSubjectCards, 
     getTasks, 
     patchSubjectCardById, 
+    patchSubjectCardStatus,
     patchTaskStatus 
 } from "/script-API/boardpage_API.js";
 
@@ -49,16 +51,14 @@ async function createTaskElement(task) {
     const check_btn = document.createElement("button");
     check_btn.style.fontSize = "100%";
     check_btn.classList.add("check-task-btn");
-        if (task.completed) {
+        if (task.status) {
             check_btn.textContent = "✔️";
         }
         check_btn.addEventListener("click", async () => {
-        const newCompletedState = !task.completed;
-
-        await patchSubjectCardById(boardId, task.subject_card_id, newCompletedState);
-
-        await displayTasks();
-    });
+            const newCompletedState = !task.status;
+            await patchSubjectCardStatus(boardId, task.subject_card_id, newCompletedState);
+            await displayTasks();
+        });
 
 
     const delete_btn = document.createElement("button");
