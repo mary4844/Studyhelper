@@ -99,13 +99,15 @@ async function createTaskElement(task) {
         const checkBtn = document.createElement("button");
         checkBtn.classList.add("check-subtask-btn");
 
-        if (subtask.completed) {
+        if (subtask.status) {
             checkBtn.textContent = "✔️";
         }
-
         checkBtn.addEventListener("click", async () => {
-            await patchTaskStatus(boardId, task.subject_card_id, subtask.task_id);
-            await displayTasks();
+            const newCompletedState = !subtask.status;
+            await patchTaskStatus(boardId, task.subject_card_id, subtask.task_id, newCompletedState);
+            subtask.status = !subtask.status;
+            checkBtn.textContent = subtask.status ? "✔️" : "";
+            applyTaskFilter(selectedAltYourTasks);
         });
 
         const subtaskTail = document.createElement("div");
