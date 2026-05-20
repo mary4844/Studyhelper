@@ -15,7 +15,6 @@ import{
 } from "/script-API/startpage_API.js"
 
 import { io } from "socket.io-client";
-console.log("Current board id:", boardId);
 
 // Rest of your board page code below
 // Add_task knappen
@@ -29,7 +28,7 @@ const add_task_btn = document.getElementById("add-task-btn");
 const tasks_container = document.getElementById("tasks-container");
 let userInput = null;
 let selectedAlt = null;
-const socket = io("http://localhost:3000");
+const socket = io();
 const boardId = new URLSearchParams(window.location.search).get("board_id");
 let subjectCardId = null;
 
@@ -42,6 +41,8 @@ async function init() {
 }
 
 socket.emit("joinBoard", boardId);
+
+console.log("Current board id:", boardId);
 
 window.addEventListener("beforeunload", () => {
     socket.emit("leaveBoard", boardId);

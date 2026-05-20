@@ -158,5 +158,22 @@ router.patch('/:task_id/status', async (req, res) => {
   }
 })
 
+router.get('/:date', async (req, res) => {
+    try {
+        const { date } = req.params;
+
+        //behöver plocka datumet specifikt?
+        const result = await pool.query(
+            "SELECT * FROM tasks WHERE deadline = $1",
+            [date]);
+        
+        return res.status(200).json(result.rows);
+
+    } catch (error) {
+        console.error("error fetching board:", error);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
 //Möjliggör att app.js kan importera routern o dess funktioner
 module.exports = router;
