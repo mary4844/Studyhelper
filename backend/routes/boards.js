@@ -176,30 +176,38 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
 
     if (!user.rows[0]) {
-      return res.status(404).json({ error: 'Användaren hittades inte' });
+      return res.status(404).json({ error: 'AnvÃ¤ndaren hittades inte' });
     }
 
     const user_id = user.rows[0].user_id;
     const { board_id } = req.params;
     
     const connection = await pool.query(
-      `SELECT * FROM user_board 
-      WHERE user_id = $1 
-      AND board_id = $2`,
+      `SELECT * FROM user_board WHERE user_id = $1 AND board_id = $2`,
       [user_id, board_id]);
 
     if (!connection.rows[0]) {
       return res.status(404).json({ error: 'Ingen koppling?!' });
     }
 
-    //ta bort kopplingen mellan user och board
+    // Delete tasks that belong to subject cards on this board
+    await pool.query(`
+      DELETE FROM tasks 
+      WHERE subject_card_id IN (
+        SELECT subject_card_id FROM subject_cards WHERE board_id = $1
+      )`, [board_id]);
+
+    // Delete subject cards on this board
+    await pool.query(`DELETE FROM subject_cards WHERE board_id = $1`, [board_id]);
+
+    // Delete user_board connections
     await pool.query(`DELETE FROM user_board WHERE board_id = $1`, [board_id]);
 
-    //ta bort board
-    const result = await pool.query("DELETE FROM board WHERE board_id = $1", [board_id]);
+    // Delete the board
+    const result = await pool.query(`DELETE FROM board WHERE board_id = $1`, [board_id]);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "result not found" });
+      return res.status(404).json({ error: "Board not found" });
     }
 
     res.status(204).send();
@@ -208,7 +216,46 @@ router.delete('/:board_id', requiresAuth(), async (req, res) => {
     console.error("error deleting board:", error);
     return res.status(500).json({ error: "Server error" });
   }
-})
+});
+// router.delete('/:board_id', requiresAuth(), async (req, res) => {
+//   try {
+//     const email = req.oidc.user.email;
+//     const user = await pool.query('SELECT * FROM users WHERE user_mail = $1', [email]);
+
+//     if (!user.rows[0]) {
+//       return res.status(404).json({ error: 'Användaren hittades inte' });
+//     }
+
+//     const user_id = user.rows[0].user_id;
+//     const { board_id } = req.params;
+    
+//     const connection = await pool.query(
+//       `SELECT * FROM user_board 
+//       WHERE user_id = $1 
+//       AND board_id = $2`,
+//       [user_id, board_id]);
+
+//     if (!connection.rows[0]) {
+//       return res.status(404).json({ error: 'Ingen koppling?!' });
+//     }
+
+//     //ta bort kopplingen mellan user och board
+//     await pool.query(`DELETE FROM user_board WHERE board_id = $1`, [board_id]);
+
+//     //ta bort board
+//     const result = await pool.query("DELETE FROM board WHERE board_id = $1", [board_id]);
+
+//     if (result.rowCount === 0) {
+//       return res.status(404).json({ error: "result not found" });
+//     }
+
+//     res.status(204).send();
+
+//   } catch (error) {
+//     console.error("error deleting board:", error);
+//     return res.status(500).json({ error: "Server error" });
+//   }
+// })
 
 // router.patch();
 

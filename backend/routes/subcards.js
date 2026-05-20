@@ -82,10 +82,13 @@ router.get('/', requiresAuth(), async (req, res) => { //requires auth ?
 })
 
 // deleteSubjectCardById
-router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requires auth ?
+router.delete('/:subject_card_id', requiresAuth(), async (req, res) => {
     try {
         const io = req.app.get('io');
         const { board_id, subject_card_id } = req.params;
+
+        // Delete tasks belonging to this subject card first
+        await pool.query(`DELETE FROM tasks WHERE subject_card_id = $1`, [subject_card_id]);
 
         const result = await pool.query(
             `DELETE FROM subject_cards 
@@ -96,14 +99,36 @@ router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requi
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Card is not connected to this board' });
         }
-        //kanske inte behövs subject_card_id i emiten
+
         emitCardDeleted(io, board_id, subject_card_id);
         res.status(204).send();
     } catch (error) {
         console.error("error deleting subcard:", error);
         return res.status(500).json({ error: "Server error" });
     }
-})
+});
+// router.delete('/:subject_card_id', requiresAuth(), async (req, res) => { //requires auth ?
+//     try {
+//         const io = req.app.get('io');
+//         const { board_id, subject_card_id } = req.params;
+
+//         const result = await pool.query(
+//             `DELETE FROM subject_cards 
+//             WHERE subject_card_id = $1 
+//             AND board_id = $2 RETURNING *`,
+//             [subject_card_id, board_id]);
+
+//         if (result.rows.length === 0) {
+//             return res.status(404).json({ error: 'Card is not connected to this board' });
+//         }
+//         //kanske inte behövs subject_card_id i emiten
+//         emitCardDeleted(io, board_id, subject_card_id);
+//         res.status(204).send();
+//     } catch (error) {
+//         console.error("error deleting subcard:", error);
+//         return res.status(500).json({ error: "Server error" });
+//     }
+// })
 
 // Update task status
 router.patch('/:subject_card_id/status', async (req, res) => {
