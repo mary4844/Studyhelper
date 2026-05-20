@@ -17,18 +17,19 @@ import{
 
 // Rest of your board page code below
 // Add_task knappen
-let page_color_name = "blue";
-let page_color = null;
-let board_name = null;
-if(page_color_name === "blue") {
-    page_color = "#94C8F3";
-}
+// let page_color_name = "blue";
+// let page_color = null;
+// let board_name = null;
+// if(page_color_name === "blue") {
+//     page_color = "#94C8F3";
+// }
 const add_task_btn = document.getElementById("add-task-btn");
 const tasks_container = document.getElementById("tasks-container");
 let userInput = null;
 let selectedAlt = null;
 const socket = io();
 const boardId = new URLSearchParams(window.location.search).get("board_id");
+
 async function displayBoardName() {
     const board = await getBoardByID(boardId);
 
