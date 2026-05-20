@@ -29,7 +29,16 @@ let userInput = null;
 let selectedAlt = null;
 const socket = io();
 const boardId = new URLSearchParams(window.location.search).get("board_id");
+async function displayBoardName() {
+    const board = await getBoardByID(boardId);
+
+    const boardTitle = document.getElementById("board-title");
+    boardTitle.textContent = board.board_name;
+}
+
+displayBoardName();
 let subjectCardId = null;
+
 
 let task_color = null;
 
