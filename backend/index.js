@@ -40,6 +40,6 @@ io.on('connection', (socket) => {
 // Start the Express app here, but keep routes and database logic in app.js.
 // That makes the app easier to understand and easier to test later.
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
