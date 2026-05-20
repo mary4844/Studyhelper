@@ -14,7 +14,6 @@ import{
     getBoardByID
 } from "/script-API/startpage_API.js"
 
-import { io } from "socket.io-client";
 
 // Rest of your board page code below
 // Add_task knappen
