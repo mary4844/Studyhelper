@@ -49,7 +49,7 @@ async function renderCalendar(month, year) {
             deadlinedTasks.forEach(task => {
                 const taskElement = document.createElement('div');
                 taskElement.textContent = 
-                    "Deadline: " + deadlinedTasks.task_name;
+                    "Deadline: " + task.task_name;
                 dateInfo.appendChild(taskElement);
             });
         }
