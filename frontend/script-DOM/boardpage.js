@@ -6,10 +6,13 @@ import {
     deleteTaskById, 
     getAllSubjectCards, 
     getTasks, 
-    patchSubjectCardById, 
     patchSubjectCardStatus,
     patchTaskStatus 
 } from "/script-API/boardpage_API.js";
+
+import{
+    getBoardByID
+} from "/script-API/startpage_API.js"
 
 // Rest of your board page code below
 // Add_task knappen
@@ -26,16 +29,24 @@ let selectedAlt = null;
 const boardId = new URLSearchParams(window.location.search).get("board_id");
 let subjectCardId = null;
 
+let task_color = null;
+
+async function init() {
+    const board = await getBoardByID(boardId);
+    task_color = board.is_shared ? "#94C8F3" : "rgb(150, 207, 161)";
+    await displayTasks();
+}
+
 let selectedAltYourTasks = "all";
 
 async function createTaskElement(task) {
     const new_task = document.createElement("span");
-    new_task.style.background = page_color;
+    new_task.style.background = task_color;
     new_task.classList.add("task");
 
     const dropdown_btn = document.createElement("button");
     dropdown_btn.textContent = "↘";
-    dropdown_btn.style.background = page_color;
+    dropdown_btn.style.background = task_color;
     dropdown_btn.classList.add("dropdown-btn");
 
     const task_title = document.createElement("h2");
@@ -68,7 +79,7 @@ async function createTaskElement(task) {
     delete_btn.classList.add("delete-task-btn");
     delete_btn.addEventListener("click", async () => {
         await deleteSubjectCardById(boardId, task.subject_card_id);
-        await displayTasks();
+        await init();
     });
 
     const task_tail_confirm_btns = document.createElement("div");
@@ -82,7 +93,7 @@ async function createTaskElement(task) {
     subtasks.forEach(subtask => {
         const subtaskElement = document.createElement("div");
         subtaskElement.classList.add("subtask");
-        subtaskElement.style.background = page_color;
+        subtaskElement.style.background = task_color;
 
         const subtaskTitle = document.createElement("h3");
         subtaskTitle.textContent = subtask.task_name;
@@ -93,7 +104,7 @@ async function createTaskElement(task) {
 
         deleteBtn.addEventListener("click", async () => {
             await deleteTaskById(boardId, task.subject_card_id, subtask.task_id);
-            await displayTasks();
+            await init();
         });
 
         const checkBtn = document.createElement("button");
@@ -167,7 +178,7 @@ async function createTaskElement(task) {
             }
 
             await createTask(boardId, task.subject_card_id, subInput, deadline);
-            await displayTasks();
+            await init();
             input_container.remove();
         });
 
@@ -212,7 +223,9 @@ async function displayTasks() {
     applyTaskFilter(selectedAltYourTasks);
 }
 
-displayTasks();
+//displayTasks();
+
+init();
 
 const share_board_btn = document.getElementById("share-board-btn");
 
@@ -259,7 +272,12 @@ share_board_btn.addEventListener("click", () => {
             return;
         }
 
-        await addUserToBoard(boardId, email);
+        const response = await addUserToBoard(boardId, email);
+
+        if (response.error) {
+            alert(response.error);
+            return;
+        }
 
         popup.remove();
         alert("Board shared!");
@@ -339,7 +357,7 @@ add_task_btn.addEventListener("click", () => {
             await createSubjectCard(boardId, userInput);
 
             selectedAltYourTasks = "active";
-            await displayTasks();
+            await init();
         } else {
             return;
         }

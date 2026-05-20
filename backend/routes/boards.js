@@ -64,17 +64,19 @@ router.get('/:board_id', requiresAuth(), async (req, res) => {
       return res.status(404).json({ error: 'Ingen koppling?!' });
     }
 
-    const name = await pool.query("SELECT board_name FROM board WHERE board_id = $1", [board_id]);
+    const result = await pool.query(
+        "SELECT * FROM board WHERE board_id = $1",
+        [board_id]
+    );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Board not found" });
+        return res.status(404).json({ error: "Board not found" });
     }
 
-    const boardName = name.rows[0]?.board_name;
-    return res.status(200).json({ board_name: boardName });
+    return res.status(200).json(result.rows[0]);
 
     } catch (error) {
-      console.error("error getting board name:", error);
+      console.error("error getting board:", error);
       return res.status(500).json({ error: "Server error" });
     }
 })
@@ -229,7 +231,7 @@ router.post('/:board_id/share', requiresAuth(), async (req, res) => {
 
       //om den nya usern inte finns
       if(!user_to_add.rows[0]) {
-        return res.status(404).json({ error: 'Användaren hittades inte'})
+        return res.status(404).json({ error: 'Requested user not found'})
       }
 
       //kollar om requesting user har tillgång till boarden
@@ -240,7 +242,7 @@ router.post('/:board_id/share', requiresAuth(), async (req, res) => {
 
       //om requesting user inte har tillgång (men tror den alltid kommer ha det)
       if (!membership.rows[0]) {
-        return res.status(403).json({ error: 'du har inte tillgång till den här boarden'})
+        return res.status(403).json({ error: 'You don`t have access to this board'})
       }
 
       //kollar om den nya usern redan är med
@@ -251,7 +253,7 @@ router.post('/:board_id/share', requiresAuth(), async (req, res) => {
 
       //om den nya usern redan är med
       if (alreadyMember.rows[0]) {
-          return res.status(409).json({ error: 'Användaren är redan med i boarden' });
+          return res.status(409).json({ error: 'This user already has access to this board' });
       }
 
       //updaterar borden till is_shared = true om den inte redan är det

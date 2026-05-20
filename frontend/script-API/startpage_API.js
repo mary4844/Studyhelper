@@ -11,8 +11,8 @@ export async function getAllBoards() {
         .then(res => res.json());
 }
 
-export async function getBoardByID() {
-    return await fetch(`/boards/${board_id}`)
+export async function getBoardByID(boardId) {
+    return await fetch(`/boards/${boardId}`)
     .then(res => res.json());
 }
 

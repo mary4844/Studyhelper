@@ -86,12 +86,12 @@ export async function patchTaskStatus(board_id, subject_card_id, task_id) {
 }
 
 export async function addUserToBoard(board_id, new_user_mail) {
-    return await fetch(`/boards/${board_id}/share`, {
+    const response = await fetch(`/boards/${board_id}/share`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ new_user_mail })
     })
-    .then(res => res.json());
+    return await response.json();
 }
 
 // ----------------------- OM CARD ID:N ÄR GLOBALT UNIKA ------------
