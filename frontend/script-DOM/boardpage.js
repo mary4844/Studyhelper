@@ -210,9 +210,9 @@ share_board_btn.addEventListener("click", () => {
 
     share_btn.addEventListener("click", async () => {
         const email = email_input.value.trim();
-
-        if (email === "") {
-            alert("Please enter an email");
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email === "" || !emailPattern.test(email)) {
+            alert("Please enter a valid email address");
             return;
         }
 
