@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "jest --runInBand --verbose",
     "test:tasks": "NODE_ENV=test jest --runInBand --verbose route_tests/tasks.unit.test.js",
     "test:cards": "NODE_ENV=test jest --runInBand --verbose route_tests/subcards.unit.test.js",
