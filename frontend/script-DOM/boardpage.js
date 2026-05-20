@@ -109,7 +109,7 @@ async function createTaskElement(task) {
     delete_btn.classList.add("delete-task-btn");
     delete_btn.addEventListener("click", async () => {
         await deleteSubjectCardById(boardId, task.subject_card_id);
-        await init();
+        //await init();
     });
 
     const task_tail_confirm_btns = document.createElement("div");
@@ -134,7 +134,7 @@ async function createTaskElement(task) {
 
         deleteBtn.addEventListener("click", async () => {
             await deleteTaskById(boardId, task.subject_card_id, subtask.task_id);
-            await init();
+            //await init();
         });
 
         const checkBtn = document.createElement("button");
@@ -208,7 +208,7 @@ async function createTaskElement(task) {
             }
 
             await createTask(boardId, task.subject_card_id, subInput, deadline);
-            await init();
+            //await init();
             input_container.remove();
         });
 
@@ -387,7 +387,7 @@ add_task_btn.addEventListener("click", () => {
             await createSubjectCard(boardId, userInput);
 
             selectedAltYourTasks = "active";
-            await init();
+            //await init();
         } else {
             return;
         }
