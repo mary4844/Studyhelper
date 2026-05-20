@@ -1,4 +1,6 @@
-//import { getDeadlineTask } from "../script-API/calendar_API.js"
+import { 
+    getDeadlineTask 
+} from "../script-API/calendar_API.js"
 
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
@@ -18,10 +20,7 @@ async function renderCalendar(month, year) {
     calendarDates.innerHTML = '';
     monthYear.textContent = `${months[month]} ${year}`;
 
-    // Get first day of the month
     const firstDay = new Date(year, month, 1).getDay();
-
-    // Get the number of days in the month
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     // Create blanks for days of the before the forst day
@@ -37,7 +36,7 @@ async function renderCalendar(month, year) {
     for (let i = 1; i <= daysInMonth; i++) {
 
         const formattedDate =`${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        // const deadlinedTasks = await getDeadlineTask(formattedDate);
+        const deadlinedTasks = await getDeadlineTask(formattedDate);
 
         const day = document.createElement('div');
 
@@ -46,14 +45,14 @@ async function renderCalendar(month, year) {
         date.classList.add('date')
 
         const dateInfo = document.createElement('div');
-        // if (deadlinedTasks.length > 0) {
-        //     deadlinedTasks.forEach(task => {
-        //         const taskElement = document.createElement('div');
-        //         taskElement.textContent = 
-        //             "Deadline: " + deadlinedTasks.task_name;
-        //         dateInfo.appendChild(taskElement);
-        //     });
-        // }
+        if (deadlinedTasks.length > 0) {
+            deadlinedTasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.textContent = 
+                    "Deadline: " + deadlinedTasks.task_name;
+                dateInfo.appendChild(taskElement);
+            });
+        }
         dateInfo.classList.add('date-info')
 
         // Highlight today's date

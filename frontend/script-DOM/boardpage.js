@@ -123,15 +123,56 @@ async function createTaskElement(task) {
     const add_subtask_btn = document.createElement("button");
     add_subtask_btn.textContent = "Add Subtask";
     add_subtask_btn.classList.add("add-subtask-btn", "task-btns");
-    add_subtask_btn.addEventListener("click", async () => {
-        const subInput = prompt("Enter subtask name:");
+    // add_subtask_btn.addEventListener("click", async () => {
+    //     const subInput = prompt("Enter subtask name:");
 
-        if (subInput === null || subInput.trim() === "") {
+    //     if (subInput === null || subInput.trim() === "") {
+    //         return;
+    //     }
+
+    //     await createTask(boardId, task.subject_card_id, subInput.trim());
+    //     await displayTasks();
+    // });
+
+    add_subtask_btn.addEventListener("click", async () => {
+        // Check if already displayed
+        const existing_input = document.querySelector(".sub-add-task-alts");
+        if (existing_input) {
+            existing_input.remove();
             return;
         }
 
-        await createTask(boardId, task.subject_card_id, subInput.trim());
-        await displayTasks();
+        const input_container = document.createElement("div");
+        input_container.classList.add("sub-add-task-alts");
+
+        const subtask_input = document.createElement("input");
+        subtask_input.type = "text";
+        subtask_input.placeholder = "Enter subtask name*";
+        // subtask_input.classList.add("task-name-input");
+
+        const addDeadline = document.createElement("input");
+        addDeadline.type = "date";
+
+        const confirm_btn = document.createElement("button");
+        confirm_btn.textContent = "Add";
+        confirm_btn.classList.add("add-btn");
+
+        confirm_btn.addEventListener("click", async () => {
+            const subInput = subtask_input.value.trim();
+            if (subInput === "") return;
+
+            let deadline = addDeadline.value.trim()
+            if ( deadline === "") {
+                deadline = null
+            }
+
+            await createTask(boardId, task.subject_card_id, subInput, deadline);
+            await displayTasks();
+            input_container.remove();
+        });
+
+        input_container.append(subtask_input, addDeadline, confirm_btn);
+        subtask_controls.append(input_container);
     });
     subtask_controls.append(add_subtask_btn);
 
