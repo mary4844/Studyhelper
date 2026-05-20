@@ -56,15 +56,14 @@ window.addEventListener("beforeunload", () => {
     socket.emit("leaveBoard", boardId);
 });
 
+socket.on("card-created", () => displayTasks());
+socket.on("card-deleted", () => displayTasks());
+socket.on("card-edited", () => displayTasks());
+socket.on("card-status-updated", () => displayTasks());
 socket.on("task-created", () => displayTasks());
 socket.on("task-deleted", () => displayTasks());
 socket.on("task-edited", () => displayTasks());
-
-socket.on("subtask-created", () => displayTasks());
-socket.on("subtask-deleted", () => displayTasks());
-socket.on("subtask-edited", () => displayTasks());
-socket.on("subtask-status-updated", () => displayTasks());
-
+socket.on("task-status-updated", () => displayTasks());
 socket.on("User added", () => displayTasks());
 
 let selectedAltYourTasks = "all";
@@ -336,7 +335,7 @@ function applyTaskFilter(filter) {
     });
 }
 
-getAllSubjectCards(boardId);
+//getAllSubjectCards(boardId);
 
 const other_alts = document.querySelector(".your-tasks-alts");
 add_task_btn.addEventListener("click", () => {
