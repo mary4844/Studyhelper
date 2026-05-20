@@ -11,6 +11,11 @@ export async function getAllBoards() {
         .then(res => res.json());
 }
 
+export async function getBoardByID() {
+    return await fetch(`/boards/${board_id}`)
+    .then(res => res.json());
+}
+
 //creates board and posts it in db
 // type måste vara 'personal' eller 'group', exakt så
 export async function createBoard(name, type) {
