@@ -14,6 +14,9 @@ import{
     getBoardByID
 } from "/script-API/startpage_API.js"
 
+import { io } from "socket.io-client";
+console.log("Current board id:", boardId);
+
 // Rest of your board page code below
 // Add_task knappen
 let page_color_name = "blue";
@@ -26,6 +29,7 @@ const add_task_btn = document.getElementById("add-task-btn");
 const tasks_container = document.getElementById("tasks-container");
 let userInput = null;
 let selectedAlt = null;
+const socket = io("http://localhost:3000");
 const boardId = new URLSearchParams(window.location.search).get("board_id");
 let subjectCardId = null;
 
@@ -36,6 +40,23 @@ async function init() {
     task_color = board.is_shared ? "#94C8F3" : "rgb(150, 207, 161)";
     await displayTasks();
 }
+
+socket.emit("joinBoard", boardId);
+
+window.addEventListener("beforeunload", () => {
+    socket.emit("leaveBoard", boardId);
+});
+
+socket.on("task-created", () => displayTasks());
+socket.on("task-deleted", () => displayTasks());
+socket.on("task-edited", () => displayTasks());
+
+socket.on("subtask-created", () => displayTasks());
+socket.on("subtask-deleted", () => displayTasks());
+socket.on("subtask-edited", () => displayTasks());
+socket.on("subtask-status-updated", () => displayTasks());
+
+socket.on("User added", () => displayTasks());
 
 let selectedAltYourTasks = "all";
 
