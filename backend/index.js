@@ -1,4 +1,4 @@
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const { app } = require("./app");
 
 //till socket
@@ -40,6 +40,6 @@ io.on('connection', (socket) => {
 // Start the Express app here, but keep routes and database logic in app.js.
 // That makes the app easier to understand and easier to test later.
 
-httpServer.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
